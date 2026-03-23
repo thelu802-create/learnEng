@@ -232,6 +232,13 @@
     #ffffff;
 }
 
+.home-hero-card {
+  background:
+    radial-gradient(circle at top right, rgba(42, 157, 143, 0.12), transparent 30%),
+    radial-gradient(circle at bottom left, rgba(231, 111, 81, 0.1), transparent 28%),
+    linear-gradient(180deg, #ffffff 0%, #f8fbfd 100%);
+}
+
 .hero-tag {
   width: fit-content;
   padding: 8px 14px;
@@ -243,15 +250,48 @@
 
 .hero-title.ant-typography {
   margin: 0;
-  font-size: clamp(2.4rem, 4vw, 4.4rem);
-  line-height: 0.98;
+  font-size: clamp(2rem, 3.4vw, 3.4rem);
+  line-height: 1.05;
   color: #101828;
+  letter-spacing: -0.03em;
 }
 
 .hero-copy.ant-typography {
-  max-width: 620px;
+  max-width: 560px;
   color: #475467;
-  line-height: 1.75;
+  line-height: 1.7;
+  font-size: 1rem;
+}
+
+.home-hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.home-hero-kicker {
+  color: #2a9d8f;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.home-hero-points {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.home-hero-point {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: #344054;
+}
+
+.home-hero-point .anticon {
+  margin-top: 4px;
+  color: #2a9d8f;
 }
 
 .outline-button {
@@ -278,6 +318,51 @@
   align-items: flex-end;
 }
 
+.home-hero-showcase {
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.home-progress-panel {
+  width: 100%;
+  padding: 20px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(42, 157, 143, 0.12);
+  box-shadow: 0 14px 28px rgba(16, 24, 40, 0.06);
+}
+
+.home-progress-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.home-progress-title.ant-typography {
+  margin: 0 !important;
+}
+
+.home-progress-copy.ant-typography {
+  margin: 12px 0 16px !important;
+  color: #475467;
+  line-height: 1.7;
+}
+
+.home-progress-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.home-progress-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .hero-badge-card {
   position: absolute;
   top: 18px;
@@ -299,6 +384,10 @@
   gap: 14px;
 }
 
+.home-metric-grid {
+  width: 100%;
+}
+
 .hero-grid div {
   padding: 18px 16px;
   border-radius: 20px;
@@ -314,6 +403,80 @@
 .hero-grid .anticon {
   color: #2a9d8f;
   font-size: 18px;
+}
+
+.home-section-card,
+.home-action-card {
+  min-height: 100%;
+}
+
+.home-journey-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.home-journey-card {
+  padding: 18px;
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(248, 251, 253, 1));
+  border: 1px solid #e5edf2;
+}
+
+.home-journey-card .ant-typography {
+  margin-bottom: 0;
+}
+
+.home-journey-card p {
+  margin-top: 10px;
+  color: #667085;
+  line-height: 1.7;
+}
+
+.home-journey-index {
+  display: inline-flex;
+  margin-bottom: 12px;
+  color: #2a9d8f;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.home-action-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  padding: 18px;
+  border: 1px solid #dde9ee;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.88);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.home-action-link:hover {
+  transform: translateY(-2px);
+  border-color: #bfe0db;
+  box-shadow: 0 12px 26px rgba(16, 24, 40, 0.06);
+}
+
+.home-action-link .anticon {
+  color: #2a9d8f;
+  font-size: 18px;
+}
+
+.home-action-copy {
+  display: block;
+  margin-top: 6px;
+  color: #667085;
+  line-height: 1.6;
 }
 
 .section-heading .ant-typography {
@@ -962,6 +1125,15 @@
     min-height: 280px;
   }
 
+  .home-progress-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .home-journey-grid {
+    grid-template-columns: 1fr;
+  }
+
   .hero-badge-card {
     width: 160px;
   }
@@ -997,6 +1169,10 @@
 
   .hero-showcase {
     padding-top: 96px;
+  }
+
+  .home-action-link {
+    align-items: flex-start;
   }
 
   .practice-item {
