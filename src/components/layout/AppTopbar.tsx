@@ -2,6 +2,7 @@ import {
   FontSizeOutlined,
   GlobalOutlined,
   InfoCircleOutlined,
+  MenuOutlined,
   MoonOutlined,
   SettingOutlined,
   SunOutlined,
@@ -17,6 +18,7 @@ interface AppTopbarProps {
   selectedGrade: GradeKey
   gradeOptions: GradeKey[]
   onGradeChange: (grade: GradeKey) => void
+  onOpenMobileMenu: () => void
   themeMode: ThemeMode
   onThemeChange: (themeMode: ThemeMode) => void
   fontSizeMode: FontSizeMode
@@ -27,6 +29,7 @@ function AppTopbar({
   selectedGrade,
   gradeOptions,
   onGradeChange,
+  onOpenMobileMenu,
   themeMode,
   onThemeChange,
   fontSizeMode,
@@ -82,6 +85,13 @@ function AppTopbar({
     <>
       <header className="topbar">
         <div className="topbar-left">
+          <Button
+            type="default"
+            icon={<MenuOutlined />}
+            className="mobile-menu-trigger"
+            onClick={onOpenMobileMenu}
+            aria-label={language === 'en' ? 'Open navigation menu' : 'Mở menu điều hướng'}
+          />
           <div>
             <Text className="page-kicker">{t('common.gradeLabel')}</Text>
             <Title level={4} className="page-title">
@@ -120,6 +130,7 @@ function AppTopbar({
         title={settingsCopy.settingsTitle}
         placement="right"
         width={380}
+        styles={{ body: { paddingBottom: 32 } }}
         onClose={() => setIsSettingsOpen(false)}
         open={isSettingsOpen}
         className="settings-drawer"

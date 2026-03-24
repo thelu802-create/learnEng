@@ -52,6 +52,7 @@ function App() {
   const [selectedGrade, setSelectedGrade] = useState<GradeKey>(() => gradeOptions[0] ?? 'Lá»›p 6')
   const [themeMode, setThemeMode] = useState<ThemeMode>(getInitialThemeMode)
   const [fontSizeMode, setFontSizeMode] = useState<FontSizeMode>(getInitialFontSizeMode)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     window.localStorage.setItem(THEME_STORAGE_KEY, themeMode)
@@ -123,7 +124,12 @@ function App() {
           <AppSidebar
             menuItems={menuItems}
             selectedMenu={selectedMenu}
-            onMenuChange={setSelectedMenu}
+            onMenuChange={(menuKey) => {
+              setSelectedMenu(menuKey)
+              setIsMobileMenuOpen(false)
+            }}
+            isMobileOpen={isMobileMenuOpen}
+            onMobileClose={() => setIsMobileMenuOpen(false)}
           />
 
           <Layout className="main-layout">
@@ -135,6 +141,7 @@ function App() {
               onThemeChange={setThemeMode}
               fontSizeMode={fontSizeMode}
               onFontSizeChange={setFontSizeMode}
+              onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
             />
 
             <Content className="app-content">

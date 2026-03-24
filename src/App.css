@@ -60,6 +60,20 @@
   gap: 14px;
 }
 
+.mobile-menu-trigger {
+  display: none;
+  width: 46px;
+  min-width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  border-color: #dbe7ec;
+  box-shadow: 0 10px 22px rgba(16, 24, 40, 0.05);
+}
+
+.mobile-menu-trigger .anticon {
+  font-size: 18px;
+}
+
 .topbar-actions {
   display: flex;
   align-items: center;
@@ -462,6 +476,18 @@
 .app-content {
   padding: 24px;
   background: transparent;
+}
+
+.mobile-nav-root {
+  display: none;
+}
+
+.mobile-side-menu {
+  padding-top: 10px;
+}
+
+.mobile-side-menu .ant-menu-item {
+  margin: 6px 0;
 }
 
 .content-shell {
@@ -1923,6 +1949,12 @@
   border-bottom-color: #1b313c;
 }
 
+.theme-dark .mobile-menu-trigger {
+  border-color: #24424e;
+  background: linear-gradient(180deg, rgba(16, 32, 40, 0.96), rgba(14, 27, 34, 0.96));
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.2);
+}
+
 .theme-dark .page-kicker,
 .theme-dark .grade-picker-label,
 .theme-dark .hero-copy.ant-typography,
@@ -2140,26 +2172,48 @@
 }
 
 @media (max-width: 991px) {
+  .app-sider {
+    display: none !important;
+  }
+
+  .mobile-nav-root {
+    display: block;
+  }
+
+  .mobile-menu-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .topbar {
-    flex-direction: column;
-    align-items: stretch;
+    padding: 14px 16px;
+    gap: 14px;
   }
 
   .topbar-actions {
     justify-content: stretch;
+    width: 100%;
   }
 
   .grade-picker {
     flex-direction: column;
     align-items: stretch;
+    width: 100%;
+    gap: 10px;
+    padding: 12px;
   }
 
   .settings-trigger {
-    width: 100%;
+    width: 52px;
   }
 
   .settings-trigger-icon {
     width: 52px;
+  }
+
+  .topbar-actions .ant-segmented {
+    width: 100%;
   }
 
   .hero-showcase {
@@ -2216,6 +2270,12 @@
   .lesson-topic-brief {
     grid-template-columns: 1fr;
   }
+
+  .vocabulary-layout > .ant-col,
+  .teacher-flow-grid,
+  .teacher-chart-grid {
+    width: 100%;
+  }
 }
 
 @media (max-width: 767px) {
@@ -2255,5 +2315,66 @@
   .lesson-topic-actions {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .teacher-hero-card .ant-card-body,
+  .home-hero-card .ant-card-body,
+  .practice-generator-card .ant-card-body,
+  .practice-quiz-card .ant-card-body,
+  .content-card .ant-card-body {
+    padding: 18px !important;
+  }
+
+  .hero-title.ant-typography {
+    font-size: clamp(1.55rem, 8vw, 2.2rem);
+    line-height: 1.04;
+  }
+
+  .teacher-featured-card,
+  .home-progress-panel,
+  .vocabulary-detail-panel {
+    border-radius: 18px;
+  }
+
+  .teacher-mini-grid-inline,
+  .teacher-mini-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .theme-toggle-grid,
+  .practice-section-switch,
+  .practice-score-grid,
+  .teacher-chart-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .vocabulary-tags {
+    gap: 8px;
+  }
+
+  .vocabulary-tag {
+    min-height: 34px;
+    height: 34px;
+    padding-inline: 10px !important;
+    font-size: 13px;
+  }
+
+  .practice-generator-actions,
+  .practice-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .practice-generator-actions .ant-btn,
+  .practice-actions .ant-btn {
+    width: 100%;
+  }
+
+  .practice-option.ant-radio-button-wrapper {
+    padding: 12px 14px;
+  }
+
+  .settings-drawer .ant-drawer-content-wrapper {
+    width: min(100vw, 360px) !important;
   }
 }
