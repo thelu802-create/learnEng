@@ -1,4 +1,6 @@
-const grade6 = {
+import type { GradeContent } from '../../types'
+
+const grade6: GradeContent = {
   level: 'Nền tảng',
   overview:
     'Làm quen tiếng Anh THCS qua các chủ đề gần gũi như bản thân, trường học, gia đình và sinh hoạt hằng ngày.',

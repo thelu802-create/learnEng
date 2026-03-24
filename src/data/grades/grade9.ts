@@ -1,4 +1,6 @@
-const grade9 = {
+import type { GradeContent } from '../../types'
+
+const grade9: GradeContent = {
   level: 'Ôn thi',
   overview:
     'Tập trung hoàn thiện 4 kỹ năng, hệ thống ngữ pháp trọng tâm và luyện dạng bài chuẩn bị cho kỳ thi chuyển cấp.',

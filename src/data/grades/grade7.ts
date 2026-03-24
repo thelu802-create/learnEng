@@ -1,4 +1,6 @@
-const grade7 = {
+import type { GradeContent } from '../../types'
+
+const grade7: GradeContent = {
   level: 'Mở rộng',
   overview:
     'Tăng cường phản xạ giao tiếp với các chủ đề về cộng đồng, sức khỏe, âm nhạc, giao thông và cuộc sống xanh.',

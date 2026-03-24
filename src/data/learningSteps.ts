@@ -1,4 +1,4 @@
-export const learningSteps = [
+export const learningSteps: string[] = [
   'Khởi động bằng từ vựng chủ điểm',
   'Học ngữ pháp qua ví dụ ngắn',
   'Luyện nghe - nói theo tình huống',
