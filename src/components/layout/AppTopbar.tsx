@@ -72,7 +72,8 @@ function AppTopbar({
           aboutTitle: 'Về ứng dụng',
           aboutCopy:
             'English Path gom bài học, tra từ vựng và luyện tập trong một giao diện gọn, dễ dùng cho học sinh THCS.',
-          aboutOwner: `Phát triển bởi ${t('common.appOwner')}.`,
+          aboutOwnerPrefix: 'Phát triển và biên soạn bởi',
+          aboutOwnerName: 'Nguyễn Thế Lữ',
           settingsLabel: 'Cài đặt',
           lightMode: 'Chế độ sáng',
           darkMode: 'Chế độ tối',
@@ -92,7 +93,8 @@ function AppTopbar({
             onClick={onOpenMobileMenu}
             aria-label={language === 'en' ? 'Open navigation menu' : 'Mở menu điều hướng'}
           />
-          <div>
+
+          <div className="topbar-grade">
             <Text className="page-kicker">{t('common.gradeLabel')}</Text>
             <Title level={4} className="page-title">
               {gradeLabel(selectedGrade)}
@@ -230,10 +232,8 @@ function AppTopbar({
             </div>
             <Paragraph className="settings-copy">{settingsCopy.aboutCopy}</Paragraph>
             <Paragraph className="settings-copy settings-about-note">
-              {language === 'en' ? 'Crafted for teaching by ' : 'Phát triển và biên soạn bởi '}
-              <span className="settings-about-owner-name">
-                {language === 'en' ? 'Nguyen The Lu' : 'Nguyễn Thế Lữ'}
-              </span>
+              {settingsCopy.aboutOwnerPrefix}{' '}
+              <span className="settings-about-owner-name">{settingsCopy.aboutOwnerName}</span>
             </Paragraph>
           </div>
         </div>
