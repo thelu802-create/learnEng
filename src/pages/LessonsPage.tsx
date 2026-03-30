@@ -71,7 +71,7 @@ interface LessonsPageProps {
 
 function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
   const { t, gradeLabel, language } = useI18n()
-  const { configured, user } = useSupabaseAuth()
+  const { configured, signInWithGithub, user } = useSupabaseAuth()
   const [addWordForm] = Form.useForm<AddWordFormValues>()
   const [selectedVocabularyKey, setSelectedVocabularyKey] = useState('')
   const [searchKeyword, setSearchKeyword] = useState('')
@@ -110,14 +110,14 @@ function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
           notesCopy: 'Save a short teaching note for the selected topic.',
           notesPlaceholder: 'Add objectives, reminders, or quick in-class prompts...',
           saveNote: 'Save note',
-          notesNeedLogin: 'Sign in with GitHub in Settings to save notes to Supabase.',
+          notesNeedLogin: 'Sign in with GitHub to save teaching notes for this topic.',
           notesNotReady: 'Supabase is not configured yet in this environment.',
           notesSaved: 'Note saved successfully.',
           notesLoadError: 'Unable to load teacher notes.',
           notesSaveError: 'Unable to save note.',
           toolsTitle: 'Vocabulary tools',
           toolsCopy: 'Add a single word or import a CSV/Excel file for the selected grade.',
-          toolsNeedLogin: 'Sign in with GitHub to create and import vocabulary.',
+          toolsNeedLogin: 'Sign in with GitHub to add and import vocabulary.',
           addWord: 'Add word',
           importWords: 'Import words',
           downloadTemplate: 'Download template',
@@ -220,6 +220,24 @@ function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
           autoFillIpa: 'Tự động điền IPA',
           autoFillIpaHint: 'Nếu ô IPA đang trống, hệ thống sẽ thử tự điền từ dictionary API.',
         }
+
+  const notesNeedLoginText =
+    language === 'en'
+      ? lessonsCopy.notesNeedLogin
+      : 'Hãy đăng nhập GitHub để lưu ghi chú giảng dạy cho chủ điểm này.'
+  const toolsNeedLoginText =
+    language === 'en'
+      ? lessonsCopy.toolsNeedLogin
+      : 'Hãy đăng nhập GitHub để thêm và import từ vựng.'
+  const loginActionText = language === 'en' ? 'Sign in with GitHub' : 'Đăng nhập GitHub'
+
+  const handleGithubSignIn = async () => {
+    try {
+      await signInWithGithub()
+    } catch {
+      message.error(language === 'en' ? 'Unable to start GitHub sign-in.' : 'Không thể bắt đầu đăng nhập GitHub.')
+    }
+  }
 
   const mergedVocabularyTopicsByGrade = useMemo<Record<GradeKey, SearchableVocabularyTopic[]>>(() => {
     const baseMap = (Object.entries(gradeContent) as [GradeKey, GradeContent][]).reduce<
@@ -1090,7 +1108,12 @@ function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
                 {!configured ? (
                   <Paragraph className="practice-empty-copy">{lessonsCopy.notesNotReady}</Paragraph>
                 ) : !user ? (
-                  <Paragraph className="practice-empty-copy">{lessonsCopy.toolsNeedLogin}</Paragraph>
+                  <Space direction="vertical" size={10}>
+                    <Paragraph className="practice-empty-copy">{toolsNeedLoginText}</Paragraph>
+                    <Button type="primary" onClick={() => void handleGithubSignIn()}>
+                      {loginActionText}
+                    </Button>
+                  </Space>
                 ) : (
                   <>
                     <Space wrap size={10}>
@@ -1140,7 +1163,12 @@ function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
                 {!configured ? (
                   <Paragraph className="practice-empty-copy">{lessonsCopy.notesNotReady}</Paragraph>
                 ) : !user ? (
-                  <Paragraph className="practice-empty-copy">{lessonsCopy.notesNeedLogin}</Paragraph>
+                  <Space direction="vertical" size={10}>
+                    <Paragraph className="practice-empty-copy">{notesNeedLoginText}</Paragraph>
+                    <Button type="primary" onClick={() => void handleGithubSignIn()}>
+                      {loginActionText}
+                    </Button>
+                  </Space>
                 ) : isNotesLoading ? (
                   <div className="teacher-notes-loading">
                     <Spin />

@@ -51,7 +51,7 @@ type PlannerFormValues = PlannerTaskInput
 
 function PlannerPage() {
   const { language } = useI18n()
-  const { configured, user } = useSupabaseAuth()
+  const { configured, signInWithGithub, user } = useSupabaseAuth()
   const [form] = Form.useForm<PlannerFormValues>()
   const [tasks, setTasks] = useState<PlannerTask[]>([])
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null)
@@ -100,7 +100,8 @@ function PlannerPage() {
           overdueCopy: 'Tasks that need attention now.',
           laterCopy: 'Other scheduled tasks for later.',
           repeatHint: 'Useful for weekly routines such as checking notebooks or preparing a class.',
-          loginRequired: 'Sign in with GitHub to save planner tasks to Supabase.',
+          loginRequired: 'Sign in with GitHub to save your planner tasks.',
+          loginAction: 'Sign in with GitHub',
           notReady: 'Supabase is not configured yet in this environment.',
           loadError: 'Unable to load planner tasks.',
           pendingToday: 'Not done yet',
@@ -155,6 +156,18 @@ function PlannerPage() {
           completedToggle: 'Hiện việc đã xong',
           hideCompleted: 'Ẩn việc đã xong',
         }
+
+  const loginRequiredText =
+    language === 'en' ? copy.loginRequired : 'Hãy đăng nhập GitHub để lưu nhắc việc của bạn.'
+  const loginActionText = language === 'en' ? 'Sign in with GitHub' : 'Đăng nhập GitHub'
+
+  const handleGithubSignIn = async () => {
+    try {
+      await signInWithGithub()
+    } catch {
+      message.error(language === 'en' ? 'Unable to start GitHub sign-in.' : 'Không thể bắt đầu đăng nhập GitHub.')
+    }
+  }
 
   useEffect(() => {
     if (!configured || !user) {
@@ -502,7 +515,12 @@ function PlannerPage() {
         </Card>
       ) : !user ? (
         <Card className="content-card" bordered={false}>
-          <Paragraph className="settings-copy">{copy.loginRequired}</Paragraph>
+          <Space direction="vertical" size={12}>
+            <Paragraph className="settings-copy">{loginRequiredText}</Paragraph>
+            <Button type="primary" onClick={() => void handleGithubSignIn()}>
+              {loginActionText}
+            </Button>
+          </Space>
         </Card>
       ) : (
         <Space direction="vertical" size={18} className="full-width">
