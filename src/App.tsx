@@ -8,9 +8,11 @@ import { gradeContent, learningSteps } from './data'
 import HomePage from './pages/HomePage'
 import HelpPage from './pages/HelpPage'
 import LessonsPage from './pages/LessonsPage'
+import PlannerPage from './pages/PlannerPage'
 import PracticePage from './pages/PracticePage'
 import ProgressPage from './pages/ProgressPage'
 import I18nProvider from './components/providers/I18nProvider'
+import SupabaseAuthProvider from './components/providers/SupabaseAuthProvider'
 import type { FontSizeMode, GradeKey, MenuKey, ThemeMode } from './types'
 
 const { Content } = Layout
@@ -100,6 +102,10 @@ function App() {
       return <PracticePage {...pageProps} learningSteps={learningSteps} />
     }
 
+    if (selectedMenu === 'planner') {
+      return <PlannerPage />
+    }
+
     if (selectedMenu === 'progress') {
       return <ProgressPage {...pageProps} />
     }
@@ -112,6 +118,7 @@ function App() {
       <HomePage
         {...pageProps}
         onOpenLessons={() => setSelectedMenu('lessons')}
+        onOpenPlanner={() => setSelectedMenu('planner')}
         onOpenPractice={() => setSelectedMenu('practice')}
       />
     )
@@ -119,37 +126,39 @@ function App() {
 
   return (
     <I18nProvider>
-      <ConfigProvider theme={themeConfig}>
-        <Layout className={`app-shell ${themeMode === 'dark' ? 'theme-dark' : 'theme-light'}`}>
-          <AppSidebar
-            menuItems={menuItems}
-            selectedMenu={selectedMenu}
-            onMenuChange={(menuKey) => {
-              setSelectedMenu(menuKey)
-              setIsMobileMenuOpen(false)
-            }}
-            isMobileOpen={isMobileMenuOpen}
-            onMobileClose={() => setIsMobileMenuOpen(false)}
-          />
-
-          <Layout className="main-layout">
-            <AppTopbar
-              selectedGrade={selectedGrade}
-              gradeOptions={gradeOptions}
-              onGradeChange={setSelectedGrade}
-              themeMode={themeMode}
-              onThemeChange={setThemeMode}
-              fontSizeMode={fontSizeMode}
-              onFontSizeChange={setFontSizeMode}
-              onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+      <SupabaseAuthProvider>
+        <ConfigProvider theme={themeConfig}>
+          <Layout className={`app-shell ${themeMode === 'dark' ? 'theme-dark' : 'theme-light'}`}>
+            <AppSidebar
+              menuItems={menuItems}
+              selectedMenu={selectedMenu}
+              onMenuChange={(menuKey) => {
+                setSelectedMenu(menuKey)
+                setIsMobileMenuOpen(false)
+              }}
+              isMobileOpen={isMobileMenuOpen}
+              onMobileClose={() => setIsMobileMenuOpen(false)}
             />
 
-            <Content className="app-content">
-              <div className="content-shell">{renderPage()}</div>
-            </Content>
+            <Layout className="main-layout">
+              <AppTopbar
+                selectedGrade={selectedGrade}
+                gradeOptions={gradeOptions}
+                onGradeChange={setSelectedGrade}
+                themeMode={themeMode}
+                onThemeChange={setThemeMode}
+                fontSizeMode={fontSizeMode}
+                onFontSizeChange={setFontSizeMode}
+                onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+              />
+
+              <Content className="app-content">
+                <div className="content-shell">{renderPage()}</div>
+              </Content>
+            </Layout>
           </Layout>
-        </Layout>
-      </ConfigProvider>
+        </ConfigProvider>
+      </SupabaseAuthProvider>
     </I18nProvider>
   )
 }

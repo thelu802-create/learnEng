@@ -1,5 +1,6 @@
 import {
   BookOutlined,
+  CalendarOutlined,
   PlayCircleOutlined,
   QuestionCircleOutlined,
   RiseOutlined,
@@ -16,6 +17,7 @@ const { Text } = Typography
 
 const iconMap: Record<MenuIconKey, ReactNode> = {
   book: <BookOutlined />,
+  calendar: <CalendarOutlined />,
   play: <PlayCircleOutlined />,
   rise: <RiseOutlined />,
   rocket: <RocketOutlined />,

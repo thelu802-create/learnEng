@@ -6,6 +6,285 @@
     linear-gradient(180deg, #ffffff 0%, #f8fbfd 100%);
 }
 
+.planner-form-card .ant-input,
+.planner-form-card .ant-input-affix-wrapper,
+.planner-form-card .ant-select-selector {
+  border-radius: 14px !important;
+}
+
+.planner-sticky-card {
+  position: sticky;
+  top: 92px;
+}
+
+.planner-overview-card .ant-card-body {
+  padding: 16px !important;
+}
+
+.planner-overview-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.planner-overview-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  font-size: 18px;
+}
+
+.planner-overview-icon.tone-gold {
+  background: rgba(233, 165, 108, 0.14);
+  color: #c97a26;
+}
+
+.planner-overview-icon.tone-cyan {
+  background: rgba(91, 192, 235, 0.14);
+  color: #1f8eb4;
+}
+
+.planner-overview-icon.tone-volcano {
+  background: rgba(231, 111, 81, 0.14);
+  color: #d05737;
+}
+
+.planner-overview-icon.tone-blue {
+  background: rgba(59, 130, 246, 0.12);
+  color: #2563eb;
+}
+
+.planner-overview-label {
+  display: block;
+  color: #344054;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.planner-form-callout {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(42, 157, 143, 0.08), rgba(42, 157, 143, 0.03));
+  border: 1px solid rgba(42, 157, 143, 0.12);
+  color: #475467;
+}
+
+.planner-form-callout .anticon {
+  margin-top: 3px;
+  color: #2a9d8f;
+}
+
+.planner-list-card {
+  height: 100%;
+}
+
+.planner-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.planner-task-item {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(42, 157, 143, 0.12);
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(247, 251, 253, 0.96));
+  box-shadow: 0 10px 22px rgba(16, 24, 40, 0.04);
+}
+
+.planner-task-item.is-completed {
+  opacity: 0.8;
+  background: rgba(148, 163, 184, 0.08);
+}
+
+.theme-dark .planner-task-item {
+  background: rgba(16, 32, 40, 0.84);
+  border-color: rgba(123, 183, 232, 0.18);
+}
+
+.theme-dark .planner-task-item.is-completed {
+  background: rgba(148, 163, 184, 0.12);
+}
+
+.theme-dark .planner-overview-label,
+.theme-dark .planner-meta-chip.ant-tag,
+.theme-dark .planner-form-callout {
+  color: #c1d0d7;
+}
+
+.theme-dark .planner-form-callout {
+  background: linear-gradient(135deg, rgba(42, 157, 143, 0.14), rgba(42, 157, 143, 0.06));
+  border-color: rgba(123, 183, 232, 0.18);
+}
+
+.theme-dark .planner-meta-chip.ant-tag {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.theme-dark .planner-icon-action.ant-btn {
+  border-color: #24424e;
+  background: rgba(16, 32, 40, 0.96);
+  color: #c1d0d7;
+  box-shadow: none;
+}
+
+.theme-dark .planner-icon-action.ant-btn:hover {
+  border-color: #2a9d8f !important;
+  color: #8ad9cf !important;
+  background: rgba(42, 157, 143, 0.12) !important;
+}
+
+.theme-dark .planner-icon-action-complete.ant-btn.is-active,
+.theme-dark .planner-icon-action-complete.ant-btn.is-active:hover {
+  border-color: #2a9d8f !important;
+  background: rgba(42, 157, 143, 0.2) !important;
+  color: #8ad9cf !important;
+}
+
+.theme-dark .planner-icon-action-delete.ant-btn:hover {
+  border-color: #e76f51 !important;
+  color: #ffb4a2 !important;
+  background: rgba(231, 111, 81, 0.12) !important;
+}
+
+.planner-task-main {
+  display: grid;
+  gap: 8px;
+}
+
+.planner-task-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.planner-task-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.planner-priority-tag.ant-tag {
+  margin-inline-end: 0;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.planner-meta-chip.ant-tag {
+  margin-inline-end: 0;
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: rgba(15, 23, 42, 0.05);
+  color: #475467;
+}
+
+.planner-task-actions {
+  padding-top: 4px;
+  gap: 8px !important;
+}
+
+.planner-icon-action.ant-btn {
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
+  border-color: #d8e6eb;
+  background: #ffffff;
+  color: #344054;
+  box-shadow: 0 8px 16px rgba(16, 24, 40, 0.04);
+}
+
+.planner-icon-action.ant-btn:hover {
+  border-color: #2a9d8f !important;
+  color: #2a9d8f !important;
+  background: #f4fbfa !important;
+}
+
+.planner-icon-action-complete.ant-btn.is-active,
+.planner-icon-action-complete.ant-btn.is-active:hover {
+  border-color: #2a9d8f !important;
+  background: rgba(42, 157, 143, 0.12) !important;
+  color: #1c7f73 !important;
+}
+
+.planner-icon-action-delete.ant-btn:hover {
+  border-color: #e76f51 !important;
+  color: #e76f51 !important;
+  background: rgba(231, 111, 81, 0.08) !important;
+}
+
+.planner-board-grid .ant-col {
+  display: flex;
+}
+
+.planner-board-grid .planner-list-card {
+  width: 100%;
+}
+
+.planner-home-list {
+  gap: 12px;
+}
+
+.planner-home-item {
+  align-items: flex-start;
+}
+
+.planner-home-copy {
+  display: grid;
+  gap: 4px;
+}
+
+.planner-home-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.planner-home-status.ant-tag {
+  margin-inline-end: 0;
+  border-radius: 999px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 6px 10px;
+  white-space: nowrap;
+}
+
+.planner-home-meta {
+  line-height: 1.45;
+}
+
+.planner-today-card {
+  border: 1px solid rgba(233, 165, 108, 0.18);
+}
+
+.planner-subsection {
+  display: grid;
+  gap: 12px;
+}
+
+.planner-subsection-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.planner-completed-subsection {
+  padding-top: 10px;
+  border-top: 1px dashed rgba(148, 163, 184, 0.28);
+}
+
 .app-sider {
   background: linear-gradient(180deg, #f9fbfc 0%, #f2f7f9 100%) !important;
   border-right: 1px solid #e7edf2;
@@ -416,6 +695,16 @@
   gap: 12px;
 }
 
+.settings-account-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid #e5edf2;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(248, 251, 253, 1));
+}
+
 .settings-guide-item {
   padding: 14px 16px;
   border-radius: 16px;
@@ -588,6 +877,7 @@
 
 .teacher-hero-main {
   justify-content: space-between;
+  gap: 12px;
 }
 
 .home-hero-kicker {
@@ -608,6 +898,15 @@
     radial-gradient(circle at top right, rgba(42, 157, 143, 0.08), transparent 44%),
     linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(247, 251, 253, 1));
   box-shadow: 0 12px 24px rgba(16, 24, 40, 0.05);
+}
+
+.teacher-hero-reminders-card {
+  height: 100%;
+}
+
+.teacher-hero-reminders-card .ant-card-body {
+  height: 100%;
+  padding: 20px !important;
 }
 
 .teacher-featured-brief {
@@ -743,12 +1042,13 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
+  padding: 7px 11px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.84);
   border: 1px solid rgba(42, 157, 143, 0.12);
   color: #1d2939;
   font-weight: 700;
+  line-height: 1.2;
 }
 
 .teacher-summary-label {
@@ -1158,6 +1458,64 @@
   justify-content: space-between;
   gap: 12px;
   padding-top: 4px;
+}
+
+.teacher-notes-card {
+  min-height: 100%;
+}
+
+.teacher-notes-input textarea {
+  border-radius: 18px;
+  border-color: #d6e5ea;
+  box-shadow: 0 10px 24px rgba(16, 24, 40, 0.04);
+  resize: vertical;
+}
+
+.teacher-notes-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+}
+
+.vocabulary-tools-card .ant-space {
+  width: 100%;
+}
+
+.vocabulary-import-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.vocabulary-import-upload {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px dashed rgba(55, 96, 140, 0.26);
+  border-radius: 14px;
+  background: rgba(245, 250, 255, 0.9);
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.vocabulary-import-upload:hover {
+  border-color: rgba(22, 119, 255, 0.45);
+  box-shadow: 0 10px 24px rgba(22, 119, 255, 0.08);
+  transform: translateY(-1px);
+}
+
+.vocabulary-import-upload input {
+  display: none;
+}
+
+.vocabulary-import-summary {
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(125, 154, 190, 0.18);
+  background: rgba(248, 251, 255, 0.9);
 }
 
 .unit-head {
@@ -2140,7 +2498,8 @@
 }
 
 .theme-dark .lesson-topic-card,
-.theme-dark .lesson-topic-pill {
+.theme-dark .lesson-topic-pill,
+.theme-dark .settings-account-card {
   border-color: #1f3641;
 }
 
@@ -2300,6 +2659,10 @@
   .teacher-chart-grid {
     width: 100%;
   }
+
+  .planner-sticky-card {
+    position: static;
+  }
 }
 
 @media (max-width: 767px) {
@@ -2328,6 +2691,16 @@
   }
 
   .home-action-link {
+    align-items: flex-start;
+  }
+
+  .planner-task-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .planner-home-head {
+    flex-direction: column;
     align-items: flex-start;
   }
 

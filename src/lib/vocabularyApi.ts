@@ -1,3 +1,4 @@
+import { getSupabaseClient } from './supabase/client'
 import type { GradeKey, VocabularyApiPayload, VocabularyApiResponse } from '../types'
 
 const apiBase = '/api/vocabulary'
@@ -61,4 +62,29 @@ export async function deleteVocabularyWord(
   })
 
   return handleResponse<VocabularyApiResponse>(response)
+}
+
+export async function lookupIpaMap(words: string[]): Promise<Record<string, string>> {
+  const supabase = getSupabaseClient()
+
+  if (supabase) {
+    const { data, error } = await supabase.functions.invoke('ipa-lookup', {
+      body: { words },
+    })
+
+    if (!error && data?.ipaMap && typeof data.ipaMap === 'object') {
+      return data.ipaMap as Record<string, string>
+    }
+  }
+
+  const response = await fetch('/api/ipa/lookup', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ words }),
+  })
+
+  const payload = await handleResponse<{ ipaMap: Record<string, string> }>(response)
+  return payload.ipaMap
 }

@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { readFile, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import express from 'express'
@@ -7,6 +7,7 @@ import express from 'express'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const port = 3001
+const ipaCacheFilePath = path.join(__dirname, 'server-data', 'ipa-cache.json')
 
 const gradeFileMap = {
   'Lớp 6': {
@@ -114,6 +115,72 @@ function serializeModule(variableName, data) {
 async function saveGradeData(gradeConfig, gradeData) {
   const moduleSource = serializeModule(gradeConfig.variableName, gradeData)
   await writeFile(gradeConfig.filePath, moduleSource, 'utf8')
+}
+
+async function loadIpaCache() {
+  try {
+    const source = await readFile(ipaCacheFilePath, 'utf8')
+    return JSON.parse(source)
+  } catch {
+    return {}
+  }
+}
+
+async function saveIpaCache(cache) {
+  await mkdir(path.dirname(ipaCacheFilePath), { recursive: true })
+  await writeFile(ipaCacheFilePath, JSON.stringify(cache, null, 2), 'utf8')
+}
+
+function normalizeCacheKey(word) {
+  return String(word || '').trim().toLowerCase()
+}
+
+function extractIpaFromDictionaryPayload(payload) {
+  if (!Array.isArray(payload)) {
+    return ''
+  }
+
+  for (const entry of payload) {
+    if (Array.isArray(entry.phonetics)) {
+      const textPhonetic = entry.phonetics.find((phonetic) => phonetic?.text?.trim())
+      if (textPhonetic?.text?.trim()) {
+        return textPhonetic.text.trim()
+      }
+    }
+
+    if (typeof entry.phonetic === 'string' && entry.phonetic.trim()) {
+      return entry.phonetic.trim()
+    }
+  }
+
+  return ''
+}
+
+async function lookupIpa(word, cache) {
+  const cacheKey = normalizeCacheKey(word)
+
+  if (!cacheKey) {
+    return ''
+  }
+
+  if (typeof cache[cacheKey] === 'string') {
+    return cache[cacheKey]
+  }
+
+  try {
+    const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`)
+    if (!response.ok) {
+      cache[cacheKey] = ''
+      return ''
+    }
+
+    const payload = await response.json()
+    const ipa = extractIpaFromDictionaryPayload(payload)
+    cache[cacheKey] = ipa
+    return ipa
+  } catch {
+    return ''
+  }
 }
 
 app.get('/api/vocabulary/:grade', async (req, res) => {
@@ -285,6 +352,29 @@ app.get('/api/vocabulary/:grade/source', async (req, res) => {
     return res.json({ filePath: gradeConfig.filePath, source })
   } catch (error) {
     return res.status(500).json({ message: 'Khong doc duoc file nguon.', error: error.message })
+  }
+})
+
+app.post('/api/ipa/lookup', async (req, res) => {
+  try {
+    const words = Array.isArray(req.body?.words) ? req.body.words : []
+    const uniqueWords = [...new Set(words.map((word) => String(word || '').trim()).filter(Boolean))]
+
+    if (uniqueWords.length === 0) {
+      return res.json({ ipaMap: {} })
+    }
+
+    const cache = await loadIpaCache()
+    const ipaMap = {}
+
+    for (const word of uniqueWords) {
+      ipaMap[word] = await lookupIpa(word, cache)
+    }
+
+    await saveIpaCache(cache)
+    return res.json({ ipaMap })
+  } catch (error) {
+    return res.status(500).json({ message: 'Khong tra duoc phien am.', error: error.message })
   }
 })
 

@@ -17,6 +17,18 @@ npm run dev
 npm run build
 ```
 
+## Supabase scaffold
+
+Repo đã được scaffold sẵn cho hướng `Vercel + Supabase`.
+
+1. Tạo file `.env.local` từ `.env.example`
+2. Điền `VITE_SUPABASE_URL` và `VITE_SUPABASE_ANON_KEY`
+3. Chạy SQL trong `supabase/schema.sql`
+
+Chi tiết xem tại:
+
+`docs/backend-setup.md`
+
 ## Deploy GitHub Pages
 
 Repo này đã được cấu hình để deploy tự động lên GitHub Pages qua GitHub Actions.

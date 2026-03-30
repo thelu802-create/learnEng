@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import {
   ArrowRightOutlined,
   BookOutlined,
@@ -8,7 +9,15 @@ import {
   SoundOutlined,
 } from '@ant-design/icons'
 import { Button, Card, Col, Progress, Row, Space, Tag, Typography } from 'antd'
+import { useSupabaseAuth } from '../components/providers/SupabaseAuthProvider'
 import { useI18n } from '../i18n'
+import {
+  formatTaskDate,
+  getTaskBucket,
+  getWeekdayLabel,
+  type PlannerTask,
+} from '../lib/plannerStorage'
+import { listPlannerTasks } from '../lib/supabase/teacherData'
 import type { GradeContent, GradeKey } from '../types'
 
 const { Title, Paragraph, Text } = Typography
@@ -17,6 +26,7 @@ interface HomePageProps {
   selectedGrade: GradeKey
   currentGrade: GradeContent
   onOpenLessons: () => void
+  onOpenPlanner: () => void
   onOpenPractice: () => void
 }
 
@@ -24,9 +34,27 @@ function HomePage({
   selectedGrade,
   currentGrade,
   onOpenLessons,
+  onOpenPlanner,
   onOpenPractice,
 }: HomePageProps) {
   const { gradeLabel, language } = useI18n()
+  const { configured, user } = useSupabaseAuth()
+  const [plannerTasks, setPlannerTasks] = useState<PlannerTask[]>([])
+
+  const getReminderStatus = (task: PlannerTask) => {
+    const bucket = getTaskBucket(task)
+
+    if (bucket === 'today') {
+      return { key: 'today' as const, color: 'gold' }
+    }
+
+    if (bucket === 'overdue') {
+      return { key: 'overdue' as const, color: 'volcano' }
+    }
+
+    return { key: 'upcoming' as const, color: 'cyan' }
+  }
+
   const topicCount = currentGrade.vocabularyTopics.length
   const wordCount = currentGrade.vocabularyTopics.reduce(
     (total, topic) => total + topic.words.length,
@@ -36,6 +64,51 @@ function HomePage({
   const unitCount = currentGrade.units.length
   const featuredUnit = currentGrade.units[0]
   const featuredTopic = currentGrade.vocabularyTopics[0]
+  const reminderTasks = plannerTasks
+    .filter((task) => {
+      const bucket = getTaskBucket(task)
+      return bucket === 'today' || bucket === 'upcoming' || bucket === 'overdue'
+    })
+    .slice(0, 3)
+
+  useEffect(() => {
+    if (!configured || !user) {
+      setPlannerTasks([])
+      return
+    }
+
+    let active = true
+    listPlannerTasks(user.id)
+      .then((records) => {
+        if (!active) {
+          return
+        }
+
+        setPlannerTasks(
+          records.map((task) => ({
+            id: task.id,
+            title: task.title,
+            note: task.note,
+            dueDate: task.due_date,
+            dueTime: task.due_time,
+            priority: task.priority,
+            repeatWeekly: task.repeat_weekly,
+            completed: task.completed,
+            createdAt: task.created_at,
+            updatedAt: task.updated_at,
+          })),
+        )
+      })
+      .catch(() => {
+        if (active) {
+          setPlannerTasks([])
+        }
+      })
+
+    return () => {
+      active = false
+    }
+  }, [configured, user])
 
   const coverageItems =
     language === 'en'
@@ -85,6 +158,13 @@ function HomePage({
           actionPracticeCopy: 'Use short activities to reinforce vocabulary in class or for homework.',
           resourcesTitle: 'Resources ready to use',
           resourcesCopy: 'Everything below is available for the selected grade right now.',
+          remindersTitle: 'Teaching reminders',
+          remindersCopy: 'Keep the closest tasks visible so nothing important slips past.',
+          openPlanner: 'Open planner',
+          noReminders: 'No reminders are close yet. Add a task in Planner to see it here.',
+          statusToday: 'Today',
+          statusUpcoming: 'Soon',
+          statusOverdue: 'Overdue',
         }
       : {
           tag: 'Bảng điều khiển giảng dạy',
@@ -117,13 +197,20 @@ function HomePage({
           actionPracticeCopy: 'Dùng bài tập ngắn để củng cố từ vựng trên lớp hoặc giao về nhà.',
           resourcesTitle: 'Tài nguyên sẵn để dùng',
           resourcesCopy: 'Toàn bộ dữ liệu dưới đây đang có sẵn cho khối được chọn.',
+          remindersTitle: 'Nhắc việc giảng dạy',
+          remindersCopy: 'Giữ các việc gần hạn ở ngay trang chủ để không bị sót.',
+          openPlanner: 'Mở nhắc việc',
+          noReminders: 'Chưa có việc nào gần hạn. Bạn có thể thêm việc trong Planner.',
+          statusToday: 'Hôm nay',
+          statusUpcoming: 'Sắp tới',
+          statusOverdue: 'Quá hạn',
         }
 
   return (
     <Space direction="vertical" size={20} className="full-width">
       <Card className="hero-card teacher-hero-card" bordered={false}>
         <Row gutter={[20, 20]} align="stretch">
-          <Col xs={24}>
+          <Col xs={24} xl={16}>
             <Space direction="vertical" size={14} className="full-width teacher-hero-main">
               <Tag className="hero-tag" bordered={false}>
                 {copy.tag}
@@ -185,6 +272,53 @@ function HomePage({
                 </div>
               </div>
             </Space>
+          </Col>
+
+          <Col xs={24} xl={8}>
+            <Card className="teacher-featured-card teacher-hero-reminders-card" bordered={false}>
+              <Space direction="vertical" size={16} className="full-width">
+                <div className="section-heading">
+                  <Title level={3}>{copy.remindersTitle}</Title>
+                  <Paragraph>{copy.remindersCopy}</Paragraph>
+                </div>
+
+                {reminderTasks.length > 0 ? (
+                  <div className="teacher-resource-list planner-home-list">
+                    {reminderTasks.map((task) => {
+                      const status = getReminderStatus(task)
+                      const statusLabel =
+                        status.key === 'today'
+                          ? copy.statusToday
+                          : status.key === 'overdue'
+                            ? copy.statusOverdue
+                            : copy.statusUpcoming
+
+                      return (
+                        <div className="teacher-resource-item planner-home-item" key={task.id}>
+                          <CheckCircleOutlined />
+                          <div className="planner-home-copy">
+                            <div className="planner-home-head">
+                              <Text strong>{task.title}</Text>
+                              <Tag className="planner-home-status" color={status.color} bordered={false}>
+                                {statusLabel}
+                              </Tag>
+                            </div>
+                            <Text type="secondary" className="planner-home-meta">
+                              {getWeekdayLabel(task.dueDate, language)} · {formatTaskDate(task.dueDate, language)}
+                              {task.dueTime ? ` · ${task.dueTime}` : ''}
+                            </Text>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <Paragraph className="settings-copy">{copy.noReminders}</Paragraph>
+                )}
+
+                <Button onClick={onOpenPlanner}>{copy.openPlanner}</Button>
+              </Space>
+            </Card>
           </Col>
         </Row>
       </Card>
@@ -258,54 +392,56 @@ function HomePage({
         </Col>
 
         <Col xs={24} xl={9}>
-          <Card className="content-card highlight-card teacher-side-card" bordered={false}>
-            <Space direction="vertical" size={18} className="full-width">
-              <div className="section-heading">
-                <Title level={3}>{copy.actionsTitle}</Title>
-                <Paragraph>{copy.actionsCopy}</Paragraph>
-              </div>
+          <Space direction="vertical" size={18} className="full-width">
+            <Card className="content-card highlight-card teacher-side-card" bordered={false}>
+              <Space direction="vertical" size={18} className="full-width">
+                <div className="section-heading">
+                  <Title level={3}>{copy.actionsTitle}</Title>
+                  <Paragraph>{copy.actionsCopy}</Paragraph>
+                </div>
 
-              <div className="teacher-side-actions">
-                <button type="button" className="home-action-link" onClick={onOpenLessons}>
-                  <div>
-                    <Text strong>{copy.actionLessons}</Text>
-                    <Text className="home-action-copy">{copy.actionLessonsCopy}</Text>
+                <div className="teacher-side-actions">
+                  <button type="button" className="home-action-link" onClick={onOpenLessons}>
+                    <div>
+                      <Text strong>{copy.actionLessons}</Text>
+                      <Text className="home-action-copy">{copy.actionLessonsCopy}</Text>
+                    </div>
+                    <ArrowRightOutlined />
+                  </button>
+
+                  <button type="button" className="home-action-link" onClick={onOpenPractice}>
+                    <div>
+                      <Text strong>{copy.actionPractice}</Text>
+                      <Text className="home-action-copy">{copy.actionPracticeCopy}</Text>
+                    </div>
+                    <ArrowRightOutlined />
+                  </button>
+                </div>
+
+                <div className="teacher-side-divider" />
+
+                <div className="section-heading">
+                  <Title level={4}>{copy.resourcesTitle}</Title>
+                  <Paragraph>{copy.resourcesCopy}</Paragraph>
+                </div>
+
+                <div className="teacher-resource-list">
+                  <div className="teacher-resource-item">
+                    <CheckCircleOutlined />
+                    <span>{featuredTopic?.title ?? featuredUnit?.title ?? gradeLabel(selectedGrade)}</span>
                   </div>
-                  <ArrowRightOutlined />
-                </button>
-
-                <button type="button" className="home-action-link" onClick={onOpenPractice}>
-                  <div>
-                    <Text strong>{copy.actionPractice}</Text>
-                    <Text className="home-action-copy">{copy.actionPracticeCopy}</Text>
+                  <div className="teacher-resource-item">
+                    <CheckCircleOutlined />
+                    <span>{featuredUnit?.project ?? currentGrade.project}</span>
                   </div>
-                  <ArrowRightOutlined />
-                </button>
-              </div>
-
-              <div className="teacher-side-divider" />
-
-              <div className="section-heading">
-                <Title level={4}>{copy.resourcesTitle}</Title>
-                <Paragraph>{copy.resourcesCopy}</Paragraph>
-              </div>
-
-              <div className="teacher-resource-list">
-                <div className="teacher-resource-item">
-                  <CheckCircleOutlined />
-                  <span>{featuredTopic?.title ?? featuredUnit?.title ?? gradeLabel(selectedGrade)}</span>
+                  <div className="teacher-resource-item">
+                    <CheckCircleOutlined />
+                    <span>{currentGrade.exercises[0] ?? currentGrade.skills[0]}</span>
+                  </div>
                 </div>
-                <div className="teacher-resource-item">
-                  <CheckCircleOutlined />
-                  <span>{featuredUnit?.project ?? currentGrade.project}</span>
-                </div>
-                <div className="teacher-resource-item">
-                  <CheckCircleOutlined />
-                  <span>{currentGrade.exercises[0] ?? currentGrade.skills[0]}</span>
-                </div>
-              </div>
-            </Space>
-          </Card>
+              </Space>
+            </Card>
+          </Space>
         </Col>
       </Row>
     </Space>

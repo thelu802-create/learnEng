@@ -1,15 +1,18 @@
 import {
   FontSizeOutlined,
+  GithubOutlined,
   GlobalOutlined,
   InfoCircleOutlined,
+  LogoutOutlined,
   MenuOutlined,
   MoonOutlined,
   SettingOutlined,
   SunOutlined,
 } from '@ant-design/icons'
-import { Button, Divider, Drawer, Segmented, Tooltip, Typography } from 'antd'
+import { Button, Divider, Drawer, Segmented, Tooltip, Typography, message } from 'antd'
 import { useState } from 'react'
 import { useI18n } from '../../i18n'
+import { useSupabaseAuth } from '../providers/SupabaseAuthProvider'
 import type { FontSizeMode, GradeKey, ThemeMode } from '../../types'
 
 const { Paragraph, Text, Title } = Typography
@@ -37,6 +40,7 @@ function AppTopbar({
 }: AppTopbarProps) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const { language, setLanguage, t, gradeLabel } = useI18n()
+  const { configured, loading, user, signInWithGithub, signOut } = useSupabaseAuth()
 
   const settingsCopy =
     language === 'en'
@@ -49,6 +53,12 @@ function AppTopbar({
           themeCopy: 'Switch appearance with one tap.',
           fontSizeTitle: 'Font size',
           fontSizeCopy: 'Adjust text size for a more comfortable reading experience.',
+          accountTitle: 'Teacher account',
+          accountCopy: 'Sign in with GitHub to save notes and generated worksheets to Supabase.',
+          accountNotReady: 'Supabase is not configured yet in this environment.',
+          signIn: 'Sign in with GitHub',
+          signOut: 'Sign out',
+          connectedAs: 'Connected as',
           aboutTitle: 'About app',
           aboutCopy:
             'English Path brings lessons, vocabulary lookup, and practice into one focused interface for lower secondary students.',
@@ -69,6 +79,12 @@ function AppTopbar({
           themeCopy: 'Chuyển nhanh giữa chế độ sáng và tối.',
           fontSizeTitle: 'Cỡ chữ',
           fontSizeCopy: 'Điều chỉnh kích thước chữ để đọc thoải mái hơn.',
+          accountTitle: 'Tài khoản giáo viên',
+          accountCopy: 'Đăng nhập GitHub để lưu ghi chú và bộ đề đã tạo lên Supabase.',
+          accountNotReady: 'Môi trường này chưa cấu hình Supabase.',
+          signIn: 'Đăng nhập GitHub',
+          signOut: 'Đăng xuất',
+          connectedAs: 'Đang kết nối với',
           aboutTitle: 'Về ứng dụng',
           aboutCopy:
             'English Path gom bài học, tra từ vựng và luyện tập trong một giao diện gọn, dễ dùng cho học sinh THCS.',
@@ -81,6 +97,23 @@ function AppTopbar({
           fontSizeMedium: 'Vừa',
           fontSizeLarge: 'Lớn',
         }
+
+  const handleGithubSignIn = async () => {
+    try {
+      await signInWithGithub()
+    } catch (error) {
+      message.error(error instanceof Error ? error.message : 'Không thể đăng nhập GitHub.')
+    }
+  }
+
+  const handleSignOut = async () => {
+    try {
+      await signOut()
+      message.success(language === 'en' ? 'Signed out.' : 'Đã đăng xuất.')
+    } catch (error) {
+      message.error(error instanceof Error ? error.message : 'Không thể đăng xuất.')
+    }
+  }
 
   return (
     <>
@@ -142,6 +175,36 @@ function AppTopbar({
             <Text className="settings-eyebrow">{settingsCopy.settingsTitle}</Text>
             <Paragraph className="settings-copy">{settingsCopy.settingsSubtitle}</Paragraph>
           </div>
+
+          <div className="settings-section">
+            <div className="settings-heading">
+              <GithubOutlined />
+              <Title level={5}>{settingsCopy.accountTitle}</Title>
+            </div>
+            <Paragraph className="settings-copy">
+              {configured ? settingsCopy.accountCopy : settingsCopy.accountNotReady}
+            </Paragraph>
+            {user ? (
+              <div className="settings-account-card">
+                <Text className="page-kicker">{settingsCopy.connectedAs}</Text>
+                <Text strong>{user.email ?? user.user_metadata.user_name ?? user.id}</Text>
+                <Button icon={<LogoutOutlined />} onClick={handleSignOut} disabled={loading}>
+                  {settingsCopy.signOut}
+                </Button>
+              </div>
+            ) : (
+              <Button
+                type="primary"
+                icon={<GithubOutlined />}
+                onClick={handleGithubSignIn}
+                disabled={!configured || loading}
+              >
+                {settingsCopy.signIn}
+              </Button>
+            )}
+          </div>
+
+          <Divider />
 
           <div className="settings-section">
             <div className="settings-heading">
