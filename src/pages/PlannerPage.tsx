@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import type { FocusEvent, MouseEvent } from 'react'
 import {
   CalendarOutlined,
   CheckCircleOutlined,
@@ -33,6 +34,7 @@ import {
   getTaskDueDate,
   getWeekdayLabel,
   isSameDay,
+  sortPlannerTasks,
   shiftPlannerTaskAfterCompletion,
   type PlannerTask,
   type PlannerTaskInput,
@@ -49,6 +51,20 @@ const { Title, Paragraph, Text } = Typography
 
 type PlannerFormValues = PlannerTaskInput
 
+function formatDateInputValue(date: Date): string {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+function openNativePicker(event: FocusEvent<HTMLInputElement> | MouseEvent<HTMLInputElement>) {
+  const input = event.currentTarget
+  if (typeof input.showPicker === 'function') {
+    input.showPicker()
+  }
+}
+
 function PlannerPage() {
   const { language } = useI18n()
   const { configured, signInWithGithub, user } = useSupabaseAuth()
@@ -58,6 +74,9 @@ function PlannerPage() {
   const [loadingTasks, setLoadingTasks] = useState(false)
   const [savingTask, setSavingTask] = useState(false)
   const [showCompletedToday, setShowCompletedToday] = useState(false)
+  const currentYear = new Date().getFullYear()
+  const minPlannerDate = formatDateInputValue(new Date(currentYear - 1, 0, 1))
+  const maxPlannerDate = formatDateInputValue(new Date(currentYear + 5, 11, 31))
 
   const copy =
     language === 'en'
@@ -160,6 +179,10 @@ function PlannerPage() {
   const loginRequiredText =
     language === 'en' ? copy.loginRequired : 'Hãy đăng nhập GitHub để lưu nhắc việc của bạn.'
   const loginActionText = language === 'en' ? 'Sign in with GitHub' : 'Đăng nhập GitHub'
+  const invalidDateRangeText =
+    language === 'en'
+      ? `Please choose a date between ${minPlannerDate} and ${maxPlannerDate}.`
+      : `Hãy chọn ngày trong khoảng ${minPlannerDate} đến ${maxPlannerDate}.`
 
   const handleGithubSignIn = async () => {
     try {
@@ -185,18 +208,20 @@ function PlannerPage() {
         }
 
         setTasks(
-          records.map((task) => ({
-            id: task.id,
-            title: task.title,
-            note: task.note,
-            dueDate: task.due_date,
-            dueTime: task.due_time,
-            priority: task.priority,
-            repeatWeekly: task.repeat_weekly,
-            completed: task.completed,
-            createdAt: task.created_at,
-            updatedAt: task.updated_at,
-          })),
+          sortPlannerTasks(
+            records.map((task) => ({
+              id: task.id,
+              title: task.title,
+              note: task.note,
+              dueDate: task.due_date,
+              dueTime: task.due_time,
+              priority: task.priority,
+              repeatWeekly: task.repeat_weekly,
+              completed: task.completed,
+              createdAt: task.created_at,
+              updatedAt: task.updated_at,
+            })),
+          ),
         )
       })
       .catch(() => {
@@ -288,6 +313,11 @@ function PlannerPage() {
 
     const values = await form.validateFields()
 
+    if (values.dueDate < minPlannerDate || values.dueDate > maxPlannerDate) {
+      message.warning(invalidDateRangeText)
+      return
+    }
+
     try {
       setSavingTask(true)
 
@@ -316,9 +346,11 @@ function PlannerPage() {
 
       setTasks((currentTasks) => {
         const exists = currentTasks.some((task) => task.id === nextTask.id)
-        return exists
-          ? currentTasks.map((task) => (task.id === nextTask.id ? nextTask : task))
-          : [...currentTasks, nextTask]
+        return sortPlannerTasks(
+          exists
+            ? currentTasks.map((task) => (task.id === nextTask.id ? nextTask : task))
+            : [...currentTasks, nextTask],
+        )
       })
 
       setEditingTaskId(null)
@@ -351,7 +383,7 @@ function PlannerPage() {
     try {
       setSavingTask(true)
       await deletePlannerTaskRecord(taskId, user.id)
-      setTasks((currentTasks) => currentTasks.filter((task) => task.id !== taskId))
+      setTasks((currentTasks) => sortPlannerTasks(currentTasks.filter((task) => task.id !== taskId)))
       if (editingTaskId === taskId) {
         setEditingTaskId(null)
         form.resetFields()
@@ -384,7 +416,7 @@ function PlannerPage() {
       })
 
       setTasks((currentTasks) =>
-        currentTasks.map((item) => (item.id === task.id ? mapRecordToTask(saved) : item)),
+        sortPlannerTasks(currentTasks.map((item) => (item.id === task.id ? mapRecordToTask(saved) : item))),
       )
       message.success(copy.toggled)
     } catch {
@@ -574,9 +606,29 @@ function PlannerPage() {
                       <Form.Item
                         name="dueDate"
                         label={copy.dateField}
-                        rules={[{ required: true, message: copy.requiredDate }]}
+                        rules={[
+                          { required: true, message: copy.requiredDate },
+                          {
+                            validator: async (_, value?: string) => {
+                              if (!value || (value >= minPlannerDate && value <= maxPlannerDate)) {
+                                return
+                              }
+
+                              throw new Error(invalidDateRangeText)
+                            },
+                          },
+                        ]}
                       >
-                        <Input type="date" />
+                        <Input
+                          type="date"
+                          min={minPlannerDate}
+                          max={maxPlannerDate}
+                          readOnly
+                          onFocus={openNativePicker}
+                          onClick={openNativePicker}
+                          onKeyDown={(event) => event.preventDefault()}
+                          onPaste={(event) => event.preventDefault()}
+                        />
                       </Form.Item>
                     </Col>
                     <Col span={10}>

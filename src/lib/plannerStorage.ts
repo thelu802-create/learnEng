@@ -24,7 +24,7 @@ export interface PlannerTaskInput {
 
 export const PLANNER_STORAGE_KEY = 'english-path-planner-tasks'
 
-function sortTasks(tasks: PlannerTask[]): PlannerTask[] {
+export function sortPlannerTasks(tasks: PlannerTask[]): PlannerTask[] {
   return [...tasks].sort((left, right) => {
     const leftTime = getTaskDueTimestamp(left)
     const rightTime = getTaskDueTimestamp(right)
@@ -48,7 +48,7 @@ export function readPlannerTasks(): PlannerTask[] {
       return []
     }
 
-    return sortTasks(
+    return sortPlannerTasks(
       parsed.filter(
         (task) =>
           typeof task?.id === 'string' &&
@@ -66,7 +66,7 @@ export function writePlannerTasks(tasks: PlannerTask[]): void {
     return
   }
 
-  window.localStorage.setItem(PLANNER_STORAGE_KEY, JSON.stringify(sortTasks(tasks)))
+  window.localStorage.setItem(PLANNER_STORAGE_KEY, JSON.stringify(sortPlannerTasks(tasks)))
 }
 
 export function createPlannerTask(input: PlannerTaskInput): PlannerTask {
@@ -92,13 +92,13 @@ export function upsertPlannerTask(task: PlannerTask): PlannerTask[] {
     : [...tasks, task]
 
   writePlannerTasks(nextTasks)
-  return sortTasks(nextTasks)
+  return sortPlannerTasks(nextTasks)
 }
 
 export function removePlannerTask(taskId: string): PlannerTask[] {
   const nextTasks = readPlannerTasks().filter((task) => task.id !== taskId)
   writePlannerTasks(nextTasks)
-  return sortTasks(nextTasks)
+  return sortPlannerTasks(nextTasks)
 }
 
 export function togglePlannerTask(taskId: string): PlannerTask[] {
@@ -120,7 +120,7 @@ export function togglePlannerTask(taskId: string): PlannerTask[] {
   })
 
   writePlannerTasks(nextTasks)
-  return sortTasks(nextTasks)
+  return sortPlannerTasks(nextTasks)
 }
 
 export function shiftPlannerTaskAfterCompletion(task: PlannerTask): PlannerTask {
