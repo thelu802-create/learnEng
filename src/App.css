@@ -15,6 +15,15 @@
 .planner-sticky-card {
   position: sticky;
   top: 92px;
+  max-height: calc(100vh - 112px);
+  overflow: hidden;
+}
+
+.planner-sticky-card .ant-card-body {
+  max-height: calc(100vh - 112px);
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  padding: 18px !important;
 }
 
 .planner-overview-card .ant-card-body {
@@ -69,8 +78,8 @@
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  padding: 12px 14px;
-  border-radius: 16px;
+  padding: 10px 12px;
+  border-radius: 14px;
   background: linear-gradient(135deg, rgba(42, 157, 143, 0.08), rgba(42, 157, 143, 0.03));
   border: 1px solid rgba(42, 157, 143, 0.12);
   color: #475467;
@@ -79,6 +88,18 @@
 .planner-form-callout .anticon {
   margin-top: 3px;
   color: #2a9d8f;
+}
+
+.planner-form-card .section-heading {
+  gap: 6px;
+}
+
+.planner-form-card .section-heading .ant-typography {
+  margin-bottom: 0;
+}
+
+.planner-form-card .section-heading p {
+  line-height: 1.55;
 }
 
 .planner-list-card {
@@ -838,6 +859,27 @@
 
 .teacher-hero-card .ant-card-body {
   padding: 22px !important;
+}
+
+.planner-hero-card .ant-card-body {
+  padding: 20px 24px !important;
+}
+
+.planner-hero-card .hero-tag {
+  padding: 6px 12px;
+}
+
+.planner-hero-card .hero-title.ant-typography {
+  font-size: clamp(1.55rem, 2.5vw, 2.35rem);
+  line-height: 1.06;
+  max-width: 880px;
+}
+
+.planner-hero-card .hero-copy.ant-typography {
+  max-width: 700px;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  margin-bottom: 0;
 }
 
 .hero-tag {

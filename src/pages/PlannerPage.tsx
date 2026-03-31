@@ -531,7 +531,7 @@ function PlannerPage() {
 
   return (
     <Space direction="vertical" size={20} className="full-width">
-      <Card className="hero-card highlight-card" bordered={false}>
+      <Card className="hero-card highlight-card planner-hero-card" bordered={false}>
         <Space direction="vertical" size={14} className="full-width">
           <Tag className="hero-tag" bordered={false}>
             {copy.eyebrow}
@@ -623,7 +623,6 @@ function PlannerPage() {
                           type="date"
                           min={minPlannerDate}
                           max={maxPlannerDate}
-                          readOnly
                           onFocus={openNativePicker}
                           onClick={openNativePicker}
                           onKeyDown={(event) => event.preventDefault()}
