@@ -12,6 +12,9 @@ import type {
   VocabularyEntryRecord,
 } from './types'
 
+// Centralized Supabase service helpers.
+// Pages should call these functions instead of scattering table queries across UI files.
+
 export async function listTeacherNotes(userId: string): Promise<TeacherNoteRecord[]> {
   const supabase = requireSupabaseClient()
   const { data, error } = await supabase
@@ -155,6 +158,7 @@ export async function saveQuizAttempt(input: {
 }
 
 export async function listVocabularyEntries(userId: string): Promise<VocabularyEntryRecord[]> {
+  // System words are readable in the merged lessons view, while teacher rows stay scoped per user.
   const supabase = requireSupabaseClient()
   const { data, error } = await supabase
     .from('vocabulary_entries')
@@ -245,6 +249,8 @@ export async function deleteVocabularyEntry(entryId: string, userId: string): Pr
 }
 
 export async function listPlannerTasks(userId: string): Promise<PlannerTaskRecord[]> {
+  // The DB returns tasks ordered by due date/time.
+  // The planner page still re-sorts client-side after mutations so the UI updates immediately.
   const supabase = requireSupabaseClient()
   const { data, error } = await supabase
     .from('planner_tasks')

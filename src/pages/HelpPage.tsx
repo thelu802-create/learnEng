@@ -1,6 +1,7 @@
 import {
   BookOutlined,
   BulbOutlined,
+  CalendarOutlined,
   InfoCircleOutlined,
   PlayCircleOutlined,
   SettingOutlined,
@@ -19,9 +20,11 @@ function HelpPage() {
           eyebrow: 'User guide',
           title: 'How to use English Path',
           intro:
-            'This page helps you move through the app in the simplest order: choose a grade, open a lesson, review vocabulary, and start practice.',
+            'This page helps you move through the app in a simple order: choose a grade, open a lesson, review vocabulary, start practice, and keep track of weekly teaching tasks.',
           quickStart: 'Quick start',
           menuGuide: 'Main sections',
+          menuGuideCopy:
+            'The areas below are the main places you will use most often while teaching and reviewing.',
           tipsTitle: 'Tips for teachers',
           aboutTitle: 'About app',
           step1Title: 'Choose the grade you want to teach',
@@ -30,27 +33,38 @@ function HelpPage() {
           step2Title: 'Open Lessons to review the unit',
           step2Copy:
             'Lessons shows grammar focus, vocabulary, class activities, projects, and linked words for each topic.',
-          step3Title: 'Open the Vocabulary tab to look up words',
+          step3Title: 'Use the Vocabulary area to manage words',
           step3Copy:
-            'You can search by keyword, open word details, and review meaning, IPA, and example sentences quickly.',
-          step4Title: 'Use Practice for reinforcement',
+            'Search by keyword, open word details, review meaning, IPA, and examples, then add, edit, or delete teacher vocabulary when needed.',
+          step4Title: 'Open Practice for reinforcement',
           step4Copy:
-            'Practice is where you move from reading to recall with word practice and passage quiz activities.',
+            'Practice is where you move from reading to recall with Word Practice and Passage Quiz Generator activities.',
+          step5Title: 'Use Planner to track your week',
+          step5Copy:
+            'Planner helps you add teaching tasks, review what is due today, and mark work as done without losing sight of upcoming reminders.',
           lessonsTitle: 'Lessons',
           lessonsCopy:
-            'Use this area to read unit content, search vocabulary, add teacher vocabulary, import word lists, and save notes by topic.',
+            'Use this area to read unit content, search vocabulary, add teacher vocabulary, import word lists, edit teacher-added words, and save notes by topic.',
           practiceTitle: 'Practice',
           practiceCopy:
             'Use Word Practice for ready-made review and Passage Quiz Generator when you want to create exercises from your own text.',
+          plannerTitle: 'Planner',
+          plannerCopy:
+            'Use Planner to add work for the week, separate today from upcoming tasks, and quickly check what has already been completed.',
           settingsTitle: 'Settings',
           settingsCopy:
             'Use the gear button in the topbar to switch language, theme, and font size for easier classroom use.',
-          teacherTip1: 'Sign in with GitHub before adding, editing, importing, or deleting vocabulary.',
-          teacherTip2: 'Teacher-added words can be edited or deleted from the word detail panel in Lessons.',
-          teacherTip3: 'When importing vocabulary, leave IPA blank if you want the system to auto-fill it.',
+          teacherTip1:
+            'Sign in with GitHub before adding, editing, importing, or deleting vocabulary, notes, and planner tasks.',
+          teacherTip2:
+            'Teacher-added words can be edited or deleted from the word detail panel in Lessons.',
+          teacherTip3:
+            'When importing vocabulary, leave IPA blank if you want the system to auto-fill it automatically.',
           teacherTip4: 'Use Teacher Notes in Lessons to save short reminders for each topic.',
+          teacherTip5:
+            'Planner tasks are saved to your account, so you can review the same schedule after signing in again.',
           aboutCopy:
-            'English Path is a lightweight teaching and review tool for lower secondary English, combining lessons, vocabulary lookup, practice, and teacher tools in one place.',
+            'English Path is a lightweight teaching and review tool for lower secondary English, combining lessons, vocabulary lookup, practice, reminders, and teacher tools in one place.',
           guideTag: 'Guide',
           menuTag: 'Sections',
           tipsTag: 'Teacher tips',
@@ -60,9 +74,11 @@ function HelpPage() {
           eyebrow: 'Hướng dẫn sử dụng',
           title: 'Cách dùng English Path',
           intro:
-            'Trang này giúp bạn dùng app theo thứ tự đơn giản nhất: chọn khối, mở bài học, xem từ vựng và bắt đầu luyện tập.',
+            'Trang này giúp bạn dùng app theo thứ tự đơn giản: chọn khối, mở bài học, xem từ vựng, luyện tập và theo dõi công việc trong tuần.',
           quickStart: 'Bắt đầu nhanh',
           menuGuide: 'Các khu chính',
+          menuGuideCopy:
+            'Các khu dưới đây là những nơi bạn sẽ dùng thường xuyên nhất khi dạy học và ôn tập.',
           tipsTitle: 'Mẹo dùng cho giáo viên',
           aboutTitle: 'Về ứng dụng',
           step1Title: 'Chọn khối cần dạy',
@@ -71,27 +87,39 @@ function HelpPage() {
           step2Title: 'Mở Lessons để xem bài',
           step2Copy:
             'Lessons hiển thị trọng tâm ngữ pháp, từ vựng, hoạt động trên lớp, project và các từ liên kết theo từng chủ điểm.',
-          step3Title: 'Mở tab Từ vựng để tra nhanh',
+          step3Title: 'Dùng khu Từ vựng để quản lý từ',
           step3Copy:
-            'Bạn có thể tìm theo từ khóa, mở chi tiết từng từ và xem nghĩa, phiên âm, câu ví dụ ngay trong cùng một chỗ.',
+            'Bạn có thể tìm theo từ khóa, mở chi tiết từ, xem nghĩa, phiên âm, ví dụ, rồi thêm, sửa hoặc xóa từ do giáo viên tạo.',
           step4Title: 'Dùng Practice để củng cố',
           step4Copy:
             'Practice là nơi chuyển từ xem bài sang ghi nhớ, với Word Practice và Passage Quiz Generator.',
+          step5Title: 'Dùng Planner để theo dõi công việc',
+          step5Copy:
+            'Planner giúp bạn thêm việc trong tuần, xem các việc đến hạn hôm nay và đánh dấu hoàn thành mà vẫn theo dõi được các việc sắp tới.',
           lessonsTitle: 'Lessons',
           lessonsCopy:
-            'Dùng khu này để xem bài học, tra từ vựng, thêm từ giáo viên, import danh sách từ và lưu ghi chú theo chủ điểm.',
+            'Dùng khu này để xem bài học, tra từ vựng, thêm từ giáo viên, import danh sách từ, sửa xóa từ do giáo viên thêm và lưu ghi chú theo chủ điểm.',
           practiceTitle: 'Practice',
           practiceCopy:
             'Dùng Word Practice để ôn tập có sẵn, và Passage Quiz Generator khi muốn tạo bài tập từ đoạn văn của riêng bạn.',
+          plannerTitle: 'Planner',
+          plannerCopy:
+            'Dùng Planner để thêm công việc trong tuần, tách việc hôm nay, việc sắp tới và kiểm tra nhanh những việc đã xong.',
           settingsTitle: 'Cài đặt',
           settingsCopy:
             'Dùng nút bánh răng trên topbar để đổi ngôn ngữ, giao diện và cỡ chữ cho phù hợp khi dạy học.',
-          teacherTip1: 'Hãy đăng nhập GitHub trước khi thêm, sửa, import hoặc xóa từ vựng.',
-          teacherTip2: 'Từ do giáo viên thêm có thể sửa hoặc xóa ngay trong khung chi tiết từ ở Lessons.',
-          teacherTip3: 'Khi import từ vựng, có thể để trống cột IPA nếu muốn hệ thống tự điền.',
-          teacherTip4: 'Dùng Ghi chú giáo viên trong Lessons để lưu nhanh lưu ý cho từng chủ điểm.',
+          teacherTip1:
+            'Hãy đăng nhập GitHub trước khi thêm, sửa, import hoặc xóa từ vựng, ghi chú và nhắc việc.',
+          teacherTip2:
+            'Từ do giáo viên thêm có thể sửa hoặc xóa ngay trong khung chi tiết từ ở Lessons.',
+          teacherTip3:
+            'Khi import từ vựng, có thể để trống cột IPA nếu muốn hệ thống tự điền.',
+          teacherTip4:
+            'Dùng Ghi chú giáo viên trong Lessons để lưu nhanh lưu ý cho từng chủ điểm.',
+          teacherTip5:
+            'Nhắc việc trong Planner được lưu theo tài khoản, nên có thể xem lại sau khi đăng nhập.',
           aboutCopy:
-            'English Path là công cụ gọn nhẹ hỗ trợ dạy và ôn tập tiếng Anh THCS, kết hợp bài học, tra từ, luyện tập và tiện ích cho giáo viên trong một nơi.',
+            'English Path là công cụ gọn nhẹ hỗ trợ dạy và ôn tập tiếng Anh THCS, kết hợp bài học, tra từ, luyện tập, nhắc việc và tiện ích cho giáo viên trong một nơi.',
           guideTag: 'Hướng dẫn',
           menuTag: 'Chức năng',
           tipsTag: 'Mẹo dùng',
@@ -119,6 +147,11 @@ function HelpPage() {
       title: copy.step4Title,
       description: copy.step4Copy,
     },
+    {
+      icon: <CalendarOutlined />,
+      title: copy.step5Title,
+      description: copy.step5Copy,
+    },
   ]
 
   const menuSections = [
@@ -138,6 +171,13 @@ function HelpPage() {
     },
     {
       tag: copy.menuTag,
+      color: 'green',
+      icon: <CalendarOutlined />,
+      title: copy.plannerTitle,
+      description: copy.plannerCopy,
+    },
+    {
+      tag: copy.menuTag,
       color: 'gold',
       icon: <SettingOutlined />,
       title: copy.settingsTitle,
@@ -145,7 +185,13 @@ function HelpPage() {
     },
   ]
 
-  const teacherTips = [copy.teacherTip1, copy.teacherTip2, copy.teacherTip3, copy.teacherTip4]
+  const teacherTips = [
+    copy.teacherTip1,
+    copy.teacherTip2,
+    copy.teacherTip3,
+    copy.teacherTip4,
+    copy.teacherTip5,
+  ]
 
   return (
     <Space direction="vertical" size={20} className="full-width">
@@ -185,6 +231,17 @@ function HelpPage() {
 
         <Col xs={24} xl={10}>
           <Space direction="vertical" size={16} className="full-width">
+            <Card className="content-card" bordered={false}>
+              <Space direction="vertical" size={12} className="full-width">
+                <Tag color="blue">{copy.menuTag}</Tag>
+                <div className="settings-heading">
+                  <InfoCircleOutlined />
+                  <Title level={4}>{copy.menuGuide}</Title>
+                </div>
+                <Paragraph className="settings-copy">{copy.menuGuideCopy}</Paragraph>
+              </Space>
+            </Card>
+
             {menuSections.map((section) => (
               <Card className="content-card" bordered={false} key={section.title}>
                 <Space direction="vertical" size={12} className="full-width">
@@ -223,9 +280,7 @@ function HelpPage() {
                   <Title level={4}>{copy.aboutTitle}</Title>
                 </div>
                 <Paragraph className="settings-copy">{copy.aboutCopy}</Paragraph>
-                <Paragraph className="settings-copy settings-about-note">
-                  {t('common.appOwner')}
-                </Paragraph>
+                <Paragraph className="settings-copy settings-about-note">{t('common.appOwner')}</Paragraph>
               </Space>
             </Card>
           </Space>

@@ -240,6 +240,7 @@ function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
   }
 
   const mergedVocabularyTopicsByGrade = useMemo<Record<GradeKey, SearchableVocabularyTopic[]>>(() => {
+    // Start with the bundled course data, then layer teacher-added rows on top for the active session.
     const baseMap = (Object.entries(gradeContent) as [GradeKey, GradeContent][]).reduce<
       Record<GradeKey, SearchableVocabularyTopic[]>
     >((result, [grade, content]) => {
@@ -410,6 +411,7 @@ function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
       return
     }
 
+    // Teacher vocabulary stays private per account, so it is only loaded after sign-in.
     let active = true
     setIsVocabularyLoading(true)
 
@@ -515,6 +517,7 @@ function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
     }
 
     const existingTopic = selectedGradeTopics.find((topic) => topic.key === values.topicKey)
+    // Duplicate checks compare against both bundled words and teacher-added words after trim/normalization.
     const isDuplicateWord = existingTopic?.words.some((word) => {
       if (normalizeWordKey(word.word) !== normalizedWord) {
         return false

@@ -198,6 +198,7 @@ function PlannerPage() {
       return
     }
 
+    // Load private planner data only after the teacher session is ready.
     let active = true
     setLoadingTasks(true)
 
@@ -321,6 +322,7 @@ function PlannerPage() {
     try {
       setSavingTask(true)
 
+      // Create and edit share one form, so the page swaps between insert/update here.
       const saved = editingTaskId
         ? await updatePlannerTaskRecord(editingTaskId, {
             userId: user.id,
