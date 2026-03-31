@@ -2,6 +2,7 @@ import {
   BookOutlined,
   BulbOutlined,
   CalendarOutlined,
+  CheckCircleOutlined,
   InfoCircleOutlined,
   PlayCircleOutlined,
   SettingOutlined,
@@ -24,7 +25,7 @@ function HelpPage() {
           quickStart: 'Quick start',
           menuGuide: 'Main sections',
           menuGuideCopy:
-            'The areas below are the main places you will use most often while teaching and reviewing.',
+            'These are the areas you will use most often while teaching, reviewing content, and organizing your week.',
           tipsTitle: 'Tips for teachers',
           aboutTitle: 'About app',
           step1Title: 'Choose the grade you want to teach',
@@ -59,7 +60,7 @@ function HelpPage() {
           teacherTip2:
             'Teacher-added words can be edited or deleted from the word detail panel in Lessons.',
           teacherTip3:
-            'When importing vocabulary, leave IPA blank if you want the system to auto-fill it automatically.',
+            'When importing vocabulary, you can leave IPA blank if you want the system to fill it automatically.',
           teacherTip4: 'Use Teacher Notes in Lessons to save short reminders for each topic.',
           teacherTip5:
             'Planner tasks are saved to your account, so you can review the same schedule after signing in again.',
@@ -76,9 +77,9 @@ function HelpPage() {
           intro:
             'Trang này giúp bạn dùng app theo thứ tự đơn giản: chọn khối, mở bài học, xem từ vựng, luyện tập và theo dõi công việc trong tuần.',
           quickStart: 'Bắt đầu nhanh',
-          menuGuide: 'Các khu chính',
+          menuGuide: 'Các mục chính',
           menuGuideCopy:
-            'Các khu dưới đây là những nơi bạn sẽ dùng thường xuyên nhất khi dạy học và ôn tập.',
+            'Đây là những phần bạn sẽ dùng thường xuyên nhất khi dạy học, ôn tập và sắp xếp công việc trong tuần.',
           tipsTitle: 'Mẹo dùng cho giáo viên',
           aboutTitle: 'Về ứng dụng',
           step1Title: 'Chọn khối cần dạy',
@@ -113,7 +114,7 @@ function HelpPage() {
           teacherTip2:
             'Từ do giáo viên thêm có thể sửa hoặc xóa ngay trong khung chi tiết từ ở Lessons.',
           teacherTip3:
-            'Khi import từ vựng, có thể để trống cột IPA nếu muốn hệ thống tự điền.',
+            'Khi import từ vựng, bạn có thể để trống cột IPA nếu muốn hệ thống tự điền.',
           teacherTip4:
             'Dùng Ghi chú giáo viên trong Lessons để lưu nhanh lưu ý cho từng chủ điểm.',
           teacherTip5:
@@ -157,28 +158,28 @@ function HelpPage() {
   const menuSections = [
     {
       tag: copy.guideTag,
-      color: 'cyan',
+      tagClassName: 'help-section-tag-cyan',
       icon: <BookOutlined />,
       title: copy.lessonsTitle,
       description: copy.lessonsCopy,
     },
     {
       tag: copy.menuTag,
-      color: 'geekblue',
+      tagClassName: 'help-section-tag-geekblue',
       icon: <PlayCircleOutlined />,
       title: copy.practiceTitle,
       description: copy.practiceCopy,
     },
     {
       tag: copy.menuTag,
-      color: 'green',
+      tagClassName: 'help-section-tag-green',
       icon: <CalendarOutlined />,
       title: copy.plannerTitle,
       description: copy.plannerCopy,
     },
     {
       tag: copy.menuTag,
-      color: 'gold',
+      tagClassName: 'help-section-tag-gold',
       icon: <SettingOutlined />,
       title: copy.settingsTitle,
       description: copy.settingsCopy,
@@ -195,8 +196,8 @@ function HelpPage() {
 
   return (
     <Space direction="vertical" size={20} className="full-width">
-      <Card className="hero-card highlight-card" bordered={false}>
-        <Space direction="vertical" size={16} className="full-width">
+      <Card className="hero-card highlight-card help-hero-card" bordered={false}>
+        <Space direction="vertical" size={14} className="full-width">
           <Tag className="hero-tag" bordered={false}>
             {copy.eyebrow}
           </Tag>
@@ -215,11 +216,16 @@ function HelpPage() {
               </div>
 
               <div className="help-step-list">
-                {quickSteps.map((step) => (
+                {quickSteps.map((step, index) => (
                   <div className="help-step-item" key={step.title}>
                     <div className="help-step-icon">{step.icon}</div>
                     <div>
-                      <Text strong>{step.title}</Text>
+                      <div className="help-step-head">
+                        <Tag bordered={false} className="help-step-badge">
+                          {language === 'en' ? `Step ${index + 1}` : `Bước ${index + 1}`}
+                        </Tag>
+                        <Text strong>{step.title}</Text>
+                      </div>
                       <Paragraph className="settings-copy">{step.description}</Paragraph>
                     </div>
                   </div>
@@ -230,56 +236,65 @@ function HelpPage() {
         </Col>
 
         <Col xs={24} xl={10}>
-          <Space direction="vertical" size={16} className="full-width">
-            <Card className="content-card" bordered={false}>
+          <Space direction="vertical" size={16} className="full-width help-side-stack">
+            <Card className="content-card help-section-card" bordered={false}>
               <Space direction="vertical" size={12} className="full-width">
-                <Tag color="blue">{copy.menuTag}</Tag>
+                <Tag bordered={false} className="help-section-tag help-section-tag-blue">
+                  {copy.menuTag}
+                </Tag>
                 <div className="settings-heading">
                   <InfoCircleOutlined />
                   <Title level={4}>{copy.menuGuide}</Title>
                 </div>
-                <Paragraph className="settings-copy">{copy.menuGuideCopy}</Paragraph>
+                <Paragraph className="settings-copy help-section-copy">{copy.menuGuideCopy}</Paragraph>
               </Space>
             </Card>
 
             {menuSections.map((section) => (
-              <Card className="content-card" bordered={false} key={section.title}>
+              <Card className="content-card help-section-card" bordered={false} key={section.title}>
                 <Space direction="vertical" size={12} className="full-width">
-                  <Tag color={section.color}>{section.tag}</Tag>
+                  <Tag bordered={false} className={`help-section-tag ${section.tagClassName}`}>
+                    {section.tag}
+                  </Tag>
                   <div className="settings-heading">
                     {section.icon}
                     <Title level={4}>{section.title}</Title>
                   </div>
-                  <Paragraph className="settings-copy">{section.description}</Paragraph>
+                  <Paragraph className="settings-copy help-section-copy">{section.description}</Paragraph>
                 </Space>
               </Card>
             ))}
 
-            <Card className="content-card" bordered={false}>
+            <Card className="content-card help-section-card help-tips-card" bordered={false}>
               <Space direction="vertical" size={12} className="full-width">
-                <Tag color="purple">{copy.tipsTag}</Tag>
+                <Tag bordered={false} className="help-section-tag help-section-tag-purple">
+                  {copy.tipsTag}
+                </Tag>
                 <div className="settings-heading">
                   <BulbOutlined />
                   <Title level={4}>{copy.tipsTitle}</Title>
                 </div>
-                <Space direction="vertical" size={8} className="full-width">
+                <div className="help-tips-list">
                   {teacherTips.map((tip) => (
-                    <Paragraph className="settings-copy" key={tip}>
-                      - {tip}
-                    </Paragraph>
+                    <div className="help-tip-item" key={tip}>
+                      <CheckCircleOutlined />
+                      <Paragraph className="settings-copy">{tip}</Paragraph>
+                    </div>
                   ))}
-                </Space>
+                </div>
               </Space>
             </Card>
 
-            <Card className="content-card" bordered={false}>
+            <Card className="content-card help-section-card" bordered={false}>
               <Space direction="vertical" size={12} className="full-width">
-                <Tag color="volcano">{copy.aboutTag}</Tag>
+                <Tag bordered={false} className="help-section-tag help-section-tag-volcano">
+                  {copy.aboutTag}
+                </Tag>
                 <div className="settings-heading">
                   <InfoCircleOutlined />
                   <Title level={4}>{copy.aboutTitle}</Title>
                 </div>
-                <Paragraph className="settings-copy">{copy.aboutCopy}</Paragraph>
+                <Paragraph className="settings-copy help-section-copy">{copy.aboutCopy}</Paragraph>
                 <Paragraph className="settings-copy settings-about-note">{t('common.appOwner')}</Paragraph>
               </Space>
             </Card>

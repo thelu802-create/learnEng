@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   ArrowRightOutlined,
   BookOutlined,
@@ -55,6 +55,15 @@ function HomePage({
     return { key: 'upcoming' as const, color: 'cyan' }
   }
 
+  const getStartOfWeek = (date: Date) => {
+    const next = new Date(date)
+    const day = next.getDay()
+    const offset = day === 0 ? -6 : 1 - day
+    next.setHours(0, 0, 0, 0)
+    next.setDate(next.getDate() + offset)
+    return next
+  }
+
   const topicCount = currentGrade.vocabularyTopics.length
   const wordCount = currentGrade.vocabularyTopics.reduce(
     (total, topic) => total + topic.words.length,
@@ -70,6 +79,45 @@ function HomePage({
       return bucket === 'today' || bucket === 'upcoming' || bucket === 'overdue'
     })
     .slice(0, 3)
+
+  const weeklyPlanner = useMemo(() => {
+    const start = getStartOfWeek(new Date())
+    const days = Array.from({ length: 7 }, (_, index) => {
+      const date = new Date(start)
+      date.setDate(start.getDate() + index)
+      return {
+        key: date.toISOString(),
+        date,
+        total: 0,
+        completed: 0,
+      }
+    })
+
+    plannerTasks.forEach((task) => {
+      const dueDate = new Date(`${task.dueDate}T00:00:00`)
+      dueDate.setHours(0, 0, 0, 0)
+      const diff = Math.round((dueDate.getTime() - start.getTime()) / 86400000)
+
+      if (diff >= 0 && diff < 7) {
+        days[diff].total += 1
+        if (task.completed) {
+          days[diff].completed += 1
+        }
+      }
+    })
+
+    const total = days.reduce((sum, day) => sum + day.total, 0)
+    const completed = days.reduce((sum, day) => sum + day.completed, 0)
+    const max = Math.max(...days.map((day) => day.total), 1)
+
+    return {
+      days,
+      total,
+      completed,
+      percent: total > 0 ? Math.round((completed / total) * 100) : 0,
+      max,
+    }
+  }, [plannerTasks])
 
   useEffect(() => {
     if (!configured || !user) {
@@ -206,6 +254,27 @@ function HomePage({
           statusOverdue: 'Quá hạn',
         }
 
+  const plannerChartTitle = language === 'en' ? 'Weekly plan' : 'Ke hoach tuan'
+  const plannerChartCopy =
+    language === 'en'
+      ? 'A quick look at this week and how much is already done.'
+      : 'Xem nhanh khoi luong viec trong tuan va muc do da hoan thanh.'
+  const plannerDoneLabel = language === 'en' ? 'done' : 'da xong'
+  const plannerThisWeekLabel = language === 'en' ? 'tasks this week' : 'viec trong tuan'
+  const plannerStats = [
+    { label: copy.statusToday, value: plannerTasks.filter((task) => getTaskBucket(task) === 'today').length, tone: 'gold' },
+    {
+      label: copy.statusUpcoming,
+      value: plannerTasks.filter((task) => getTaskBucket(task) === 'upcoming').length,
+      tone: 'cyan',
+    },
+    {
+      label: copy.statusOverdue,
+      value: plannerTasks.filter((task) => getTaskBucket(task) === 'overdue').length,
+      tone: 'volcano',
+    },
+  ] as const
+
   return (
     <Space direction="vertical" size={20} className="full-width">
       <Card className="hero-card teacher-hero-card" bordered={false}>
@@ -280,6 +349,35 @@ function HomePage({
                 <div className="section-heading">
                   <Title level={3}>{copy.remindersTitle}</Title>
                   <Paragraph>{copy.remindersCopy}</Paragraph>
+                </div>
+
+                <div className="planner-home-chart">
+                  <div className="planner-home-chart-ring">
+                    <Progress
+                      type="circle"
+                      percent={weeklyPlanner.percent}
+                      size={88}
+                      strokeColor="#2a9d8f"
+                      trailColor="rgba(42, 157, 143, 0.12)"
+                      format={() => `${weeklyPlanner.completed}/${weeklyPlanner.total || 0}`}
+                    />
+                  </div>
+                  <div className="planner-home-chart-copy">
+                    <Text className="planner-home-chart-title">{plannerChartTitle}</Text>
+                    <Paragraph className="planner-home-chart-note">{plannerChartCopy}</Paragraph>
+                    <Text className="planner-home-chart-meta">
+                      {weeklyPlanner.completed} {plannerDoneLabel} · {weeklyPlanner.total} {plannerThisWeekLabel}
+                    </Text>
+                  </div>
+                </div>
+
+                <div className="planner-home-stats">
+                  {plannerStats.map((item) => (
+                    <div className={`planner-home-stat planner-home-stat-${item.tone}`} key={item.label}>
+                      <Text className="planner-home-stat-label">{item.label}</Text>
+                      <strong>{item.value}</strong>
+                    </div>
+                  ))}
                 </div>
 
                 {reminderTasks.length > 0 ? (

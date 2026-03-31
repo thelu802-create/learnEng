@@ -748,20 +748,25 @@
   min-height: 100%;
 }
 
+.help-hero-card .ant-card-body {
+  padding: clamp(24px, 4vw, 34px) !important;
+}
+
 .help-step-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
 .help-step-item {
   display: grid;
   grid-template-columns: 52px minmax(0, 1fr);
   gap: 14px;
-  padding: 16px 18px;
-  border-radius: 20px;
+  padding: 15px 16px;
+  border-radius: 18px;
   border: 1px solid #e5edf2;
   background: linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(248, 251, 253, 1));
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
 }
 
 .help-step-icon {
@@ -773,6 +778,110 @@
   background: rgba(42, 157, 143, 0.1);
   color: #2a9d8f;
   font-size: 20px;
+}
+
+.help-step-head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.help-step-badge {
+  width: fit-content;
+  margin: 0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(42, 157, 143, 0.12);
+  color: #2a9d8f;
+  font-weight: 700;
+}
+
+.help-side-stack {
+  gap: 14px !important;
+}
+
+.help-section-card {
+  border-radius: 20px;
+}
+
+.help-section-card .ant-card-body {
+  padding: 18px !important;
+}
+
+.help-section-tag {
+  width: fit-content;
+  margin: 0;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.help-section-tag-blue {
+  background: rgba(59, 130, 246, 0.12);
+  color: #2563eb;
+}
+
+.help-section-tag-cyan {
+  background: rgba(6, 182, 212, 0.12);
+  color: #0891b2;
+}
+
+.help-section-tag-geekblue {
+  background: rgba(79, 70, 229, 0.12);
+  color: #4f46e5;
+}
+
+.help-section-tag-green {
+  background: rgba(34, 197, 94, 0.12);
+  color: #15803d;
+}
+
+.help-section-tag-gold {
+  background: rgba(245, 158, 11, 0.14);
+  color: #b45309;
+}
+
+.help-section-tag-purple {
+  background: rgba(147, 51, 234, 0.12);
+  color: #7e22ce;
+}
+
+.help-section-tag-volcano {
+  background: rgba(231, 111, 81, 0.12);
+  color: #d9480f;
+}
+
+.help-section-copy.ant-typography {
+  margin-bottom: 0;
+}
+
+.help-tips-card {
+  background:
+    radial-gradient(circle at top right, rgba(147, 51, 234, 0.08), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(248, 251, 253, 1));
+}
+
+.help-tips-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.help-tip-item {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+
+.help-tip-item .anticon {
+  color: #7e22ce;
+  margin-top: 4px;
+}
+
+.help-tip-item .ant-typography {
+  margin-bottom: 0;
 }
 
 .grade-picker-label {
@@ -949,6 +1058,82 @@
 .teacher-hero-reminders-card .ant-card-body {
   height: 100%;
   padding: 20px !important;
+}
+
+.planner-home-chart {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(42, 157, 143, 0.12);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.planner-home-chart-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.planner-home-chart-title {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.planner-home-chart-note.ant-typography {
+  margin-bottom: 0 !important;
+  color: #667085;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.planner-home-chart-meta {
+  color: #2a9d8f;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.planner-home-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.planner-home-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: rgba(148, 163, 184, 0.08);
+}
+
+.planner-home-stat-label {
+  color: #667085;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.planner-home-stat strong {
+  color: #0f172a;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.planner-home-stat-gold {
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.planner-home-stat-cyan {
+  background: rgba(6, 182, 212, 0.1);
+}
+
+.planner-home-stat-volcano {
+  background: rgba(231, 111, 81, 0.1);
 }
 
 .teacher-featured-brief {
@@ -2447,6 +2632,57 @@
   box-shadow: 0 14px 30px rgba(0, 0, 0, 0.24);
 }
 
+.theme-dark .help-step-badge {
+  background: rgba(42, 157, 143, 0.18);
+  color: #7dd3c7;
+}
+
+.theme-dark .help-section-tag-blue {
+  background: rgba(59, 130, 246, 0.18);
+  color: #93c5fd;
+}
+
+.theme-dark .help-section-tag-cyan {
+  background: rgba(6, 182, 212, 0.18);
+  color: #67e8f9;
+}
+
+.theme-dark .help-section-tag-geekblue {
+  background: rgba(79, 70, 229, 0.18);
+  color: #a5b4fc;
+}
+
+.theme-dark .help-section-tag-green {
+  background: rgba(34, 197, 94, 0.18);
+  color: #86efac;
+}
+
+.theme-dark .help-section-tag-gold {
+  background: rgba(245, 158, 11, 0.18);
+  color: #fcd34d;
+}
+
+.theme-dark .help-section-tag-purple {
+  background: rgba(147, 51, 234, 0.18);
+  color: #d8b4fe;
+}
+
+.theme-dark .help-section-tag-volcano {
+  background: rgba(231, 111, 81, 0.18);
+  color: #fdba74;
+}
+
+.theme-dark .help-tips-card {
+  background:
+    radial-gradient(circle at top right, rgba(147, 51, 234, 0.12), transparent 34%),
+    linear-gradient(180deg, rgba(16, 32, 40, 0.96), rgba(13, 26, 33, 0.96)),
+    #102028;
+}
+
+.theme-dark .help-tip-item .anticon {
+  color: #d8b4fe;
+}
+
 .theme-dark .hero-showcase,
 .theme-dark .home-hero-card,
 .theme-dark .teacher-hero-card,
@@ -2575,6 +2811,44 @@
   color: #f3f7f9;
 }
 
+.theme-dark .planner-home-chart {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(125, 211, 199, 0.14);
+}
+
+.theme-dark .planner-home-chart-title {
+  color: #f3f7f9;
+}
+
+.theme-dark .planner-home-chart-note.ant-typography,
+.theme-dark .planner-home-stat-label {
+  color: #9fb0b9;
+}
+
+.theme-dark .planner-home-chart-meta {
+  color: #73c7bc;
+}
+
+.theme-dark .planner-home-stat {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.theme-dark .planner-home-stat strong {
+  color: #f3f7f9;
+}
+
+.theme-dark .planner-home-stat-gold {
+  background: rgba(245, 158, 11, 0.14);
+}
+
+.theme-dark .planner-home-stat-cyan {
+  background: rgba(6, 182, 212, 0.14);
+}
+
+.theme-dark .planner-home-stat-volcano {
+  background: rgba(231, 111, 81, 0.14);
+}
+
 .theme-dark .teacher-chart-item .ant-progress-inner {
   background: rgba(255, 255, 255, 0.08);
 }
@@ -2659,6 +2933,15 @@
   .teacher-featured-meta,
   .teacher-chart-grid {
     grid-template-columns: 1fr;
+  }
+
+  .planner-home-chart {
+    grid-template-columns: 1fr;
+  }
+
+  .planner-home-chart-ring {
+    display: grid;
+    place-items: center;
   }
 
   .teacher-mini-grid-inline {
