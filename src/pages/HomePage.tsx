@@ -355,12 +355,7 @@ function HomePage({
 
           <Col xs={24} xl={8}>
             <Card className="teacher-featured-card teacher-hero-reminders-card" variant="borderless">
-              <Space orientation="vertical" size={16} className="full-width">
-                <div className="section-heading">
-                  <Title level={3}>{copy.remindersTitle}</Title>
-                  <Paragraph>{copy.remindersCopy}</Paragraph>
-                </div>
-
+              <Space orientation="vertical" size={14} className="full-width">
                 <div className="planner-home-chart">
                   <div className="planner-home-chart-ring">
                     <Progress
