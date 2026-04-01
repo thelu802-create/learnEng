@@ -1,5 +1,5 @@
 import { CheckCircleOutlined } from '@ant-design/icons'
-import { Card, Col, List, Progress, Row, Space, Typography } from 'antd'
+import { Card, Col, Progress, Row, Space, Typography } from 'antd'
 import { useI18n } from '../i18n'
 import type { GradeContent, GradeKey } from '../types'
 
@@ -36,15 +36,14 @@ function ProgressPage({ selectedGrade, currentGrade }: ProgressPageProps) {
         <Card className="content-card" variant="borderless">
           <Space orientation="vertical" size={16} className="full-width">
             <Title level={3}>{t('progress.milestones')}</Title>
-            <List
-              dataSource={milestones}
-              renderItem={(item) => (
-                <List.Item className="skill-item">
+            <Space orientation="vertical" size={10} className="full-width">
+              {milestones.map((item) => (
+                <div className="skill-item" key={item}>
                   <CheckCircleOutlined className="accent-icon" />
                   <Text>{item}</Text>
-                </List.Item>
-              )}
-            />
+                </div>
+              ))}
+            </Space>
           </Space>
         </Card>
       </Col>

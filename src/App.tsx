@@ -1,21 +1,21 @@
-import { useEffect, useMemo, useState } from 'react'
-import { ConfigProvider, Layout, theme as antdTheme } from 'antd'
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
+import { ConfigProvider, Layout, Spin, theme as antdTheme } from 'antd'
 import './App.css'
 import AppSidebar from './components/layout/AppSidebar'
 import AppTopbar from './components/layout/AppTopbar'
 import { menuItems } from './constants/navigation'
 import { gradeContent, learningSteps } from './data'
-import HomePage from './pages/HomePage'
-import HelpPage from './pages/HelpPage'
-import LessonsPage from './pages/LessonsPage'
-import PlannerPage from './pages/PlannerPage'
-import PracticePage from './pages/PracticePage'
-import ProgressPage from './pages/ProgressPage'
 import I18nProvider from './components/providers/I18nProvider'
 import SupabaseAuthProvider from './components/providers/SupabaseAuthProvider'
 import type { FontSizeMode, GradeKey, MenuKey, ThemeMode } from './types'
 
 const { Content } = Layout
+const HomePage = lazy(() => import('./pages/HomePage'))
+const HelpPage = lazy(() => import('./pages/HelpPage'))
+const LessonsPage = lazy(() => import('./pages/LessonsPage'))
+const PlannerPage = lazy(() => import('./pages/PlannerPage'))
+const PracticePage = lazy(() => import('./pages/PracticePage'))
+const ProgressPage = lazy(() => import('./pages/ProgressPage'))
 const THEME_STORAGE_KEY = 'learneng-theme'
 const FONT_SIZE_STORAGE_KEY = 'learneng-font-size'
 
@@ -153,7 +153,17 @@ function App() {
               />
 
               <Content className="app-content">
-                <div className="content-shell">{renderPage()}</div>
+                <div className="content-shell">
+                  <Suspense
+                    fallback={
+                      <div className="page-loading-shell">
+                        <Spin size="large" />
+                      </div>
+                    }
+                  >
+                    {renderPage()}
+                  </Suspense>
+                </div>
               </Content>
             </Layout>
           </Layout>

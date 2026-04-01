@@ -27,7 +27,7 @@ function VocabularyImportModal({
       okText={copy.importRun}
       confirmLoading={confirmLoading}
     >
-      <Space direction="vertical" size={14} className="full-width">
+      <Space orientation="vertical" size={14} className="full-width">
         <Paragraph className="settings-copy">{copy.importCopy}</Paragraph>
         <Text type="secondary">{copy.importHint}</Text>
 

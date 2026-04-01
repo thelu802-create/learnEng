@@ -930,6 +930,12 @@
   width: 100%;
 }
 
+.page-loading-shell {
+  min-height: 320px;
+  display: grid;
+  place-items: center;
+}
+
 .hero-card,
 .stat-card,
 .content-card,

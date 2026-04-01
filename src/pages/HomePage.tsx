@@ -17,7 +17,7 @@ import {
   getWeekdayLabel,
   type PlannerTask,
 } from '../lib/plannerStorage'
-import { listPlannerTasks } from '../lib/supabase/teacherData'
+import { listPlannerTasks } from '../lib/supabase/plannerApi'
 import type { GradeContent, GradeKey } from '../types'
 
 const { Title, Paragraph, Text } = Typography

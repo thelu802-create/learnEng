@@ -1,6 +1,14 @@
-import * as XLSX from 'xlsx'
 import type { VocabularyWord } from '../../types'
 import type { ImportVocabularyRow, SpreadsheetRow } from './types'
+
+type XlsxModule = typeof import('xlsx')
+
+let xlsxModulePromise: Promise<XlsxModule> | null = null
+
+async function loadXlsx(): Promise<XlsxModule> {
+  xlsxModulePromise ??= import('xlsx')
+  return xlsxModulePromise
+}
 
 export function matchesVocabulary(word: VocabularyWord, keyword: string): boolean {
   const normalizedKeyword = keyword.trim().toLowerCase()
@@ -109,7 +117,8 @@ export function normalizeSpreadsheetRows(rows: SpreadsheetRow[]): ImportVocabula
     .filter((row) => row.topicKey || row.word || row.meaning || row.example || row.ipa)
 }
 
-export function readSpreadsheetRows(buffer: ArrayBuffer): SpreadsheetRow[] {
+export async function readSpreadsheetRows(buffer: ArrayBuffer): Promise<SpreadsheetRow[]> {
+  const XLSX = await loadXlsx()
   const workbook = XLSX.read(buffer, { type: 'array' })
   const firstSheetName = workbook.SheetNames[0]
 
@@ -136,11 +145,12 @@ export function downloadCsvFile(fileName: string, content: string) {
   URL.revokeObjectURL(objectUrl)
 }
 
-export function downloadXlsxFile(
+export async function downloadXlsxFile(
   fileName: string,
   rows: Array<Record<string, string>>,
   sheetName: string,
 ) {
+  const XLSX = await loadXlsx()
   const worksheet = XLSX.utils.json_to_sheet(rows)
   const workbook = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(workbook, worksheet, sheetName)

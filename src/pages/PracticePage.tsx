@@ -528,16 +528,16 @@ function PracticeChoiceSession({
   }
 
   return (
-    <Card className="content-card practice-quiz-card" bordered={false}>
+    <Card className="content-card practice-quiz-card" variant="borderless">
       {!currentQuestion ? (
-        <Space direction="vertical" size={12} className="full-width">
+        <Space orientation="vertical" size={12} className="full-width">
           <Title level={4} className="practice-empty-title">
             {t('common.noData')}
           </Title>
           <Paragraph className="practice-empty-copy">{t('practice.quizNeedMore')}</Paragraph>
         </Space>
       ) : (
-        <Space direction="vertical" size={18} className="full-width">
+        <Space orientation="vertical" size={18} className="full-width">
           <div className="practice-quiz-head">
             <div>
               <Text className="page-kicker">
@@ -575,7 +575,7 @@ function PracticeChoiceSession({
             onChange={(event) => handleAnswer(event.target.value)}
             className="practice-options"
           >
-            <Space direction="vertical" size={12} className="full-width">
+            <Space orientation="vertical" size={12} className="full-width">
               {currentQuestion.options.map((option) => {
                 let optionState = ''
 
@@ -609,7 +609,7 @@ function PracticeChoiceSession({
 
           {showResult ? (
             <div className={`practice-feedback ${isCorrect ? 'is-correct' : 'is-wrong'}`}>
-              <Space direction="vertical" size={6} className="full-width">
+              <Space orientation="vertical" size={6} className="full-width">
                 <Text strong>{isCorrect ? t('practice.correct') : t('practice.wrong')}</Text>
                 {!isCorrect ? (
                   <Text>
@@ -721,16 +721,16 @@ function PracticeMatchSession({ selectedGrade, vocabularyPool }: PracticeMatchSe
     currentRound?.pairs.every((pair) => Boolean(selectedPairs[pair.word])) ?? false
 
   return (
-    <Card className="content-card practice-quiz-card" bordered={false}>
+    <Card className="content-card practice-quiz-card" variant="borderless">
       {!currentRound ? (
-        <Space direction="vertical" size={12} className="full-width">
+        <Space orientation="vertical" size={12} className="full-width">
           <Title level={4} className="practice-empty-title">
             {t('common.noData')}
           </Title>
           <Paragraph className="practice-empty-copy">{t('practice.matchNeedMore')}</Paragraph>
         </Space>
       ) : (
-        <Space direction="vertical" size={18} className="full-width">
+        <Space orientation="vertical" size={18} className="full-width">
           <div className="practice-quiz-head">
             <div>
               <Text className="page-kicker">{t('practice.round', { count: roundIndex + 1 })}</Text>
@@ -784,7 +784,7 @@ function PracticeMatchSession({ selectedGrade, vocabularyPool }: PracticeMatchSe
 
           {showResult ? (
             <div className={`practice-feedback ${roundScore === 4 ? 'is-correct' : 'is-wrong'}`}>
-              <Space direction="vertical" size={6} className="full-width">
+              <Space orientation="vertical" size={6} className="full-width">
                 <Text strong>
                   {roundScore === 4
                     ? t('practice.matchPerfect')
@@ -889,9 +889,9 @@ function PassageGeneratorPanel({ distractorPool }: PassageGeneratorPanelProps) {
   }
 
   return (
-    <Space direction="vertical" size={18} className="full-width">
-      <Card className="content-card practice-generator-card" bordered={false}>
-        <Space direction="vertical" size={16} className="full-width">
+    <Space orientation="vertical" size={18} className="full-width">
+      <Card className="content-card practice-generator-card" variant="borderless">
+        <Space orientation="vertical" size={16} className="full-width">
           <div className="section-heading">
             <Title level={2}>{copy.title}</Title>
             <Paragraph>{copy.intro}</Paragraph>
@@ -932,23 +932,23 @@ function PassageGeneratorPanel({ distractorPool }: PassageGeneratorPanelProps) {
         </Space>
       </Card>
 
-      <Card className="content-card practice-quiz-card" bordered={false}>
+      <Card className="content-card practice-quiz-card" variant="borderless">
         {passage.trim().length > 0 && questions.length === 0 ? (
-          <Space direction="vertical" size={12} className="full-width">
+          <Space orientation="vertical" size={12} className="full-width">
             <Title level={4} className="practice-empty-title">
               {copy.empty}
             </Title>
             <Paragraph className="practice-empty-copy">{copy.noQuestions}</Paragraph>
           </Space>
         ) : questions.length === 0 ? (
-          <Space direction="vertical" size={12} className="full-width">
+          <Space orientation="vertical" size={12} className="full-width">
             <Title level={4} className="practice-empty-title">
               {copy.empty}
             </Title>
             <Paragraph className="practice-empty-copy">{copy.emptyCopy}</Paragraph>
           </Space>
         ) : (
-          <Space direction="vertical" size={16} className="full-width">
+          <Space orientation="vertical" size={16} className="full-width">
             <div className="practice-quiz-head">
               <div>
                 <Text className="page-kicker">{copy.resultTitle}</Text>
@@ -962,14 +962,14 @@ function PassageGeneratorPanel({ distractorPool }: PassageGeneratorPanelProps) {
             <div className="practice-generator-list">
               {questions.map((question, index) => (
                 <div key={question.id} className="practice-generator-question">
-                  <Space direction="vertical" size={10} className="full-width">
+                  <Space orientation="vertical" size={10} className="full-width">
                     <Text className="page-kicker">
                       {copy.question} {index + 1}
                     </Text>
                     <Paragraph className="practice-sentence-prompt">{question.prompt}</Paragraph>
 
                     <Radio.Group value={null} className="practice-options">
-                      <Space direction="vertical" size={10} className="full-width">
+                      <Space orientation="vertical" size={10} className="full-width">
                         {question.options.map((option) => (
                           <Radio.Button
                             key={`${question.id}-${option}`}
@@ -985,7 +985,7 @@ function PassageGeneratorPanel({ distractorPool }: PassageGeneratorPanelProps) {
                     </Radio.Group>
 
                     <div className="practice-feedback is-correct">
-                      <Space direction="vertical" size={4} className="full-width">
+                      <Space orientation="vertical" size={4} className="full-width">
                         <Text strong>
                           {copy.correctAnswer}: {question.answer}
                         </Text>
@@ -1114,9 +1114,9 @@ function PassageGeneratorWorkbench({ distractorPool }: PassageGeneratorPanelProp
   }
 
   return (
-    <Space direction="vertical" size={18} className="full-width">
-      <Card className="content-card practice-generator-card" bordered={false}>
-        <Space direction="vertical" size={16} className="full-width">
+    <Space orientation="vertical" size={18} className="full-width">
+      <Card className="content-card practice-generator-card" variant="borderless">
+        <Space orientation="vertical" size={16} className="full-width">
           <div className="section-heading">
             <Title level={2}>{copy.title}</Title>
             <Paragraph>{copy.intro}</Paragraph>
@@ -1204,30 +1204,30 @@ function PassageGeneratorWorkbench({ distractorPool }: PassageGeneratorPanelProp
         </Space>
       </Card>
 
-      <Card className="content-card practice-quiz-card" bordered={false}>
+      <Card className="content-card practice-quiz-card" variant="borderless">
         {generatorView === 'take' && questions.length === 0 ? (
-          <Space direction="vertical" size={12} className="full-width">
+          <Space orientation="vertical" size={12} className="full-width">
             <Title level={4} className="practice-empty-title">
               {copy.emptyTakeTitle}
             </Title>
             <Paragraph className="practice-empty-copy">{copy.emptyTakeCopy}</Paragraph>
           </Space>
         ) : passage.trim().length > 0 && questions.length === 0 ? (
-          <Space direction="vertical" size={12} className="full-width">
+          <Space orientation="vertical" size={12} className="full-width">
             <Title level={4} className="practice-empty-title">
               {copy.empty}
             </Title>
             <Paragraph className="practice-empty-copy">{copy.noQuestions}</Paragraph>
           </Space>
         ) : questions.length === 0 ? (
-          <Space direction="vertical" size={12} className="full-width">
+          <Space orientation="vertical" size={12} className="full-width">
             <Title level={4} className="practice-empty-title">
               {copy.empty}
             </Title>
             <Paragraph className="practice-empty-copy">{copy.emptyCopy}</Paragraph>
           </Space>
         ) : (
-          <Space direction="vertical" size={16} className="full-width">
+          <Space orientation="vertical" size={16} className="full-width">
             <div className="practice-quiz-head">
               <div>
                 <Text className="page-kicker">
@@ -1243,7 +1243,7 @@ function PassageGeneratorWorkbench({ distractorPool }: PassageGeneratorPanelProp
             <div className="practice-generator-list">
               {questions.map((question, index) => (
                 <div key={question.id} className="practice-generator-question">
-                  <Space direction="vertical" size={10} className="full-width">
+                  <Space orientation="vertical" size={10} className="full-width">
                     <Text className="page-kicker">
                       {copy.question} {index + 1}
                     </Text>
@@ -1254,7 +1254,7 @@ function PassageGeneratorWorkbench({ distractorPool }: PassageGeneratorPanelProp
                       onChange={(event) => handleStudentAnswer(question.id, event.target.value)}
                       className="practice-options"
                     >
-                      <Space direction="vertical" size={10} className="full-width">
+                      <Space orientation="vertical" size={10} className="full-width">
                         {question.options.map((option) => {
                           const isStudentSelected = studentAnswers[question.id] === option
                           const optionState =
@@ -1292,7 +1292,7 @@ function PassageGeneratorWorkbench({ distractorPool }: PassageGeneratorPanelProp
                             : 'is-correct'
                         }`}
                       >
-                        <Space direction="vertical" size={4} className="full-width">
+                        <Space orientation="vertical" size={4} className="full-width">
                           {generatorView === 'take' ? (
                             <Text strong>
                               {studentAnswers[question.id] === question.answer ? copy.correct : copy.wrong}
@@ -1410,9 +1410,9 @@ function PracticePage({ selectedGrade, currentGrade, learningSteps }: PracticePa
   return (
     <Row gutter={[18, 18]}>
       <Col xs={24} xl={16}>
-        <Space direction="vertical" size={18} className="full-width">
-          <Card className="content-card practice-hero-card" bordered={false}>
-            <Space direction="vertical" size={18} className="full-width">
+        <Space orientation="vertical" size={18} className="full-width">
+          <Card className="content-card practice-hero-card" variant="borderless">
+            <Space orientation="vertical" size={18} className="full-width">
               <div className="section-heading">
                 <Title level={2}>{t('practice.title')}</Title>
                 <Paragraph>{t('practice.intro', { grade: gradeLabel(selectedGrade) })}</Paragraph>
@@ -1519,9 +1519,9 @@ function PracticePage({ selectedGrade, currentGrade, learningSteps }: PracticePa
       </Col>
 
       <Col xs={24} xl={8}>
-        <Space direction="vertical" size={18} className="full-width">
-          <Card className="content-card highlight-card" bordered={false}>
-            <Space direction="vertical" size={16} className="full-width">
+        <Space orientation="vertical" size={18} className="full-width">
+          <Card className="content-card highlight-card" variant="borderless">
+            <Space orientation="vertical" size={16} className="full-width">
               <div className="practice-score-head">
                 <div>
                   <Text className="page-kicker">{t('practice.overviewTitle')}</Text>
@@ -1571,18 +1571,18 @@ function PracticePage({ selectedGrade, currentGrade, learningSteps }: PracticePa
             </Space>
           </Card>
 
-          <Card className="content-card side-card" bordered={false}>
+          <Card className="content-card side-card" variant="borderless">
             <Title level={4}>{t('practice.suggestions')}</Title>
             <Timeline
               items={learningSteps.map((step) => ({
                 color: '#e76f51',
-                children: step,
+                content: step,
               }))}
             />
           </Card>
 
-          <Card className="content-card" bordered={false}>
-            <Space direction="vertical" size={12} className="full-width">
+          <Card className="content-card" variant="borderless">
+            <Space orientation="vertical" size={12} className="full-width">
               <Title level={5} className="practice-mini-title">
                 {selectedSection === 'word'
                   ? t('practice.todayPractice')

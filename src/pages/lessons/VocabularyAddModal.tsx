@@ -39,7 +39,7 @@ function VocabularyAddModal({
       okText={submitLabel}
       confirmLoading={confirmLoading}
     >
-      <Space direction="vertical" size={14} className="full-width">
+      <Space orientation="vertical" size={14} className="full-width">
         <Paragraph className="settings-copy">{copy.addWordCopy}</Paragraph>
         <div className="vocabulary-import-summary">
           <Space align="center" size={12}>
