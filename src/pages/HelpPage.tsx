@@ -195,10 +195,10 @@ function HelpPage() {
   ]
 
   return (
-    <Space direction="vertical" size={20} className="full-width">
-      <Card className="hero-card highlight-card help-hero-card" bordered={false}>
-        <Space direction="vertical" size={14} className="full-width">
-          <Tag className="hero-tag" bordered={false}>
+    <Space orientation="vertical" size={20} className="full-width">
+      <Card className="hero-card highlight-card help-hero-card" variant="borderless">
+        <Space orientation="vertical" size={14} className="full-width">
+          <Tag className="hero-tag" variant="filled">
             {copy.eyebrow}
           </Tag>
           <Title className="hero-title">{copy.title}</Title>
@@ -208,8 +208,8 @@ function HelpPage() {
 
       <Row gutter={[18, 18]}>
         <Col xs={24} xl={14}>
-          <Card className="content-card help-guide-card" bordered={false}>
-            <Space direction="vertical" size={16} className="full-width">
+          <Card className="content-card help-guide-card" variant="borderless">
+            <Space orientation="vertical" size={16} className="full-width">
               <div className="section-heading">
                 <Title level={3}>{copy.quickStart}</Title>
                 <Paragraph>{copy.intro}</Paragraph>
@@ -221,7 +221,7 @@ function HelpPage() {
                     <div className="help-step-icon">{step.icon}</div>
                     <div>
                       <div className="help-step-head">
-                        <Tag bordered={false} className="help-step-badge">
+                        <Tag variant="filled" className="help-step-badge">
                           {language === 'en' ? `Step ${index + 1}` : `Bước ${index + 1}`}
                         </Tag>
                         <Text strong>{step.title}</Text>
@@ -236,10 +236,10 @@ function HelpPage() {
         </Col>
 
         <Col xs={24} xl={10}>
-          <Space direction="vertical" size={16} className="full-width help-side-stack">
-            <Card className="content-card help-section-card" bordered={false}>
-              <Space direction="vertical" size={12} className="full-width">
-                <Tag bordered={false} className="help-section-tag help-section-tag-blue">
+          <Space orientation="vertical" size={16} className="full-width help-side-stack">
+            <Card className="content-card help-section-card" variant="borderless">
+              <Space orientation="vertical" size={12} className="full-width">
+                <Tag variant="filled" className="help-section-tag help-section-tag-blue">
                   {copy.menuTag}
                 </Tag>
                 <div className="settings-heading">
@@ -251,9 +251,9 @@ function HelpPage() {
             </Card>
 
             {menuSections.map((section) => (
-              <Card className="content-card help-section-card" bordered={false} key={section.title}>
-                <Space direction="vertical" size={12} className="full-width">
-                  <Tag bordered={false} className={`help-section-tag ${section.tagClassName}`}>
+              <Card className="content-card help-section-card" variant="borderless" key={section.title}>
+                <Space orientation="vertical" size={12} className="full-width">
+                  <Tag variant="filled" className={`help-section-tag ${section.tagClassName}`}>
                     {section.tag}
                   </Tag>
                   <div className="settings-heading">
@@ -265,9 +265,9 @@ function HelpPage() {
               </Card>
             ))}
 
-            <Card className="content-card help-section-card help-tips-card" bordered={false}>
-              <Space direction="vertical" size={12} className="full-width">
-                <Tag bordered={false} className="help-section-tag help-section-tag-purple">
+            <Card className="content-card help-section-card help-tips-card" variant="borderless">
+              <Space orientation="vertical" size={12} className="full-width">
+                <Tag variant="filled" className="help-section-tag help-section-tag-purple">
                   {copy.tipsTag}
                 </Tag>
                 <div className="settings-heading">
@@ -285,9 +285,9 @@ function HelpPage() {
               </Space>
             </Card>
 
-            <Card className="content-card help-section-card" bordered={false}>
-              <Space direction="vertical" size={12} className="full-width">
-                <Tag bordered={false} className="help-section-tag help-section-tag-volcano">
+            <Card className="content-card help-section-card" variant="borderless">
+              <Space orientation="vertical" size={12} className="full-width">
+                <Tag variant="filled" className="help-section-tag help-section-tag-volcano">
                   {copy.aboutTag}
                 </Tag>
                 <div className="settings-heading">

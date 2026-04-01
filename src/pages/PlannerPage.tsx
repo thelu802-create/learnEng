@@ -454,7 +454,7 @@ function PlannerPage() {
         </Text>
         {task.note ? <Paragraph className="settings-copy">{task.note}</Paragraph> : null}
         {task.repeatWeekly ? (
-          <Tag bordered={false} color="purple">
+          <Tag variant="filled" color="purple">
             {copy.repeatField}
           </Tag>
         ) : null}
@@ -532,10 +532,10 @@ function PlannerPage() {
   ]
 
   return (
-    <Space direction="vertical" size={20} className="full-width">
-      <Card className="hero-card highlight-card planner-hero-card" bordered={false}>
-        <Space direction="vertical" size={14} className="full-width">
-          <Tag className="hero-tag" bordered={false}>
+    <Space orientation="vertical" size={20} className="full-width">
+      <Card className="hero-card highlight-card planner-hero-card" variant="borderless">
+        <Space orientation="vertical" size={14} className="full-width">
+          <Tag className="hero-tag" variant="filled">
             {copy.eyebrow}
           </Tag>
           <Title className="hero-title">{copy.title}</Title>
@@ -544,12 +544,12 @@ function PlannerPage() {
       </Card>
 
       {!configured ? (
-        <Card className="content-card" bordered={false}>
+        <Card className="content-card" variant="borderless">
           <Paragraph className="settings-copy">{copy.notReady}</Paragraph>
         </Card>
       ) : !user ? (
-        <Card className="content-card" bordered={false}>
-          <Space direction="vertical" size={12}>
+        <Card className="content-card" variant="borderless">
+          <Space orientation="vertical" size={12}>
             <Paragraph className="settings-copy">{loginRequiredText}</Paragraph>
             <Button type="primary" onClick={() => void handleGithubSignIn()}>
               {loginActionText}
@@ -557,11 +557,11 @@ function PlannerPage() {
           </Space>
         </Card>
       ) : (
-        <Space direction="vertical" size={18} className="full-width">
+        <Space orientation="vertical" size={18} className="full-width">
           <Row gutter={[14, 14]}>
             {overviewCards.map((item) => (
               <Col xs={12} lg={6} key={item.key}>
-                <Card className={`content-card planner-overview-card planner-overview-${item.key}`} bordered={false}>
+                <Card className={`content-card planner-overview-card planner-overview-${item.key}`} variant="borderless">
                   <div className="planner-overview-head">
                     <span className={`planner-overview-icon tone-${item.tone}`}>{item.icon}</span>
                     <Tag color={item.tone}>{item.value}</Tag>
@@ -574,8 +574,8 @@ function PlannerPage() {
 
         <Row gutter={[18, 18]}>
           <Col xs={24} xl={8}>
-            <Card className="content-card planner-form-card planner-sticky-card" bordered={false}>
-              <Space direction="vertical" size={16} className="full-width">
+            <Card className="content-card planner-form-card planner-sticky-card" variant="borderless">
+              <Space orientation="vertical" size={16} className="full-width">
                 <div className="section-heading">
                   <Title level={3}>{copy.formTitle}</Title>
                   <Paragraph>{copy.formCopy}</Paragraph>
@@ -666,9 +666,9 @@ function PlannerPage() {
           </Col>
 
           <Col xs={24} xl={16}>
-            <Space direction="vertical" size={16} className="full-width">
-              <Card className="content-card planner-list-card planner-today-card" bordered={false}>
-                <Space direction="vertical" size={14} className="full-width">
+            <Space orientation="vertical" size={16} className="full-width">
+              <Card className="content-card planner-list-card planner-today-card" variant="borderless">
+                <Space orientation="vertical" size={14} className="full-width">
                   <div className="planner-section-head">
                     <div className="settings-heading">
                       <NotificationOutlined />
@@ -686,14 +686,14 @@ function PlannerPage() {
                   ) : todayTasks.length === 0 ? (
                     <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={copy.noTasks} />
                   ) : (
-                    <Space direction="vertical" size={14} className="full-width">
+                    <Space orientation="vertical" size={14} className="full-width">
                       <div className="planner-subsection">
                         <div className="planner-subsection-head">
                           <Text strong>{copy.pendingToday}</Text>
                           <Tag color="cyan">{todayPendingTasks.length}</Tag>
                         </div>
                         {todayPendingTasks.length > 0 ? (
-                          <Space direction="vertical" size={12} className="full-width">
+                          <Space orientation="vertical" size={12} className="full-width">
                             {todayPendingTasks.map(renderTaskItem)}
                           </Space>
                         ) : (
@@ -718,7 +718,7 @@ function PlannerPage() {
                           ) : null}
                         </div>
                         {showCompletedToday && todayCompletedTasks.length > 0 ? (
-                          <Space direction="vertical" size={12} className="full-width">
+                          <Space orientation="vertical" size={12} className="full-width">
                             {todayCompletedTasks.map(renderTaskItem)}
                           </Space>
                         ) : null}
@@ -731,8 +731,8 @@ function PlannerPage() {
               <Row gutter={[16, 16]}>
                 {sectionCards.map((section) => (
                   <Col xs={24} md={12} key={section.key}>
-                    <Card className="content-card planner-list-card" bordered={false}>
-                      <Space direction="vertical" size={14} className="full-width">
+                    <Card className="content-card planner-list-card" variant="borderless">
+                      <Space orientation="vertical" size={14} className="full-width">
                         <div className="planner-section-head">
                           <div className="settings-heading">
                             {section.icon}
@@ -750,7 +750,7 @@ function PlannerPage() {
                         ) : section.items.length === 0 ? (
                           <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={copy.noTasks} />
                         ) : (
-                          <Space direction="vertical" size={12} className="full-width">
+                          <Space orientation="vertical" size={12} className="full-width">
                             {section.items.map(renderTaskItem)}
                           </Space>
                         )}

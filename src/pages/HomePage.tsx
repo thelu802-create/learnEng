@@ -254,13 +254,13 @@ function HomePage({
           statusOverdue: 'Quá hạn',
         }
 
-  const plannerChartTitle = language === 'en' ? 'Weekly plan' : 'Ke hoach tuan'
+  const plannerChartTitle = language === 'en' ? 'Weekly plan' : 'Kế hoạch tuần'
   const plannerChartCopy =
     language === 'en'
       ? 'A quick look at this week and how much is already done.'
-      : 'Xem nhanh khoi luong viec trong tuan va muc do da hoan thanh.'
-  const plannerDoneLabel = language === 'en' ? 'done' : 'da xong'
-  const plannerThisWeekLabel = language === 'en' ? 'tasks this week' : 'viec trong tuan'
+      : 'Xem nhanh khối lượng việc trong tuần và mức độ đã hoàn thành.'
+  const plannerDoneLabel = language === 'en' ? 'done' : 'đã xong'
+  const plannerThisWeekLabel = language === 'en' ? 'tasks this week' : 'việc trong tuần'
   const plannerStats = [
     { label: copy.statusToday, value: plannerTasks.filter((task) => getTaskBucket(task) === 'today').length, tone: 'gold' },
     {
@@ -274,14 +274,24 @@ function HomePage({
       tone: 'volcano',
     },
   ] as const
+  const plannerChartTitleText = language === 'en' ? 'Weekly plan' : 'Kế hoạch tuần'
+  const plannerChartCopyText =
+    language === 'en'
+      ? 'A quick look at this week and how much is already done.'
+      : 'Xem nhanh khối lượng việc trong tuần và mức độ đã hoàn thành.'
+  const plannerDoneLabelText = language === 'en' ? 'done' : 'đã xong'
+  const plannerThisWeekLabelText = language === 'en' ? 'tasks this week' : 'việc trong tuần'
+  void plannerChartTitle
+  void plannerChartCopy
+  void plannerChartCopyText
 
   return (
-    <Space direction="vertical" size={20} className="full-width">
-      <Card className="hero-card teacher-hero-card" bordered={false}>
+    <Space orientation="vertical" size={20} className="full-width">
+      <Card className="hero-card teacher-hero-card" variant="borderless">
         <Row gutter={[20, 20]} align="stretch">
           <Col xs={24} xl={16}>
-            <Space direction="vertical" size={14} className="full-width teacher-hero-main">
-              <Tag className="hero-tag" bordered={false}>
+            <Space orientation="vertical" size={14} className="full-width teacher-hero-main">
+              <Tag className="hero-tag" variant="filled">
                 {copy.tag}
               </Tag>
 
@@ -291,7 +301,7 @@ function HomePage({
                 <Paragraph className="hero-copy">{copy.intro}</Paragraph>
               </div>
 
-              <Card className="teacher-featured-card" bordered={false}>
+              <Card className="teacher-featured-card" variant="borderless">
                 <div className="teacher-featured-brief">
                   <div className="teacher-featured-main">
                     <Text className="page-kicker">{copy.featuredUnit}</Text>
@@ -344,8 +354,8 @@ function HomePage({
           </Col>
 
           <Col xs={24} xl={8}>
-            <Card className="teacher-featured-card teacher-hero-reminders-card" bordered={false}>
-              <Space direction="vertical" size={16} className="full-width">
+            <Card className="teacher-featured-card teacher-hero-reminders-card" variant="borderless">
+              <Space orientation="vertical" size={16} className="full-width">
                 <div className="section-heading">
                   <Title level={3}>{copy.remindersTitle}</Title>
                   <Paragraph>{copy.remindersCopy}</Paragraph>
@@ -358,26 +368,32 @@ function HomePage({
                       percent={weeklyPlanner.percent}
                       size={88}
                       strokeColor="#2a9d8f"
-                      trailColor="rgba(42, 157, 143, 0.12)"
+                      railColor="rgba(42, 157, 143, 0.12)"
                       format={() => `${weeklyPlanner.completed}/${weeklyPlanner.total || 0}`}
                     />
                   </div>
                   <div className="planner-home-chart-copy">
-                    <Text className="planner-home-chart-title">{plannerChartTitle}</Text>
-                    <Paragraph className="planner-home-chart-note">{plannerChartCopy}</Paragraph>
+                    <Text className="planner-home-chart-title">{plannerChartTitleText}</Text>
                     <Text className="planner-home-chart-meta">
                       {weeklyPlanner.completed} {plannerDoneLabel} · {weeklyPlanner.total} {plannerThisWeekLabel}
                     </Text>
-                  </div>
-                </div>
-
-                <div className="planner-home-stats">
-                  {plannerStats.map((item) => (
-                    <div className={`planner-home-stat planner-home-stat-${item.tone}`} key={item.label}>
-                      <Text className="planner-home-stat-label">{item.label}</Text>
-                      <strong>{item.value}</strong>
+                    <Text className="planner-home-chart-meta planner-home-chart-meta-live">
+                      {weeklyPlanner.completed} {plannerDoneLabelText} · {weeklyPlanner.total}{' '}
+                      {plannerThisWeekLabelText}
+                    </Text>
+                    <div className="planner-home-legend">
+                      {plannerStats.map((item) => (
+                        <div className="planner-home-legend-item" key={item.label}>
+                          <span
+                            className={`planner-home-legend-dot planner-home-legend-dot-${item.tone}`}
+                            aria-hidden="true"
+                          />
+                          <Text className="planner-home-legend-label">{item.label}</Text>
+                          <strong>{item.value}</strong>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  </div>
                 </div>
 
                 {reminderTasks.length > 0 ? (
@@ -397,7 +413,7 @@ function HomePage({
                           <div className="planner-home-copy">
                             <div className="planner-home-head">
                               <Text strong>{task.title}</Text>
-                              <Tag className="planner-home-status" color={status.color} bordered={false}>
+                              <Tag className="planner-home-status" color={status.color} variant="filled">
                                 {statusLabel}
                               </Tag>
                             </div>
@@ -421,8 +437,8 @@ function HomePage({
         </Row>
       </Card>
 
-      <Card className="content-card teacher-chart-card" bordered={false}>
-        <Space direction="vertical" size={16} className="full-width">
+      <Card className="content-card teacher-chart-card" variant="borderless">
+        <Space orientation="vertical" size={16} className="full-width">
           <div className="section-heading teacher-chart-head">
             <div>
               <Title level={3}>{copy.coverageTitle}</Title>
@@ -450,8 +466,8 @@ function HomePage({
 
       <Row gutter={[18, 18]}>
         <Col xs={24} xl={15}>
-          <Card className="content-card home-section-card" bordered={false}>
-            <Space direction="vertical" size={16} className="full-width">
+          <Card className="content-card home-section-card" variant="borderless">
+            <Space orientation="vertical" size={16} className="full-width">
               <div className="section-heading">
                 <Title level={3}>{copy.classFlow}</Title>
                 <Paragraph>{copy.classFlowCopy}</Paragraph>
@@ -490,9 +506,9 @@ function HomePage({
         </Col>
 
         <Col xs={24} xl={9}>
-          <Space direction="vertical" size={18} className="full-width">
-            <Card className="content-card highlight-card teacher-side-card" bordered={false}>
-              <Space direction="vertical" size={18} className="full-width">
+          <Space orientation="vertical" size={18} className="full-width">
+            <Card className="content-card highlight-card teacher-side-card" variant="borderless">
+              <Space orientation="vertical" size={18} className="full-width">
                 <div className="section-heading">
                   <Title level={3}>{copy.actionsTitle}</Title>
                   <Paragraph>{copy.actionsCopy}</Paragraph>

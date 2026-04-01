@@ -641,7 +641,7 @@ function PracticeChoiceSession({
             <Button
               type="primary"
               icon={<RightOutlined />}
-              iconPosition="end"
+              iconPlacement="end"
               onClick={handleNextQuestion}
               disabled={!showResult}
             >
@@ -817,7 +817,7 @@ function PracticeMatchSession({ selectedGrade, vocabularyPool }: PracticeMatchSe
               <Button
                 type="primary"
                 icon={<RightOutlined />}
-                iconPosition="end"
+                iconPlacement="end"
                 onClick={handleNextRound}
                 disabled={!showResult}
               >

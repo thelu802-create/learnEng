@@ -164,7 +164,7 @@ function AppTopbar({
       <Drawer
         title={settingsCopy.settingsTitle}
         placement="right"
-        width={380}
+        size={380}
         styles={{ body: { paddingBottom: 32 } }}
         onClose={() => setIsSettingsOpen(false)}
         open={isSettingsOpen}

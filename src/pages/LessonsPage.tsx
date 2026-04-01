@@ -17,7 +17,6 @@ import {
   Empty,
   Form,
   Input,
-  List,
   Popconfirm,
   Row,
   Space,
@@ -867,7 +866,7 @@ function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
                         <Button
                           type="primary"
                           icon={<RightOutlined />}
-                          iconPosition="end"
+                          iconPlacement="end"
                           disabled={!topic || !firstTopicWord}
                           onClick={() => {
                             if (!topic || !firstTopicWord) {
@@ -1046,8 +1045,8 @@ function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
     <>
       <Row gutter={[18, 18]}>
         <Col xs={24} xl={16}>
-          <Card className="content-card" bordered={false}>
-            <Space direction="vertical" size={18} className="full-width">
+          <Card className="content-card" variant="borderless">
+            <Space orientation="vertical" size={18} className="full-width">
               <div className="section-heading">
                 <Title level={2}>{t('lessons.title', { grade: gradeLabel(selectedGrade) })}</Title>
                 <Paragraph>{currentGrade.overview}</Paragraph>
@@ -1082,27 +1081,26 @@ function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
         </Col>
 
         <Col xs={24} xl={8}>
-          <Space direction="vertical" size={18} className="full-width">
-            <Card className="content-card side-card" bordered={false}>
+          <Space orientation="vertical" size={18} className="full-width">
+            <Card className="content-card side-card" variant="borderless">
               <Text className="eyebrow">{t('common.keySkills')}</Text>
-              <List<string>
-                dataSource={currentGrade.skills}
-                renderItem={(skill) => (
-                  <List.Item className="skill-item">
+              <Space orientation="vertical" size={10} className="full-width">
+                {currentGrade.skills.map((skill) => (
+                  <div className="skill-item" key={skill}>
                     <CheckCircleOutlined className="accent-icon" />
                     <Text>{skill}</Text>
-                  </List.Item>
-                )}
-              />
+                  </div>
+                ))}
+              </Space>
             </Card>
 
-            <Card className="content-card highlight-card" bordered={false}>
+            <Card className="content-card highlight-card" variant="borderless">
               <Text className="eyebrow">{t('common.projectApply')}</Text>
               <Paragraph>{currentGrade.project}</Paragraph>
             </Card>
 
-            <Card className="content-card vocabulary-tools-card" bordered={false}>
-              <Space direction="vertical" size={14} className="full-width">
+            <Card className="content-card vocabulary-tools-card" variant="borderless">
+              <Space orientation="vertical" size={14} className="full-width">
                 <div>
                   <Text className="eyebrow">{lessonsCopy.toolsTitle}</Text>
                   <Paragraph className="settings-copy">{lessonsCopy.toolsCopy}</Paragraph>
@@ -1111,7 +1109,7 @@ function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
                 {!configured ? (
                   <Paragraph className="practice-empty-copy">{lessonsCopy.notesNotReady}</Paragraph>
                 ) : !user ? (
-                  <Space direction="vertical" size={10}>
+                  <Space orientation="vertical" size={10}>
                     <Paragraph className="practice-empty-copy">{toolsNeedLoginText}</Paragraph>
                     <Button type="primary" onClick={() => void handleGithubSignIn()}>
                       {loginActionText}
@@ -1156,8 +1154,8 @@ function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
               </Space>
             </Card>
 
-            <Card className="content-card teacher-notes-card" bordered={false}>
-              <Space direction="vertical" size={14} className="full-width">
+            <Card className="content-card teacher-notes-card" variant="borderless">
+              <Space orientation="vertical" size={14} className="full-width">
                 <div>
                   <Text className="eyebrow">{lessonsCopy.notesTitle}</Text>
                   <Paragraph className="settings-copy">{lessonsCopy.notesCopy}</Paragraph>
@@ -1166,7 +1164,7 @@ function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
                 {!configured ? (
                   <Paragraph className="practice-empty-copy">{lessonsCopy.notesNotReady}</Paragraph>
                 ) : !user ? (
-                  <Space direction="vertical" size={10}>
+                  <Space orientation="vertical" size={10}>
                     <Paragraph className="practice-empty-copy">{notesNeedLoginText}</Paragraph>
                     <Button type="primary" onClick={() => void handleGithubSignIn()}>
                       {loginActionText}

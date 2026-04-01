@@ -17,14 +17,14 @@ function ProgressPage({ selectedGrade, currentGrade }: ProgressPageProps) {
   return (
     <Row gutter={[18, 18]}>
       <Col xs={24} xl={10}>
-        <Card className="content-card progress-card" bordered={false}>
-          <Space direction="vertical" size={14} className="full-width">
+        <Card className="content-card progress-card" variant="borderless">
+          <Space orientation="vertical" size={14} className="full-width">
             <Text className="eyebrow">{t('progress.eyebrow')}</Text>
             <Title level={2}>{gradeLabel(selectedGrade)}</Title>
             <Progress
               percent={currentGrade.progress}
               strokeColor="#2a9d8f"
-              trailColor="#e8eef2"
+              railColor="#e8eef2"
             />
             <Paragraph>
               {t('progress.description', { grade: gradeLabel(selectedGrade).toLowerCase() })}
@@ -33,8 +33,8 @@ function ProgressPage({ selectedGrade, currentGrade }: ProgressPageProps) {
         </Card>
       </Col>
       <Col xs={24} xl={14}>
-        <Card className="content-card" bordered={false}>
-          <Space direction="vertical" size={16} className="full-width">
+        <Card className="content-card" variant="borderless">
+          <Space orientation="vertical" size={16} className="full-width">
             <Title level={3}>{t('progress.milestones')}</Title>
             <List
               dataSource={milestones}

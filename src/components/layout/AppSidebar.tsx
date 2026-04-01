@@ -71,7 +71,7 @@ function AppSidebar({
 
       <Drawer
         placement="left"
-        width={280}
+        size={280}
         open={isMobileOpen}
         onClose={onMobileClose}
         className="mobile-nav-drawer"
