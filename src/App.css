@@ -2598,7 +2598,7 @@
 .theme-dark .font-size-hints,
 .theme-dark .teacher-chart-label,
 .theme-dark .teacher-summary-label {
-  color: #9fb0b9;
+  color: #c0ccd2;
 }
 
 .theme-dark .page-title.ant-typography,
@@ -2821,7 +2821,7 @@
 
 .theme-dark .practice-generator-switch-hint,
 .theme-dark .practice-generator-answer-hint {
-  color: #9fb0b9;
+  color: #c0ccd2;
 }
 
 .theme-dark .settings-about-note.ant-typography,
@@ -2847,11 +2847,69 @@
 
 .theme-dark .planner-home-chart-note.ant-typography,
 .theme-dark .planner-home-legend-label {
-  color: #9fb0b9;
+  color: #c0ccd2;
 }
 
 .theme-dark .planner-home-chart-meta {
   color: #73c7bc;
+}
+
+.theme-dark .ant-input,
+.theme-dark .ant-input-affix-wrapper,
+.theme-dark .ant-input-outlined,
+.theme-dark .ant-input-textarea textarea,
+.theme-dark .ant-select-selector,
+.theme-dark .ant-picker,
+.theme-dark .ant-picker input,
+.theme-dark .ant-form-item-label > label,
+.theme-dark .ant-empty-description,
+.theme-dark .ant-typography-secondary,
+.theme-dark .ant-tag:not(.hero-tag):not(.topic-chip) {
+  color: #d7e1e6 !important;
+}
+
+.theme-dark .ant-input::placeholder,
+.theme-dark .ant-input-textarea textarea::placeholder,
+.theme-dark .ant-picker input::placeholder {
+  color: #93a7b1 !important;
+}
+
+.theme-dark .ant-input-affix-wrapper .ant-input-prefix,
+.theme-dark .ant-input-affix-wrapper .ant-input-suffix,
+.theme-dark .ant-select-arrow,
+.theme-dark .ant-picker-suffix,
+.theme-dark .ant-empty-image,
+.theme-dark .ant-empty-footer,
+.theme-dark .ant-empty-normal {
+  color: #9fb6c0 !important;
+}
+
+.theme-dark .ant-form-item-label > label {
+  font-weight: 600;
+}
+
+.theme-dark .vocabulary-meaning-text,
+.theme-dark .lesson-topic-pill .ant-typography,
+.theme-dark .lesson-topic-point .ant-typography,
+.theme-dark .planner-task-item .ant-typography,
+.theme-dark .planner-overview-label,
+.theme-dark .planner-form-callout,
+.theme-dark .topic-count,
+.theme-dark .unit-meta,
+.theme-dark .vocabulary-example-text,
+.theme-dark .vocabulary-detail-tag,
+.theme-dark .planner-home-meta,
+.theme-dark .planner-home-copy .ant-typography {
+  color: #d7e1e6 !important;
+}
+
+.theme-dark .planner-task-item .ant-typography strong,
+.theme-dark .planner-overview-label,
+.theme-dark .vocabulary-topic-title,
+.theme-dark .lesson-topic-title.ant-typography,
+.theme-dark .lesson-units-summary-title.ant-typography,
+.theme-dark .vocabulary-search-title.ant-typography {
+  color: #f5f8fa !important;
 }
 
 .theme-dark .planner-home-legend-item {
