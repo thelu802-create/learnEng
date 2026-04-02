@@ -58,10 +58,16 @@ on public.profiles for select
 to authenticated
 using (auth.uid() = id);
 
+create policy "profiles_insert_own"
+on public.profiles for insert
+to authenticated
+with check (auth.uid() = id);
+
 create policy "profiles_update_own"
 on public.profiles for update
 to authenticated
-using (auth.uid() = id);
+using (auth.uid() = id)
+with check (auth.uid() = id);
 
 create policy "teacher_notes_manage_own"
 on public.teacher_notes

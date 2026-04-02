@@ -17,6 +17,13 @@ export interface SavedQuizRecord {
   created_at: string
 }
 
+export interface ProfileRecord {
+  id: string
+  role: 'teacher' | 'student' | 'admin'
+  display_name: string | null
+  created_at: string
+}
+
 export interface SavedQuizQuestionRecord {
   id: string
   quiz_id: string

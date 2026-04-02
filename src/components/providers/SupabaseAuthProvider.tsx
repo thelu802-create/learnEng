@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import type { PropsWithChildren } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
 import { getSupabaseClient, isSupabaseConfigured } from '../../lib/supabase/client'
+import { ensureOwnProfile } from '../../lib/supabase/profilesApi'
 
 interface SupabaseAuthContextValue {
   configured: boolean
@@ -48,6 +49,24 @@ function SupabaseAuthProvider({ children }: PropsWithChildren) {
       data.subscription.unsubscribe()
     }
   }, [])
+
+  useEffect(() => {
+    if (!configured || !session?.user) {
+      return
+    }
+
+    let cancelled = false
+
+    ensureOwnProfile(session.user).catch(() => {
+      if (cancelled) {
+        return
+      }
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [configured, session?.user])
 
   const value = useMemo<SupabaseAuthContextValue>(
     () => ({
