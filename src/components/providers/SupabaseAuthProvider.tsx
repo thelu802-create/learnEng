@@ -15,6 +15,55 @@ interface SupabaseAuthContextValue {
 
 const SupabaseAuthContext = createContext<SupabaseAuthContextValue | null>(null)
 
+const OAUTH_URL_PARAM_KEYS = [
+  'access_token',
+  'code',
+  'error',
+  'error_code',
+  'error_description',
+  'expires_at',
+  'expires_in',
+  'provider_token',
+  'refresh_token',
+  'state',
+  'token_type',
+] as const
+
+function removeOAuthParams(params: URLSearchParams): boolean {
+  let changed = false
+
+  OAUTH_URL_PARAM_KEYS.forEach((key) => {
+    if (params.has(key)) {
+      params.delete(key)
+      changed = true
+    }
+  })
+
+  return changed
+}
+
+function buildCleanRedirectUrl() {
+  const url = new URL(window.location.href)
+  removeOAuthParams(url.searchParams)
+  url.hash = ''
+  return url.toString()
+}
+
+function clearOAuthParamsFromBrowserUrl() {
+  const currentUrl = new URL(window.location.href)
+  const searchChanged = removeOAuthParams(currentUrl.searchParams)
+  const hash = currentUrl.hash.startsWith('#') ? currentUrl.hash.slice(1) : currentUrl.hash
+  const hashParams = new URLSearchParams(hash)
+  const hashChanged = removeOAuthParams(hashParams)
+
+  if (!searchChanged && !hashChanged) {
+    return
+  }
+
+  currentUrl.hash = hashChanged && hashParams.toString() ? `#${hashParams.toString()}` : ''
+  window.history.replaceState({}, document.title, currentUrl.toString())
+}
+
 function SupabaseAuthProvider({ children }: PropsWithChildren) {
   const [loading, setLoading] = useState(true)
   const [session, setSession] = useState<Session | null>(null)
@@ -36,11 +85,13 @@ function SupabaseAuthProvider({ children }: PropsWithChildren) {
       }
 
       setSession(data.session)
+      clearOAuthParamsFromBrowserUrl()
       setLoading(false)
     })
 
     const { data } = client.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession)
+      clearOAuthParamsFromBrowserUrl()
       setLoading(false)
     })
 
@@ -81,7 +132,7 @@ function SupabaseAuthProvider({ children }: PropsWithChildren) {
           throw new Error('Supabase chưa được cấu hình.')
         }
 
-        const redirectTo = window.location.href
+        const redirectTo = buildCleanRedirectUrl()
         const { error } = await client.auth.signInWithOAuth({
           provider: 'github',
           options: {
