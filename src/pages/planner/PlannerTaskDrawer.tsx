@@ -77,6 +77,7 @@ function PlannerTaskDrawer({
       open={open}
       onClose={onClose}
       size="default"
+      autoFocus={false}
       forceRender
       className="planner-drawer"
       footer={

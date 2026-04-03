@@ -99,6 +99,15 @@
   padding: 18px 20px;
 }
 
+.planner-drawer .ant-drawer-content-wrapper {
+  will-change: transform;
+  transition-duration: 0.18s !important;
+}
+
+.planner-drawer .ant-drawer-mask {
+  transition-duration: 0.18s !important;
+}
+
 .planner-drawer .ant-drawer-body {
   padding: 18px 20px 12px;
 }

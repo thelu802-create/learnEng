@@ -76,6 +76,12 @@ function formatPlannerShortDate(date: Date, language: 'en' | 'vi'): string {
   }).format(date)
 }
 
+function openDrawerNextFrame(setter: (open: boolean) => void) {
+  requestAnimationFrame(() => {
+    setter(true)
+  })
+}
+
 function PlannerPage({ onRegisterTopbarAction }: PlannerPageProps) {
   const { message } = AntdApp.useApp()
   const { language } = useI18n()
@@ -96,9 +102,10 @@ function PlannerPage({ onRegisterTopbarAction }: PlannerPageProps) {
   const minPlannerDate = formatDateInputValue(new Date(currentYear - 1, 0, 1))
   const maxPlannerDate = formatDateInputValue(new Date(currentYear + 5, 11, 31))
 
-  const copy =
-    language === 'en'
-      ? {
+  const copy = useMemo(
+    () =>
+      language === 'en'
+        ? {
           title: 'Weekly planner',
           intro: 'Keep today, upcoming work, and weekly workload in one place.',
           formTitle: editingTaskId ? 'Edit task' : 'Add a task',
@@ -149,7 +156,7 @@ function PlannerPage({ onRegisterTopbarAction }: PlannerPageProps) {
           undoAction: 'Undo',
           completedSummary: 'Completed tasks stay here so you can review them quickly.',
         }
-      : {
+        : {
           title: 'Kế hoạch trong tuần',
           intro: 'Theo dõi việc hôm nay, việc sắp tới và khối lượng công việc trong tuần.',
           formTitle: editingTaskId ? 'Sửa công việc' : 'Thêm công việc',
@@ -193,7 +200,9 @@ function PlannerPage({ onRegisterTopbarAction }: PlannerPageProps) {
           completedToday: 'Đã xong',
           completedToggle: 'Hiện việc đã xong',
           hideCompleted: 'Ẩn việc đã xong',
-        }
+        },
+    [editingTaskId, language],
+  )
 
   const loginActionText = language === 'en' ? 'Sign in with GitHub' : 'Đăng nhập GitHub'
   const invalidDateRangeText =
@@ -235,26 +244,32 @@ function PlannerPage({ onRegisterTopbarAction }: PlannerPageProps) {
   const taskStatusCompleted = language === 'en' ? 'Completed' : 'Đã hoàn thành'
   const taskStatusOverdue = language === 'en' ? 'Overdue' : 'Quá hạn'
   const taskStatusLater = language === 'en' ? 'Later' : 'Để sau'
-  const priorityOptions: Array<{ value: PlannerTaskPriority; label: string }> = [
-    { value: 'low', label: copy.low },
-    { value: 'medium', label: copy.medium },
-    { value: 'high', label: copy.high },
-  ]
+  const priorityOptions: Array<{ value: PlannerTaskPriority; label: string }> = useMemo(
+    () => [
+      { value: 'low', label: copy.low },
+      { value: 'medium', label: copy.medium },
+      { value: 'high', label: copy.high },
+    ],
+    [copy.high, copy.low, copy.medium],
+  )
 
-  const mapRecordToTask = (task: Awaited<ReturnType<typeof createPlannerTaskRecord>>): PlannerTask => ({
-    id: task.id,
-    title: task.title,
-    note: task.note,
-    dueDate: task.due_date,
-    dueTime: task.due_time,
-    priority: task.priority,
-    repeatWeekly: task.repeat_weekly,
-    completed: task.completed,
-    createdAt: task.created_at,
-    updatedAt: task.updated_at,
-  })
+  const mapRecordToTask = useCallback(
+    (task: Awaited<ReturnType<typeof createPlannerTaskRecord>>): PlannerTask => ({
+      id: task.id,
+      title: task.title,
+      note: task.note,
+      dueDate: task.due_date,
+      dueTime: task.due_time,
+      priority: task.priority,
+      repeatWeekly: task.repeat_weekly,
+      completed: task.completed,
+      createdAt: task.created_at,
+      updatedAt: task.updated_at,
+    }),
+    [],
+  )
 
-  const applySavedTask = (savedTask: Awaited<ReturnType<typeof createPlannerTaskRecord>>) => {
+  const applySavedTask = useCallback((savedTask: Awaited<ReturnType<typeof createPlannerTaskRecord>>) => {
     const nextTask = mapRecordToTask(savedTask)
 
     setTasks((currentTasks) => {
@@ -267,15 +282,15 @@ function PlannerPage({ onRegisterTopbarAction }: PlannerPageProps) {
     })
 
     return nextTask
-  }
+  }, [mapRecordToTask])
 
-  const handleGithubSignIn = async () => {
+  const handleGithubSignIn = useCallback(async () => {
     try {
       await signInWithGithub()
     } catch {
       message.error(language === 'en' ? 'Unable to start GitHub sign-in.' : 'Không thể bắt đầu đăng nhập GitHub.')
     }
-  }
+  }, [language, message, signInWithGithub])
 
   useEffect(() => {
     if (!configured || !user) {
@@ -379,7 +394,7 @@ function PlannerPage({ onRegisterTopbarAction }: PlannerPageProps) {
     })
   }, [taskListDate, taskListItems, taskListQuery, taskListStatus])
 
-  const applyTaskListFilters = () => {
+  const applyTaskListFilters = useCallback(() => {
     const nextQuery = taskListQueryRef.current?.input?.value?.trim() ?? ''
     const nextDate = taskListDateRef.current?.input?.value ?? ''
 
@@ -388,24 +403,24 @@ function PlannerPage({ onRegisterTopbarAction }: PlannerPageProps) {
       setTaskListDate(nextDate)
       setTaskListStatus(taskListDraftStatus)
     })
-  }
+  }, [taskListDraftStatus])
 
-  const handleTaskStatusChange = (value: 'completed' | 'overdue' | 'later') => {
+  const handleTaskStatusChange = useCallback((value: 'completed' | 'overdue' | 'later') => {
     setTaskListDraftStatus(value)
     startTransition(() => {
       setTaskListStatus(value)
     })
-  }
+  }, [])
 
   const openCreateDrawer = useCallback(() => {
     setEditingTaskId(null)
-    setPlannerDrawerOpen(true)
+    openDrawerNextFrame(setPlannerDrawerOpen)
   }, [])
 
   const closePlannerDrawer = useCallback(() => {
     setPlannerDrawerOpen(false)
     setEditingTaskId(null)
-  }, [form])
+  }, [])
 
   useEffect(() => {
     if (plannerDrawerOpen && !editingTaskId) {
@@ -537,7 +552,7 @@ function PlannerPage({ onRegisterTopbarAction }: PlannerPageProps) {
         .replace('{count}', String(weeklyOverview.busiestDay.total))
     : weekNoTasksLabel
 
-  const handleSubmit = async (keepOpen = false) => {
+  const handleSubmit = useCallback(async (keepOpen = false) => {
     if (!user) {
       return
     }
@@ -586,9 +601,23 @@ function PlannerPage({ onRegisterTopbarAction }: PlannerPageProps) {
     } finally {
       setSavingTask(false)
     }
-  }
+  }, [
+    applySavedTask,
+    closePlannerDrawer,
+    copy.addTask,
+    copy.loadError,
+    copy.saved,
+    editingTaskId,
+    form,
+    invalidDateRangeText,
+    maxPlannerDate,
+    message,
+    minPlannerDate,
+    tasks,
+    user,
+  ])
 
-  const handleEdit = (task: PlannerTask) => {
+  const handleEdit = useCallback((task: PlannerTask) => {
     setEditingTaskId(task.id)
     form.setFieldsValue({
       title: task.title,
@@ -598,10 +627,10 @@ function PlannerPage({ onRegisterTopbarAction }: PlannerPageProps) {
       priority: task.priority,
       repeatWeekly: task.repeatWeekly,
     })
-    setPlannerDrawerOpen(true)
-  }
+    openDrawerNextFrame(setPlannerDrawerOpen)
+  }, [form])
 
-  const handleDelete = async (taskId: string) => {
+  const handleDelete = useCallback(async (taskId: string) => {
     if (!user) {
       return
     }
@@ -621,9 +650,9 @@ function PlannerPage({ onRegisterTopbarAction }: PlannerPageProps) {
     } finally {
       setSavingTask(false)
     }
-  }
+  }, [closePlannerDrawer, copy.deleted, copy.loadError, editingTaskId, message, user])
 
-  const handleUndoCompletion = async (task: PlannerTask) => {
+  const handleUndoCompletion = useCallback(async (task: PlannerTask) => {
     if (!user) {
       return
     }
@@ -649,9 +678,9 @@ function PlannerPage({ onRegisterTopbarAction }: PlannerPageProps) {
     } finally {
       setSavingTask(false)
     }
-  }
+  }, [applySavedTask, copy.loadError, copy.toggled, message, user])
 
-  const handleToggle = async (task: PlannerTask) => {
+  const handleToggle = useCallback(async (task: PlannerTask) => {
     if (!user) {
       return
     }
@@ -700,7 +729,7 @@ function PlannerPage({ onRegisterTopbarAction }: PlannerPageProps) {
     } finally {
       setSavingTask(false)
     }
-  }
+  }, [applySavedTask, copy.loadError, copy.toggled, handleUndoCompletion, message, undoActionText, undoNoticeText, user])
 
   return (
     <Space orientation="vertical" size={20} className="full-width">
