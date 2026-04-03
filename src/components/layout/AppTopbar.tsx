@@ -6,40 +6,42 @@ import {
   LogoutOutlined,
   MenuOutlined,
   MoonOutlined,
+  PlusOutlined,
   SettingOutlined,
   SunOutlined,
 } from '@ant-design/icons'
-import { Button, Divider, Drawer, Segmented, Tooltip, Typography, message } from 'antd'
+import { App as AntdApp, Button, Divider, Drawer, Segmented, Tooltip, Typography } from 'antd'
 import { useState } from 'react'
 import { useI18n } from '../../i18n'
 import { useSupabaseAuth } from '../providers/SupabaseAuthProvider'
-import type { FontSizeMode, GradeKey, ThemeMode } from '../../types'
+import type { FontSizeMode, MenuKey, ThemeMode } from '../../types'
 
 const { Paragraph, Text, Title } = Typography
 
 interface AppTopbarProps {
-  selectedGrade: GradeKey
-  gradeOptions: GradeKey[]
-  onGradeChange: (grade: GradeKey) => void
+  currentMenu: MenuKey
   onOpenMobileMenu: () => void
   themeMode: ThemeMode
   onThemeChange: (themeMode: ThemeMode) => void
   fontSizeMode: FontSizeMode
   onFontSizeChange: (fontSizeMode: FontSizeMode) => void
+  pageActionLabel?: string | null
+  onPageAction?: (() => void) | null
 }
 
 function AppTopbar({
-  selectedGrade,
-  gradeOptions,
-  onGradeChange,
+  currentMenu,
   onOpenMobileMenu,
   themeMode,
   onThemeChange,
   fontSizeMode,
   onFontSizeChange,
+  pageActionLabel,
+  onPageAction,
 }: AppTopbarProps) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
-  const { language, setLanguage, t, gradeLabel } = useI18n()
+  const { message } = AntdApp.useApp()
+  const { language, setLanguage, t, menuLabel } = useI18n()
   const { configured, loading, user, signInWithGithub, signOut } = useSupabaseAuth()
 
   const settingsCopy =
@@ -128,27 +130,19 @@ function AppTopbar({
           />
 
           <div className="topbar-grade">
-            <Text className="page-kicker">{t('common.gradeLabel')}</Text>
+            <Text className="page-kicker">English Path</Text>
             <Title level={4} className="page-title">
-              {gradeLabel(selectedGrade)}
+              {menuLabel(currentMenu)}
             </Title>
           </div>
         </div>
 
         <div className="topbar-actions">
-          <div className="grade-picker">
-            <Text className="grade-picker-label">{t('common.chooseGrade')}</Text>
-            <Segmented
-              options={gradeOptions.map((grade) => ({
-                label: gradeLabel(grade),
-                value: grade,
-              }))}
-              value={selectedGrade}
-              onChange={(value) => onGradeChange(value as GradeKey)}
-              className="grade-switcher"
-            />
-          </div>
-
+          {pageActionLabel && onPageAction ? (
+            <Button type="primary" icon={<PlusOutlined />} className="topbar-page-action" onClick={onPageAction}>
+              {pageActionLabel}
+            </Button>
+          ) : null}
           <Tooltip title={settingsCopy.settingsLabel}>
             <Button
               type="default"

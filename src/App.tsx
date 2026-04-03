@@ -1,6 +1,7 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
-import { ConfigProvider, Layout, Spin, theme as antdTheme } from 'antd'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
+import { App as AntdApp, ConfigProvider, Layout, Spin, theme as antdTheme } from 'antd'
 import './App.css'
+import AppGradeBar from './components/layout/AppGradeBar'
 import AppSidebar from './components/layout/AppSidebar'
 import AppTopbar from './components/layout/AppTopbar'
 import { menuItems } from './constants/navigation'
@@ -55,6 +56,8 @@ function App() {
   const [themeMode, setThemeMode] = useState<ThemeMode>(getInitialThemeMode)
   const [fontSizeMode, setFontSizeMode] = useState<FontSizeMode>(getInitialFontSizeMode)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [topbarPageActionLabel, setTopbarPageActionLabel] = useState<string | null>(null)
+  const [topbarPageActionHandler, setTopbarPageActionHandler] = useState<(() => void) | null>(null)
 
   useEffect(() => {
     window.localStorage.setItem(THEME_STORAGE_KEY, themeMode)
@@ -66,6 +69,11 @@ function App() {
   }, [fontSizeMode])
 
   const currentGrade = useMemo(() => gradeContent[selectedGrade], [selectedGrade])
+  const showGradeBar = selectedMenu === 'home' || selectedMenu === 'lessons' || selectedMenu === 'practice' || selectedMenu === 'progress'
+  const registerTopbarPageAction = useCallback((label: string | null, handler: (() => void) | null) => {
+    setTopbarPageActionLabel(label)
+    setTopbarPageActionHandler(() => handler)
+  }, [])
 
   const pageProps = {
     selectedGrade,
@@ -103,7 +111,7 @@ function App() {
     }
 
     if (selectedMenu === 'planner') {
-      return <PlannerPage />
+      return <PlannerPage onRegisterTopbarAction={registerTopbarPageAction} />
     }
 
     if (selectedMenu === 'progress') {
@@ -128,45 +136,54 @@ function App() {
     <I18nProvider>
       <SupabaseAuthProvider>
         <ConfigProvider theme={themeConfig}>
-          <Layout className={`app-shell ${themeMode === 'dark' ? 'theme-dark' : 'theme-light'}`}>
-            <AppSidebar
-              menuItems={menuItems}
-              selectedMenu={selectedMenu}
-              onMenuChange={(menuKey) => {
-                setSelectedMenu(menuKey)
-                setIsMobileMenuOpen(false)
-              }}
-              isMobileOpen={isMobileMenuOpen}
-              onMobileClose={() => setIsMobileMenuOpen(false)}
-            />
-
-            <Layout className="main-layout">
-              <AppTopbar
-                selectedGrade={selectedGrade}
-                gradeOptions={gradeOptions}
-                onGradeChange={setSelectedGrade}
-                themeMode={themeMode}
-                onThemeChange={setThemeMode}
-                fontSizeMode={fontSizeMode}
-                onFontSizeChange={setFontSizeMode}
-                onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+          <AntdApp>
+            <Layout className={`app-shell ${themeMode === 'dark' ? 'theme-dark' : 'theme-light'}`}>
+              <AppSidebar
+                menuItems={menuItems}
+                selectedMenu={selectedMenu}
+                onMenuChange={(menuKey) => {
+                  setSelectedMenu(menuKey)
+                  setIsMobileMenuOpen(false)
+                }}
+                isMobileOpen={isMobileMenuOpen}
+                onMobileClose={() => setIsMobileMenuOpen(false)}
               />
 
-              <Content className="app-content">
-                <div className="content-shell">
-                  <Suspense
-                    fallback={
-                      <div className="page-loading-shell">
-                        <Spin size="large" />
-                      </div>
-                    }
-                  >
-                    {renderPage()}
-                  </Suspense>
-                </div>
-              </Content>
+              <Layout className="main-layout">
+                <AppTopbar
+                  currentMenu={selectedMenu}
+                  themeMode={themeMode}
+                  onThemeChange={setThemeMode}
+                  fontSizeMode={fontSizeMode}
+                  onFontSizeChange={setFontSizeMode}
+                  onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+                  pageActionLabel={topbarPageActionLabel}
+                  onPageAction={topbarPageActionHandler}
+                />
+
+                <Content className="app-content">
+                  <div className="content-shell">
+                    {showGradeBar ? (
+                      <AppGradeBar
+                        selectedGrade={selectedGrade}
+                        gradeOptions={gradeOptions}
+                        onGradeChange={setSelectedGrade}
+                      />
+                    ) : null}
+                    <Suspense
+                      fallback={
+                        <div className="page-loading-shell">
+                          <Spin size="large" />
+                        </div>
+                      }
+                    >
+                      {renderPage()}
+                    </Suspense>
+                  </div>
+                </Content>
+              </Layout>
             </Layout>
-          </Layout>
+          </AntdApp>
         </ConfigProvider>
       </SupabaseAuthProvider>
     </I18nProvider>

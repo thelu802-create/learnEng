@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
-import type { FocusEvent, MouseEvent } from 'react'
+﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { startTransition } from 'react'
 import {
   CalendarOutlined,
   ClockCircleOutlined,
@@ -7,9 +7,9 @@ import {
   NotificationOutlined,
 } from '@ant-design/icons'
 import {
+  App as AntdApp,
   Button,
   Card,
-  Checkbox,
   Col,
   Empty,
   Form,
@@ -19,8 +19,8 @@ import {
   Space,
   Tag,
   Typography,
-  message,
 } from 'antd'
+import type { InputRef } from 'antd'
 import { useSupabaseAuth } from '../components/providers/SupabaseAuthProvider'
 import { useI18n } from '../i18n'
 import {
@@ -40,12 +40,18 @@ import {
   updatePlannerTaskRecord,
 } from '../lib/supabase/plannerApi'
 import PlannerOverviewGrid from './planner/PlannerOverviewGrid'
-import PlannerTaskItem from './planner/PlannerTaskItem'
+import PlannerTaskDrawer from './planner/PlannerTaskDrawer'
 import PlannerTaskSection from './planner/PlannerTaskSection'
+import PlannerTaskItem from './planner/PlannerTaskItem'
+import PlannerWeeklyOverview from './planner/PlannerWeeklyOverview'
 
-const { Title, Paragraph, Text } = Typography
+const { Title, Paragraph } = Typography
 
 type PlannerFormValues = PlannerTaskInput
+
+interface PlannerPageProps {
+  onRegisterTopbarAction?: (label: string | null, handler: (() => void) | null) => void
+}
 
 function formatDateInputValue(date: Date): string {
   const year = date.getFullYear()
@@ -54,22 +60,38 @@ function formatDateInputValue(date: Date): string {
   return `${year}-${month}-${day}`
 }
 
-function openNativePicker(event: FocusEvent<HTMLInputElement> | MouseEvent<HTMLInputElement>) {
-  const input = event.currentTarget
-  if (typeof input.showPicker === 'function') {
-    input.showPicker()
-  }
+function getStartOfWeek(baseDate: Date): Date {
+  const date = new Date(baseDate)
+  const day = date.getDay()
+  const diff = day === 0 ? -6 : 1 - day
+  date.setDate(date.getDate() + diff)
+  date.setHours(0, 0, 0, 0)
+  return date
 }
 
-function PlannerPage() {
+function formatPlannerShortDate(date: Date, language: 'en' | 'vi'): string {
+  return new Intl.DateTimeFormat(language === 'en' ? 'en-GB' : 'vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+  }).format(date)
+}
+
+function PlannerPage({ onRegisterTopbarAction }: PlannerPageProps) {
+  const { message } = AntdApp.useApp()
   const { language } = useI18n()
   const { configured, signInWithGithub, user } = useSupabaseAuth()
   const [form] = Form.useForm<PlannerFormValues>()
   const [tasks, setTasks] = useState<PlannerTask[]>([])
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null)
+  const [plannerDrawerOpen, setPlannerDrawerOpen] = useState(false)
   const [loadingTasks, setLoadingTasks] = useState(false)
   const [savingTask, setSavingTask] = useState(false)
-  const [showCompletedToday, setShowCompletedToday] = useState(false)
+  const [taskListQuery, setTaskListQuery] = useState('')
+  const [taskListDate, setTaskListDate] = useState('')
+  const [taskListStatus, setTaskListStatus] = useState<'completed' | 'overdue' | 'later'>('completed')
+  const [taskListDraftStatus, setTaskListDraftStatus] = useState<'completed' | 'overdue' | 'later'>('completed')
+  const taskListQueryRef = useRef<InputRef | null>(null)
+  const taskListDateRef = useRef<InputRef | null>(null)
   const currentYear = new Date().getFullYear()
   const minPlannerDate = formatDateInputValue(new Date(currentYear - 1, 0, 1))
   const maxPlannerDate = formatDateInputValue(new Date(currentYear + 5, 11, 31))
@@ -77,12 +99,13 @@ function PlannerPage() {
   const copy =
     language === 'en'
       ? {
-          eyebrow: 'Planner',
-          title: 'Weekly reminders and teaching tasks',
-          intro:
-            'Add tasks for the week, track what is due today, and keep upcoming teaching reminders in one place.',
+          title: 'Weekly planner',
+          intro: 'Keep today, upcoming work, and weekly workload in one place.',
           formTitle: editingTaskId ? 'Edit task' : 'Add a task',
           formCopy: 'Use this for teaching reminders, homework checks, meetings, or weekly routines.',
+          addAction: 'Add task',
+          saveAndNew: 'Save & add another',
+          closeDrawer: 'Close',
           titleField: 'Task title',
           noteField: 'Notes',
           dateField: 'Date',
@@ -122,12 +145,13 @@ function PlannerPage() {
           completedToday: 'Done today',
           completedToggle: 'Show completed',
           hideCompleted: 'Hide completed',
+          undoNotice: 'Task marked as done.',
+          undoAction: 'Undo',
+          completedSummary: 'Completed tasks stay here so you can review them quickly.',
         }
       : {
-          eyebrow: 'Nhắc việc',
-          title: 'Công việc và nhắc việc trong tuần',
-          intro:
-            'Thêm công việc trong tuần, xem việc đến hạn hôm nay và theo dõi những việc sắp tới trong một nơi.',
+          title: 'Kế hoạch trong tuần',
+          intro: 'Theo dõi việc hôm nay, việc sắp tới và khối lượng công việc trong tuần.',
           formTitle: editingTaskId ? 'Sửa công việc' : 'Thêm công việc',
           formCopy: 'Dùng cho việc dạy học, kiểm tra bài, họp, nhắc việc hoặc công việc lặp lại hằng tuần.',
           titleField: 'Tên công việc',
@@ -178,7 +202,39 @@ function PlannerPage() {
       : `Hãy chọn ngày trong khoảng ${minPlannerDate} đến ${maxPlannerDate}.`
   const loadingTasksText = language === 'en' ? 'Loading planner tasks...' : 'Đang tải nhắc việc...'
   const cancelText = language === 'en' ? 'Cancel' : 'Hủy'
+  const weekOverviewLabel = language === 'en' ? 'Week overview' : 'Tổng quan tuần'
+  const weekProgressLabel = language === 'en' ? 'Weekly progress' : 'Tiến độ tuần'
+  const weekLoadLabel = language === 'en' ? 'Workload by day' : 'Khối lượng theo ngày'
+  const weekPendingLabel = language === 'en' ? 'Pending' : 'Chưa xong'
+  const weekCompletedLabel = language === 'en' ? 'Completed' : 'Đã xong'
+  const weekNoTasksLabel = language === 'en' ? 'No tasks this week' : 'Chưa có việc trong tuần này'
+  const weekMetaTemplate = language === 'en' ? '{done}/{total} done' : '{done}/{total} đã xong'
+  const weekLabels = language === 'en' ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] : ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN']
 
+  const weekRangeLabel = language === 'en' ? 'This week' : 'Tuần này'
+  const weekFocusLabel = language === 'en' ? 'Focus day' : 'Ngày cần chú ý'
+  const weekTotalLabel = language === 'en' ? 'Total tasks' : 'Tổng việc'
+  const weekFocusTemplate = language === 'en' ? '{label} · {count} tasks' : '{label} · {count} việc'
+
+  const undoNoticeText = language === 'en' ? 'Task marked as done.' : 'Đã đánh dấu công việc hoàn thành.'
+  const undoActionText = language === 'en' ? 'Undo' : 'Hoàn tác'
+  const completedArchiveSearchPlaceholder =
+    language === 'en' ? 'Search by task name' : 'Tìm theo tên công việc'
+  const completedArchiveDateLabel = language === 'en' ? 'Filter by date' : 'Lọc theo ngày'
+  const completedArchiveSearchAction = language === 'en' ? 'Search' : 'Tìm'
+
+  const addTaskActionText = language === 'en' ? 'Add task' : 'Thêm công việc'
+  const saveAndNewActionText = language === 'en' ? 'Save & add another' : 'Lưu và thêm tiếp'
+  const closeDrawerText = language === 'en' ? 'Close' : 'Đóng'
+  const taskListTitle = language === 'en' ? 'Task list' : 'Danh sách công việc'
+  const taskListDescription =
+    language === 'en'
+      ? 'Review completed, overdue, and later tasks in one place.'
+      : 'Xem chung các việc đã hoàn thành, quá hạn và để sau trong một nơi.'
+  const taskStatusLabel = language === 'en' ? 'Status' : 'Trạng thái'
+  const taskStatusCompleted = language === 'en' ? 'Completed' : 'Đã hoàn thành'
+  const taskStatusOverdue = language === 'en' ? 'Overdue' : 'Quá hạn'
+  const taskStatusLater = language === 'en' ? 'Later' : 'Để sau'
   const priorityOptions: Array<{ value: PlannerTaskPriority; label: string }> = [
     { value: 'low', label: copy.low },
     { value: 'medium', label: copy.medium },
@@ -197,6 +253,21 @@ function PlannerPage() {
     createdAt: task.created_at,
     updatedAt: task.updated_at,
   })
+
+  const applySavedTask = (savedTask: Awaited<ReturnType<typeof createPlannerTaskRecord>>) => {
+    const nextTask = mapRecordToTask(savedTask)
+
+    setTasks((currentTasks) => {
+      const exists = currentTasks.some((task) => task.id === nextTask.id)
+      return sortPlannerTasks(
+        exists
+          ? currentTasks.map((task) => (task.id === nextTask.id ? nextTask : task))
+          : [...currentTasks, nextTask],
+      )
+    })
+
+    return nextTask
+  }
 
   const handleGithubSignIn = async () => {
     try {
@@ -266,67 +337,207 @@ function PlannerPage() {
 
   const todayTasks = useMemo(() => tasks.filter((task) => isSameDay(getTaskDueDate(task), new Date())), [tasks])
   const todayPendingTasks = todayTasks.filter((task) => !task.completed)
-  const todayCompletedTasks = todayTasks.filter((task) => task.completed)
+  const taskListItems = useMemo(
+    () =>
+      [...tasks]
+        .filter((task) => {
+          if (task.completed) {
+            return true
+          }
 
-  const overviewCards = [
-    {
-      key: 'today',
-      title: copy.today,
-      value: todayPendingTasks.length,
-      tone: 'gold',
-      icon: <NotificationOutlined />,
-    },
-    {
-      key: 'upcoming',
-      title: copy.upcoming,
-      value: bucketedTasks.upcoming.length,
-      tone: 'cyan',
-      icon: <ClockCircleOutlined />,
-    },
-    {
-      key: 'overdue',
-      title: copy.overdue,
-      value: bucketedTasks.overdue.length,
-      tone: 'volcano',
-      icon: <ExclamationCircleOutlined />,
-    },
-    {
-      key: 'later',
-      title: copy.later,
-      value: bucketedTasks.later.filter((task) => !task.completed).length,
-      tone: 'blue',
-      icon: <CalendarOutlined />,
-    },
+          const bucket = getTaskBucket(task, new Date())
+          return bucket === 'overdue' || bucket === 'later'
+        })
+        .sort((left, right) => {
+          if (left.completed !== right.completed) {
+            return left.completed ? 1 : -1
+          }
+          const leftDue = getTaskDueDate(left).getTime()
+          const rightDue = getTaskDueDate(right).getTime()
+
+          if (leftDue !== rightDue) {
+            return rightDue - leftDue
+          }
+
+          return new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime()
+        }),
+    [tasks],
+  )
+  const filteredTaskListItems = useMemo(() => {
+    const keyword = taskListQuery.trim().toLowerCase()
+
+    return taskListItems.filter((task) => {
+      const status = task.completed ? 'completed' : getTaskBucket(task, new Date())
+      const matchesStatus = status === taskListStatus
+      const matchesQuery =
+        keyword.length === 0 ||
+        task.title.toLowerCase().includes(keyword) ||
+        task.note.toLowerCase().includes(keyword)
+      const matchesDate = !taskListDate || task.dueDate === taskListDate
+
+      return matchesStatus && matchesQuery && matchesDate
+    })
+  }, [taskListDate, taskListItems, taskListQuery, taskListStatus])
+
+  const applyTaskListFilters = () => {
+    const nextQuery = taskListQueryRef.current?.input?.value?.trim() ?? ''
+    const nextDate = taskListDateRef.current?.input?.value ?? ''
+
+    startTransition(() => {
+      setTaskListQuery(nextQuery)
+      setTaskListDate(nextDate)
+      setTaskListStatus(taskListDraftStatus)
+    })
+  }
+
+  const handleTaskStatusChange = (value: 'completed' | 'overdue' | 'later') => {
+    setTaskListDraftStatus(value)
+    startTransition(() => {
+      setTaskListStatus(value)
+    })
+  }
+
+  const openCreateDrawer = useCallback(() => {
+    setEditingTaskId(null)
+    setPlannerDrawerOpen(true)
+  }, [])
+
+  const closePlannerDrawer = useCallback(() => {
+    setPlannerDrawerOpen(false)
+    setEditingTaskId(null)
+  }, [form])
+
+  useEffect(() => {
+    if (plannerDrawerOpen && !editingTaskId) {
+      form.resetFields()
+    }
+  }, [editingTaskId, form, plannerDrawerOpen])
+
+  useEffect(() => {
+    onRegisterTopbarAction?.(addTaskActionText, openCreateDrawer)
+
+    return () => {
+      onRegisterTopbarAction?.(null, null)
+    }
+  }, [addTaskActionText, onRegisterTopbarAction, openCreateDrawer])
+
+  const overviewCards = useMemo(
+    () =>
+      [
+        {
+          key: 'today',
+          title: copy.today,
+          value: todayPendingTasks.length,
+          tone: 'gold',
+          icon: <NotificationOutlined />,
+        },
+        {
+          key: 'upcoming',
+          title: copy.upcoming,
+          value: bucketedTasks.upcoming.length,
+          tone: 'cyan',
+          icon: <ClockCircleOutlined />,
+        },
+        {
+          key: 'overdue',
+          title: copy.overdue,
+          value: bucketedTasks.overdue.length,
+          tone: 'volcano',
+          icon: <ExclamationCircleOutlined />,
+        },
+        {
+          key: 'later',
+          title: copy.later,
+          value: bucketedTasks.later.filter((task) => !task.completed).length,
+          tone: 'blue',
+          icon: <CalendarOutlined />,
+        },
+      ] as const,
+    [
+      bucketedTasks.later,
+      bucketedTasks.overdue.length,
+      bucketedTasks.upcoming.length,
+      copy.later,
+      copy.overdue,
+      copy.today,
+      copy.upcoming,
+      todayPendingTasks.length,
+    ],
+  )
+
+  const taskStatusOptions = [
+    { label: taskStatusCompleted, value: 'completed' },
+    { label: taskStatusOverdue, value: 'overdue' },
+    { label: taskStatusLater, value: 'later' },
   ] as const
 
-  const sectionCards = [
-    {
-      key: 'upcoming',
-      title: copy.upcoming,
-      description: copy.upcomingCopy,
-      icon: <ClockCircleOutlined />,
-      color: 'cyan',
-      items: bucketedTasks.upcoming,
-    },
-    {
-      key: 'overdue',
-      title: copy.overdue,
-      description: copy.overdueCopy,
-      icon: <ExclamationCircleOutlined />,
-      color: 'volcano',
-      items: bucketedTasks.overdue,
-    },
-    {
-      key: 'later',
-      title: copy.later,
-      description: copy.laterCopy,
-      icon: <CalendarOutlined />,
-      color: 'blue',
-      items: bucketedTasks.later.filter((task) => !task.completed),
-    },
-  ]
+  const weeklyOverview = useMemo(() => {
+    const today = new Date()
+    const weekStart = getStartOfWeek(today)
+    const weekEnd = new Date(weekStart)
+    weekEnd.setDate(weekStart.getDate() + 6)
+    const days = Array.from({ length: 7 }, (_, index) => {
+      const date = new Date(weekStart)
+      date.setDate(weekStart.getDate() + index)
+      const iso = formatDateInputValue(date)
+      const items = tasks.filter((task) => task.dueDate === iso)
+      const completed = items.filter((task) => task.completed).length
 
-  const handleSubmit = async () => {
+      return {
+        key: iso,
+        label: weekLabels[index] ?? '',
+        dayNumber: date.getDate(),
+        total: items.length,
+        completed,
+        pending: items.length - completed,
+        isToday: isSameDay(date, today),
+      }
+    })
+
+    const total = days.reduce((sum, day) => sum + day.total, 0)
+    const completed = days.reduce((sum, day) => sum + day.completed, 0)
+    const pending = days.reduce((sum, day) => sum + day.pending, 0)
+    const max = Math.max(1, ...days.map((day) => day.total))
+    const busiestDay = days.reduce<(typeof days)[number] | null>((current, day) => {
+      if (day.total === 0) {
+        return current
+      }
+
+      if (!current || day.total > current.total) {
+        return day
+      }
+
+      return current
+    }, null)
+
+    return {
+      days,
+      weekStart,
+      weekEnd,
+      total,
+      completed,
+      pending,
+      overdue: bucketedTasks.overdue.length,
+      percent: total > 0 ? Math.round((completed / total) * 100) : 0,
+      max,
+      busiestDay,
+    }
+  }, [bucketedTasks.overdue.length, tasks, weekLabels])
+
+  const weeklyMetaText = weekMetaTemplate
+    .replace('{done}', String(weeklyOverview.completed))
+    .replace('{total}', String(weeklyOverview.total))
+  const weeklyRangeText = `${weekRangeLabel} ${formatPlannerShortDate(weeklyOverview.weekStart, language)} - ${formatPlannerShortDate(
+    weeklyOverview.weekEnd,
+    language,
+  )}`
+  const weeklyFocusText = weeklyOverview.busiestDay
+    ? weekFocusTemplate
+        .replace('{label}', weeklyOverview.busiestDay.label)
+        .replace('{count}', String(weeklyOverview.busiestDay.total))
+    : weekNoTasksLabel
+
+  const handleSubmit = async (keepOpen = false) => {
     if (!user) {
       return
     }
@@ -362,20 +573,14 @@ function PlannerPage() {
             repeatWeekly: values.repeatWeekly,
           })
 
-      const nextTask = mapRecordToTask(saved)
+      applySavedTask(saved)
 
-      setTasks((currentTasks) => {
-        const exists = currentTasks.some((task) => task.id === nextTask.id)
-        return sortPlannerTasks(
-          exists
-            ? currentTasks.map((task) => (task.id === nextTask.id ? nextTask : task))
-            : [...currentTasks, nextTask],
-        )
-      })
-
-      setEditingTaskId(null)
-      form.resetFields()
-      message.success(copy.saved)
+        if (keepOpen && !editingTaskId) {
+          form.resetFields()
+        } else {
+          closePlannerDrawer()
+        }
+        message.success(copy.saved)
     } catch {
       message.error(copy.loadError)
     } finally {
@@ -393,6 +598,7 @@ function PlannerPage() {
       priority: task.priority,
       repeatWeekly: task.repeatWeekly,
     })
+    setPlannerDrawerOpen(true)
   }
 
   const handleDelete = async (taskId: string) => {
@@ -405,12 +611,39 @@ function PlannerPage() {
       await deletePlannerTaskRecord(taskId, user.id)
       setTasks((currentTasks) => sortPlannerTasks(currentTasks.filter((task) => task.id !== taskId)))
 
-      if (editingTaskId === taskId) {
-        setEditingTaskId(null)
-        form.resetFields()
-      }
+        if (editingTaskId === taskId) {
+          closePlannerDrawer()
+        }
 
       message.success(copy.deleted)
+    } catch {
+      message.error(copy.loadError)
+    } finally {
+      setSavingTask(false)
+    }
+  }
+
+  const handleUndoCompletion = async (task: PlannerTask) => {
+    if (!user) {
+      return
+    }
+
+    try {
+      setSavingTask(true)
+      const restored = await updatePlannerTaskRecord(task.id, {
+        userId: user.id,
+        title: task.title,
+        note: task.note,
+        dueDate: task.dueDate,
+        dueTime: task.dueTime,
+        priority: task.priority,
+        repeatWeekly: task.repeatWeekly,
+        completed: task.completed,
+      })
+
+      applySavedTask(restored)
+      message.destroy(`planner-toggle-${task.id}`)
+      message.success(copy.toggled)
     } catch {
       message.error(copy.loadError)
     } finally {
@@ -437,10 +670,31 @@ function PlannerPage() {
         completed: shiftedTask.completed,
       })
 
-      setTasks((currentTasks) =>
-        sortPlannerTasks(currentTasks.map((item) => (item.id === task.id ? mapRecordToTask(saved) : item))),
-      )
-      message.success(copy.toggled)
+      const nextTask = applySavedTask(saved)
+
+      if (!task.completed && nextTask.completed) {
+        const messageKey = `planner-toggle-${task.id}`
+        message.open({
+          key: messageKey,
+          duration: 5,
+          content: (
+            <Space size={10} wrap>
+              <span>{undoNoticeText}</span>
+              <Button
+                type="link"
+                size="small"
+                className="planner-undo-link"
+                onClick={() => void handleUndoCompletion(task)}
+              >
+                {undoActionText}
+              </Button>
+            </Space>
+          ),
+        })
+      } else {
+        message.destroy(`planner-toggle-${task.id}`)
+        message.success(copy.toggled)
+      }
     } catch {
       message.error(copy.loadError)
     } finally {
@@ -451,10 +705,7 @@ function PlannerPage() {
   return (
     <Space orientation="vertical" size={20} className="full-width">
       <Card className="hero-card highlight-card planner-hero-card" variant="borderless">
-        <Space orientation="vertical" size={14} className="full-width">
-          <Tag className="hero-tag" variant="filled">
-            {copy.eyebrow}
-          </Tag>
+        <Space orientation="vertical" size={10} className="full-width">
           <Title className="hero-title">{copy.title}</Title>
           <Paragraph className="hero-copy">{copy.intro}</Paragraph>
         </Space>
@@ -474,228 +725,181 @@ function PlannerPage() {
           </Space>
         </Card>
       ) : (
-        <Space orientation="vertical" size={18} className="full-width">
-          <PlannerOverviewGrid items={[...overviewCards]} />
+          <Space orientation="vertical" size={18} className="full-width">
+            <PlannerOverviewGrid items={[...overviewCards]} />
 
-          <Row gutter={[18, 18]}>
-            <Col xs={24} xl={8}>
-              <Card className="content-card planner-form-card planner-sticky-card" variant="borderless">
+          <PlannerWeeklyOverview
+            weekOverviewLabel={weekOverviewLabel}
+            weekProgressLabel={weekProgressLabel}
+            weekLoadLabel={weekLoadLabel}
+            weekFocusLabel={weekFocusLabel}
+            weekPendingLabel={weekPendingLabel}
+            weekCompletedLabel={weekCompletedLabel}
+            weekTotalLabel={weekTotalLabel}
+            weeklyRangeText={weeklyRangeText}
+            weeklyMetaText={weeklyMetaText}
+            weeklyFocusText={weeklyFocusText}
+            weeklyOverview={weeklyOverview}
+          />
+
+            <Row gutter={[18, 18]}>
+              <Col xs={24}>
                 <Space orientation="vertical" size={16} className="full-width">
-                  <div className="section-heading">
-                    <Title level={3}>{copy.formTitle}</Title>
-                    <Paragraph>{copy.formCopy}</Paragraph>
-                  </div>
-
-                  <div className="planner-form-callout">
-                    <CalendarOutlined />
-                    <Text>{copy.repeatHint}</Text>
-                  </div>
-
-                  <Form
-                    form={form}
-                    layout="vertical"
-                    initialValues={{ priority: 'medium', repeatWeekly: false, dueTime: '' }}
-                  >
-                    <Form.Item name="title" label={copy.titleField} rules={[{ required: true, message: copy.requiredTitle }]}>
-                      <Input />
-                    </Form.Item>
-
-                    <Form.Item name="note" label={copy.noteField}>
-                      <Input.TextArea rows={3} />
-                    </Form.Item>
-
-                    <Row gutter={12}>
-                      <Col span={14}>
-                        <Form.Item
-                          name="dueDate"
-                          label={copy.dateField}
-                          rules={[
-                            { required: true, message: copy.requiredDate },
-                            {
-                              validator: async (_, value?: string) => {
-                                if (!value || (value >= minPlannerDate && value <= maxPlannerDate)) {
-                                  return
-                                }
-
-                                throw new Error(invalidDateRangeText)
-                              },
-                            },
-                          ]}
-                        >
-                          <Input
-                            type="date"
-                            min={minPlannerDate}
-                            max={maxPlannerDate}
-                            onFocus={openNativePicker}
-                            onClick={openNativePicker}
-                            onKeyDown={(event) => event.preventDefault()}
-                            onPaste={(event) => event.preventDefault()}
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col span={10}>
-                        <Form.Item name="dueTime" label={copy.timeField}>
-                          <Input type="time" />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-
-                    <Form.Item name="priority" label={copy.priorityField}>
-                      <Select options={priorityOptions} />
-                    </Form.Item>
-
-                    <Form.Item name="repeatWeekly" valuePropName="checked">
-                      <Checkbox>{copy.repeatField}</Checkbox>
-                    </Form.Item>
-
-                    <Space wrap>
-                      <Button type="primary" loading={savingTask} onClick={() => void handleSubmit()}>
-                        {copy.addTask}
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          setEditingTaskId(null)
-                          form.resetFields()
-                        }}
-                      >
-                        {copy.reset}
-                      </Button>
-                    </Space>
-                  </Form>
-                </Space>
-              </Card>
-            </Col>
-
-            <Col xs={24} xl={16}>
-              <Space orientation="vertical" size={16} className="full-width">
                 <Card className="content-card planner-list-card planner-today-card" variant="borderless">
-                  <Space orientation="vertical" size={14} className="full-width">
-                    <div className="planner-section-head">
-                      <div className="settings-heading">
-                        <NotificationOutlined />
-                        <Title level={4}>{copy.today}</Title>
-                      </div>
-                      <Tag color="gold">{todayTasks.length}</Tag>
-                    </div>
-
-                    <Paragraph className="settings-copy">{copy.todayCopy}</Paragraph>
-
-                    {loadingTasks ? (
-                      <Paragraph className="settings-copy">{loadingTasksText}</Paragraph>
-                    ) : todayTasks.length === 0 ? (
-                      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={copy.noTasks} />
-                    ) : (
-                      <Space orientation="vertical" size={14} className="full-width">
-                        <div className="planner-subsection">
-                          <div className="planner-subsection-head">
-                            <Text strong>{copy.pendingToday}</Text>
-                            <Tag color="cyan">{todayPendingTasks.length}</Tag>
-                          </div>
-                          {todayPendingTasks.length > 0 ? (
-                            <Space orientation="vertical" size={12} className="full-width">
-                              {todayPendingTasks.map((task) => (
-                                <PlannerTaskItem
-                                  key={task.id}
-                                  task={task}
-                                  language={language}
-                                  savingTask={savingTask}
-                                  repeatFieldLabel={copy.repeatField}
-                                  editLabel={copy.edit}
-                                  deleteLabel={copy.delete}
-                                  deleteTitle={copy.deleteTitle}
-                                  deleteDescription={copy.deleteCopy}
-                                  completeLabel={copy.complete}
-                                  undoLabel={copy.undo}
-                                  cancelText={cancelText}
-                                  onToggle={handleToggle}
-                                  onEdit={handleEdit}
-                                  onDelete={handleDelete}
-                                  priorityOptions={priorityOptions}
-                                />
-                              ))}
-                            </Space>
-                          ) : (
-                            <Paragraph className="settings-copy">{copy.noTasks}</Paragraph>
-                          )}
-                        </div>
-
-                        <div className="planner-subsection planner-completed-subsection">
-                          <div className="planner-subsection-head">
-                            <Space align="center" size={8}>
-                              <Text strong>{copy.completedToday}</Text>
-                              <Tag>{todayCompletedTasks.length}</Tag>
-                            </Space>
-                            {todayCompletedTasks.length > 0 ? (
-                              <Button size="small" type="text" onClick={() => setShowCompletedToday((current) => !current)}>
-                                {showCompletedToday ? copy.hideCompleted : copy.completedToggle}
-                              </Button>
-                            ) : null}
-                          </div>
-                          {showCompletedToday && todayCompletedTasks.length > 0 ? (
-                            <Space orientation="vertical" size={12} className="full-width">
-                              {todayCompletedTasks.map((task) => (
-                                <PlannerTaskItem
-                                  key={task.id}
-                                  task={task}
-                                  language={language}
-                                  savingTask={savingTask}
-                                  repeatFieldLabel={copy.repeatField}
-                                  editLabel={copy.edit}
-                                  deleteLabel={copy.delete}
-                                  deleteTitle={copy.deleteTitle}
-                                  deleteDescription={copy.deleteCopy}
-                                  completeLabel={copy.complete}
-                                  undoLabel={copy.undo}
-                                  cancelText={cancelText}
-                                  onToggle={handleToggle}
-                                  onEdit={handleEdit}
-                                  onDelete={handleDelete}
-                                  priorityOptions={priorityOptions}
-                                />
-                              ))}
-                            </Space>
-                          ) : null}
-                        </div>
-                      </Space>
-                    )}
-                  </Space>
+                  <PlannerTaskSection
+                    title={copy.today}
+                    description={copy.todayCopy}
+                    icon={<NotificationOutlined />}
+                    color="gold"
+                    items={todayPendingTasks}
+                    loading={loadingTasks}
+                    noTasksText={copy.noTasks}
+                    loadingText={loadingTasksText}
+                    language={language}
+                    savingTask={savingTask}
+                    repeatFieldLabel={copy.repeatField}
+                    editLabel={copy.edit}
+                    deleteLabel={copy.delete}
+                    deleteTitle={copy.deleteTitle}
+                    deleteDescription={copy.deleteCopy}
+                    completeLabel={copy.complete}
+                    undoLabel={copy.undo}
+                    cancelText={cancelText}
+                    onToggle={handleToggle}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    priorityOptions={priorityOptions}
+                  />
                 </Card>
 
-                <Row gutter={[16, 16]}>
-                  {sectionCards.map((section) => (
-                    <Col xs={24} md={12} key={section.key}>
-                      <Card className="content-card planner-list-card" variant="borderless">
-                        <PlannerTaskSection
-                          title={section.title}
-                          description={section.description}
-                          icon={section.icon}
-                          color={section.color}
-                          items={section.items}
-                          loading={loadingTasks}
-                          noTasksText={copy.noTasks}
-                          loadingText={loadingTasksText}
-                          language={language}
-                          savingTask={savingTask}
-                          repeatFieldLabel={copy.repeatField}
-                          editLabel={copy.edit}
-                          deleteLabel={copy.delete}
-                          deleteTitle={copy.deleteTitle}
-                          deleteDescription={copy.deleteCopy}
-                          completeLabel={copy.complete}
-                          undoLabel={copy.undo}
-                          cancelText={cancelText}
-                          onToggle={handleToggle}
-                          onEdit={handleEdit}
-                          onDelete={handleDelete}
-                          priorityOptions={priorityOptions}
+                <Card className="content-card planner-list-card planner-upcoming-card" variant="borderless">
+                  <PlannerTaskSection
+                    title={copy.upcoming}
+                    description={copy.upcomingCopy}
+                    icon={<ClockCircleOutlined />}
+                    color="cyan"
+                    items={bucketedTasks.upcoming}
+                    loading={loadingTasks}
+                    noTasksText={copy.noTasks}
+                    loadingText={loadingTasksText}
+                    language={language}
+                    savingTask={savingTask}
+                    repeatFieldLabel={copy.repeatField}
+                    editLabel={copy.edit}
+                    deleteLabel={copy.delete}
+                    deleteTitle={copy.deleteTitle}
+                    deleteDescription={copy.deleteCopy}
+                    completeLabel={copy.complete}
+                    undoLabel={copy.undo}
+                    cancelText={cancelText}
+                    onToggle={handleToggle}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    priorityOptions={priorityOptions}
+                  />
+                </Card>
+
+                  <Card className="content-card planner-list-card planner-task-list-card" variant="borderless">
+                    <Space orientation="vertical" size={14} className="full-width">
+                      <div className="planner-section-head">
+                        <div className="settings-heading">
+                          <ClockCircleOutlined />
+                          <Title level={4}>{taskListTitle}</Title>
+                        </div>
+                        <Tag color="cyan">{taskListItems.length}</Tag>
+                      </div>
+
+                      <Paragraph className="settings-copy">{taskListDescription}</Paragraph>
+
+                      <div className="planner-completed-filters planner-task-list-searchbar">
+                        <Input
+                          className="planner-completed-search-input"
+                          ref={taskListQueryRef}
+                          defaultValue={taskListQuery}
+                          placeholder={completedArchiveSearchPlaceholder}
                         />
-                      </Card>
-                    </Col>
-                  ))}
-                </Row>
+                        <div className="planner-completed-filter-actions planner-task-list-filter-actions">
+                          <Input
+                            className="planner-completed-date-input"
+                            ref={taskListDateRef}
+                            type="date"
+                            defaultValue={taskListDate}
+                            aria-label={completedArchiveDateLabel}
+                          />
+                          <Select
+                            className="planner-task-status-select"
+                            value={taskListDraftStatus}
+                            options={[...taskStatusOptions]}
+                            aria-label={taskStatusLabel}
+                            onChange={(value: 'completed' | 'overdue' | 'later') => handleTaskStatusChange(value)}
+                          />
+                          <Button className="planner-completed-search-button" type="primary" onClick={applyTaskListFilters}>
+                            {completedArchiveSearchAction}
+                          </Button>
+                        </div>
+                      </div>
+
+                      {loadingTasks ? (
+                        <Paragraph className="settings-copy">{loadingTasksText}</Paragraph>
+                      ) : filteredTaskListItems.length === 0 ? (
+                        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={copy.noTasks} />
+                      ) : (
+                        <Space orientation="vertical" size={12} className="full-width">
+                          {filteredTaskListItems.map((task) => (
+                            <PlannerTaskItem
+                              key={task.id}
+                              task={task}
+                              language={language}
+                              savingTask={savingTask}
+                              repeatFieldLabel={copy.repeatField}
+                              editLabel={copy.edit}
+                              deleteLabel={copy.delete}
+                              deleteTitle={copy.deleteTitle}
+                              deleteDescription={copy.deleteCopy}
+                              completeLabel={copy.complete}
+                              undoLabel={copy.undo}
+                              cancelText={cancelText}
+                              onToggle={handleToggle}
+                              onEdit={handleEdit}
+                              onDelete={handleDelete}
+                              priorityOptions={priorityOptions}
+                            />
+                          ))}
+                        </Space>
+                      )}
+                    </Space>
+                  </Card>
+
               </Space>
-            </Col>
-          </Row>
+              </Col>
+            </Row>
+
+            <PlannerTaskDrawer
+              open={plannerDrawerOpen}
+              title={copy.formTitle}
+              form={form}
+              savingTask={savingTask}
+              isEditing={Boolean(editingTaskId)}
+              formCopy={copy.formCopy}
+              repeatHint={copy.repeatHint}
+              titleField={copy.titleField}
+              noteField={copy.noteField}
+              dateField={copy.dateField}
+              timeField={copy.timeField}
+              priorityField={copy.priorityField}
+              repeatField={copy.repeatField}
+              requiredTitle={copy.requiredTitle}
+              requiredDate={copy.requiredDate}
+              invalidDateRangeText={invalidDateRangeText}
+              minPlannerDate={minPlannerDate}
+              maxPlannerDate={maxPlannerDate}
+              closeDrawerText={closeDrawerText}
+              saveAndNewActionText={saveAndNewActionText}
+              saveTaskText={copy.addTask}
+              priorityOptions={priorityOptions}
+              onClose={closePlannerDrawer}
+              onSubmit={handleSubmit}
+            />
         </Space>
       )}
     </Space>
@@ -703,3 +907,4 @@ function PlannerPage() {
 }
 
 export default PlannerPage
+

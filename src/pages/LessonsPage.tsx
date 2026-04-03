@@ -7,6 +7,7 @@ import {
   UploadOutlined,
 } from '@ant-design/icons'
 import {
+  App as AntdApp,
   Button,
   Card,
   Col,
@@ -17,7 +18,6 @@ import {
   Spin,
   Tabs,
   Typography,
-  message,
 } from 'antd'
 import type { TabsProps } from 'antd'
 import { useSupabaseAuth } from '../components/providers/SupabaseAuthProvider'
@@ -63,6 +63,7 @@ interface LessonsPageProps {
 }
 
 function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
+  const { message } = AntdApp.useApp()
   const { t, gradeLabel, language } = useI18n()
   const { configured, signInWithGithub, user } = useSupabaseAuth()
   const [addWordForm] = Form.useForm<AddWordFormValues>()
