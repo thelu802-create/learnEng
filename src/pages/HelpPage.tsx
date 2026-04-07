@@ -21,47 +21,48 @@ function HelpPage() {
           eyebrow: 'User guide',
           title: 'How to use English Path',
           intro:
-            'This page helps you move through the app in a simple order: choose a grade, open a lesson, review vocabulary, start practice, and keep track of weekly teaching tasks.',
+            'Follow a simple flow: choose a grade, open a lesson, review vocabulary, start practice, and keep track of weekly teaching tasks.',
           quickStart: 'Quick start',
           menuGuide: 'Main sections',
           menuGuideCopy:
             'These are the areas you will use most often while teaching, reviewing content, and organizing your week.',
           tipsTitle: 'Tips for teachers',
-          aboutTitle: 'About app',
+          aboutTitle: 'About the app',
           step1Title: 'Choose the grade you want to teach',
           step1Copy:
-            'Use the grade switcher in the topbar to move between Grade 6 and Grade 9 before opening any content.',
-          step2Title: 'Open Lessons to review the unit',
+            'Use the grade bar to switch between Grade 6 and Grade 9 before opening content.',
+          step2Title: 'Open Lessons to review the topic',
           step2Copy:
-            'Lessons shows grammar focus, vocabulary, class activities, projects, and linked words for each topic.',
-          step3Title: 'Use the Vocabulary area to manage words',
+            'Lessons shows unit focus, linked vocabulary, class activities, and teacher notes for each topic.',
+          step3Title: 'Use Vocabulary tools when needed',
           step3Copy:
-            'Search by keyword, open word details, review meaning, IPA, and examples, then add, edit, or delete teacher vocabulary when needed.',
+            'Search words, open details, check meaning and IPA, then add, import, edit, or delete teacher-added vocabulary.',
           step4Title: 'Open Practice for reinforcement',
           step4Copy:
-            'Practice is where you move from reading to recall with Word Practice and Passage Quiz Generator activities.',
-          step5Title: 'Use Planner to track your week',
+            'Use Word Practice for quick review and Passage Quiz Generator when you want exercises from your own text.',
+          step5Title: 'Use Planner to organize the week',
           step5Copy:
-            'Planner helps you add teaching tasks, review what is due today, and mark work as done without losing sight of upcoming reminders.',
+            'Planner helps you add tasks, review work due today, separate upcoming tasks, and track completed work in one place.',
           lessonsTitle: 'Lessons',
           lessonsCopy:
-            'Use this area to read unit content, search vocabulary, add teacher vocabulary, import word lists, edit teacher-added words, and save notes by topic.',
+            'Read unit content, search vocabulary, save teacher notes by topic, and manage teacher-added words from one screen.',
           practiceTitle: 'Practice',
           practiceCopy:
-            'Use Word Practice for ready-made review and Passage Quiz Generator when you want to create exercises from your own text.',
+            'Move from reading to recall with Word Practice and create custom activities with Passage Quiz Generator.',
           plannerTitle: 'Planner',
           plannerCopy:
-            'Use Planner to add work for the week, separate today from upcoming tasks, and quickly check what has already been completed.',
+            'Review weekly workload, add tasks, check what is due today, and search task history by name, date, or status.',
           settingsTitle: 'Settings',
           settingsCopy:
-            'Use the gear button in the topbar to switch language, theme, and font size for easier classroom use.',
+            'Use the gear button to switch language, theme, and font size for easier classroom use.',
           teacherTip1:
             'Sign in with GitHub before adding, editing, importing, or deleting vocabulary, notes, and planner tasks.',
           teacherTip2:
             'Teacher-added words can be edited or deleted from the word detail panel in Lessons.',
           teacherTip3:
             'When importing vocabulary, you can leave IPA blank if you want the system to fill it automatically.',
-          teacherTip4: 'Use Teacher Notes in Lessons to save short reminders for each topic.',
+          teacherTip4:
+            'Use Teacher Notes in Lessons to save objectives, reminders, or quick prompts for each topic.',
           teacherTip5:
             'Planner tasks are saved to your account, so you can review the same schedule after signing in again.',
           aboutCopy:
@@ -75,50 +76,50 @@ function HelpPage() {
           eyebrow: 'Hướng dẫn sử dụng',
           title: 'Cách dùng English Path',
           intro:
-            'Trang này giúp bạn dùng app theo thứ tự đơn giản: chọn khối, mở bài học, xem từ vựng, luyện tập và theo dõi công việc trong tuần.',
+            'Bạn có thể dùng app theo thứ tự đơn giản: chọn khối, mở bài học, xem từ vựng, luyện tập và theo dõi công việc trong tuần.',
           quickStart: 'Bắt đầu nhanh',
           menuGuide: 'Các mục chính',
           menuGuideCopy:
-            'Đây là những phần bạn sẽ dùng thường xuyên nhất khi dạy học, ôn tập và sắp xếp công việc trong tuần.',
+            'Đây là những khu vực bạn sẽ dùng thường xuyên nhất khi dạy học, ôn tập và sắp xếp công việc trong tuần.',
           tipsTitle: 'Mẹo dùng cho giáo viên',
           aboutTitle: 'Về ứng dụng',
           step1Title: 'Chọn khối cần dạy',
           step1Copy:
-            'Dùng bộ chuyển khối trên topbar để đổi giữa Lớp 6 đến Lớp 9 trước khi mở nội dung.',
+            'Dùng thanh chọn khối để chuyển nhanh giữa Lớp 6 và Lớp 9 trước khi mở nội dung.',
           step2Title: 'Mở Lessons để xem bài',
           step2Copy:
-            'Lessons hiển thị trọng tâm ngữ pháp, từ vựng, hoạt động trên lớp, project và các từ liên kết theo từng chủ điểm.',
-          step3Title: 'Dùng khu Từ vựng để quản lý từ',
+            'Lessons hiển thị trọng tâm bài học, từ vựng liên quan, hoạt động trên lớp và ghi chú giáo viên theo từng chủ điểm.',
+          step3Title: 'Dùng công cụ Từ vựng khi cần',
           step3Copy:
-            'Bạn có thể tìm theo từ khóa, mở chi tiết từ, xem nghĩa, phiên âm, ví dụ, rồi thêm, sửa hoặc xóa từ do giáo viên tạo.',
-          step4Title: 'Dùng Practice để củng cố',
+            'Bạn có thể tra từ, xem nghĩa và phiên âm, rồi thêm, import, sửa hoặc xóa các từ do giáo viên tạo.',
+          step4Title: 'Mở Practice để củng cố',
           step4Copy:
-            'Practice là nơi chuyển từ xem bài sang ghi nhớ, với Word Practice và Passage Quiz Generator.',
-          step5Title: 'Dùng Planner để theo dõi công việc',
+            'Dùng Word Practice để ôn tập nhanh và Passage Quiz Generator khi muốn tạo bài tập từ đoạn văn của riêng bạn.',
+          step5Title: 'Dùng Planner để quản lý tuần dạy',
           step5Copy:
-            'Planner giúp bạn thêm việc trong tuần, xem các việc đến hạn hôm nay và đánh dấu hoàn thành mà vẫn theo dõi được các việc sắp tới.',
+            'Planner giúp bạn thêm công việc, theo dõi việc hôm nay, tách việc sắp tới và tra lại các việc đã hoàn thành trong một nơi.',
           lessonsTitle: 'Lessons',
           lessonsCopy:
-            'Dùng khu này để xem bài học, tra từ vựng, thêm từ giáo viên, import danh sách từ, sửa xóa từ do giáo viên thêm và lưu ghi chú theo chủ điểm.',
+            'Dùng khu này để xem bài học, tra từ vựng, lưu ghi chú giáo viên theo chủ điểm và quản lý các từ do giáo viên thêm.',
           practiceTitle: 'Practice',
           practiceCopy:
-            'Dùng Word Practice để ôn tập có sẵn, và Passage Quiz Generator khi muốn tạo bài tập từ đoạn văn của riêng bạn.',
+            'Dùng Word Practice để ôn tập có sẵn, và Passage Quiz Generator khi muốn tạo hoạt động từ nội dung riêng.',
           plannerTitle: 'Planner',
           plannerCopy:
-            'Dùng Planner để thêm công việc trong tuần, tách việc hôm nay, việc sắp tới và kiểm tra nhanh những việc đã xong.',
+            'Dùng Planner để xem khối lượng công việc trong tuần, thêm việc mới, theo dõi việc hôm nay và tìm lại lịch sử công việc theo tên, ngày hoặc trạng thái.',
           settingsTitle: 'Cài đặt',
           settingsCopy:
-            'Dùng nút bánh răng trên topbar để đổi ngôn ngữ, giao diện và cỡ chữ cho phù hợp khi dạy học.',
+            'Dùng nút bánh răng để đổi ngôn ngữ, giao diện sáng tối và cỡ chữ cho phù hợp khi dạy học.',
           teacherTip1:
-            'Hãy đăng nhập GitHub trước khi thêm, sửa, import hoặc xóa từ vựng, ghi chú và nhắc việc.',
+            'Hãy đăng nhập GitHub trước khi thêm, sửa, import hoặc xóa từ vựng, ghi chú và công việc.',
           teacherTip2:
-            'Từ do giáo viên thêm có thể sửa hoặc xóa ngay trong khung chi tiết từ ở Lessons.',
+            'Các từ do giáo viên thêm có thể sửa hoặc xóa trực tiếp trong khung chi tiết từ ở Lessons.',
           teacherTip3:
             'Khi import từ vựng, bạn có thể để trống cột IPA nếu muốn hệ thống tự điền.',
           teacherTip4:
-            'Dùng Ghi chú giáo viên trong Lessons để lưu nhanh lưu ý cho từng chủ điểm.',
+            'Dùng Ghi chú giáo viên trong Lessons để lưu mục tiêu bài dạy, lưu ý hoặc gợi ý triển khai.',
           teacherTip5:
-            'Nhắc việc trong Planner được lưu theo tài khoản, nên có thể xem lại sau khi đăng nhập.',
+            'Công việc trong Planner được lưu theo tài khoản, nên bạn có thể xem lại sau khi đăng nhập.',
           aboutCopy:
             'English Path là công cụ gọn nhẹ hỗ trợ dạy và ôn tập tiếng Anh THCS, kết hợp bài học, tra từ, luyện tập, nhắc việc và tiện ích cho giáo viên trong một nơi.',
           guideTag: 'Hướng dẫn',
