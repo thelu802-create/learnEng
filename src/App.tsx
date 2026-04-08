@@ -15,6 +15,7 @@ const HomePage = lazy(() => import('./pages/HomePage'))
 const HelpPage = lazy(() => import('./pages/HelpPage'))
 const LessonsPage = lazy(() => import('./pages/LessonsPage'))
 const PlannerPage = lazy(() => import('./pages/PlannerPage'))
+const PlaygroundPage = lazy(() => import('./pages/PlaygroundPage'))
 const PracticePage = lazy(() => import('./pages/PracticePage'))
 const ProgressPage = lazy(() => import('./pages/ProgressPage'))
 const THEME_STORAGE_KEY = 'learneng-theme'
@@ -69,7 +70,12 @@ function App() {
   }, [fontSizeMode])
 
   const currentGrade = useMemo(() => gradeContent[selectedGrade], [selectedGrade])
-  const showGradeBar = selectedMenu === 'home' || selectedMenu === 'lessons' || selectedMenu === 'practice' || selectedMenu === 'progress'
+  const showGradeBar =
+    selectedMenu === 'home' ||
+    selectedMenu === 'lessons' ||
+    selectedMenu === 'practice' ||
+    selectedMenu === 'playground' ||
+    selectedMenu === 'progress'
   const registerTopbarPageAction = useCallback((label: string | null, handler: (() => void) | null) => {
     setTopbarPageActionLabel(label)
     setTopbarPageActionHandler(() => handler)
@@ -112,6 +118,10 @@ function App() {
 
     if (selectedMenu === 'planner') {
       return <PlannerPage onRegisterTopbarAction={registerTopbarPageAction} />
+    }
+
+    if (selectedMenu === 'playground') {
+      return <PlaygroundPage {...pageProps} />
     }
 
     if (selectedMenu === 'progress') {

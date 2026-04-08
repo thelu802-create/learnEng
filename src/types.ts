@@ -3,8 +3,8 @@ export type Language = 'vi' | 'en'
 export type ThemeMode = 'light' | 'dark'
 export type FontSizeMode = 'sm' | 'md' | 'lg'
 
-export type MenuKey = 'home' | 'lessons' | 'practice' | 'planner' | 'progress' | 'help'
-export type MenuIconKey = 'rocket' | 'book' | 'play' | 'calendar' | 'rise' | 'help'
+export type MenuKey = 'home' | 'lessons' | 'practice' | 'playground' | 'planner' | 'progress' | 'help'
+export type MenuIconKey = 'rocket' | 'book' | 'play' | 'bulb' | 'calendar' | 'rise' | 'help'
 
 export interface MenuItemConfig {
   key: MenuKey

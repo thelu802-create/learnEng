@@ -197,16 +197,6 @@ function HelpPage() {
 
   return (
     <Space orientation="vertical" size={20} className="full-width">
-      <Card className="hero-card highlight-card help-hero-card" variant="borderless">
-        <Space orientation="vertical" size={14} className="full-width">
-          <Tag className="hero-tag" variant="filled">
-            {copy.eyebrow}
-          </Tag>
-          <Title className="hero-title">{copy.title}</Title>
-          <Paragraph className="hero-copy">{copy.intro}</Paragraph>
-        </Space>
-      </Card>
-
       <Row gutter={[18, 18]}>
         <Col xs={24} xl={14}>
           <Card className="content-card help-guide-card" variant="borderless">

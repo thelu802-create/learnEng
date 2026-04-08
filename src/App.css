@@ -152,6 +152,176 @@
   border: 1px solid rgba(91, 192, 235, 0.16);
 }
 
+.playground-hero-card {
+  overflow: hidden;
+}
+
+.playground-hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.playground-card {
+  height: 100%;
+}
+
+.playground-card .ant-card-body {
+  height: 100%;
+}
+
+.playground-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.playground-scorebar {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.playground-scorebox {
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(42, 157, 143, 0.06);
+  border: 1px solid rgba(42, 157, 143, 0.12);
+}
+
+.playground-scorebox .ant-typography {
+  margin-bottom: 0;
+}
+
+.playground-word-card,
+.playground-answer-block {
+  display: grid;
+  gap: 10px;
+}
+
+.playground-word-card {
+  padding: 18px;
+  border-radius: 22px;
+  border: 1px solid rgba(42, 157, 143, 0.12);
+  background:
+    radial-gradient(circle at top right, rgba(42, 157, 143, 0.1), transparent 46%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(246, 251, 253, 0.96));
+}
+
+.playground-word-scramble,
+.playground-meaning-card {
+  display: grid;
+  place-items: center;
+  min-height: 96px;
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(15, 23, 42, 0.03);
+  color: #0f172a;
+  font-size: clamp(24px, 4vw, 34px);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+.playground-meaning-card {
+  font-size: clamp(18px, 3vw, 24px);
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+}
+
+.playground-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.playground-option.ant-radio-button-wrapper {
+  height: auto;
+  min-height: 58px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.35;
+  font-weight: 700;
+  white-space: normal;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.playground-option.ant-radio-button-wrapper::before {
+  display: none !important;
+}
+
+.playground-option.ant-radio-button-wrapper-checked,
+.playground-option.ant-radio-button-wrapper:hover {
+  color: #1f7f74;
+  border-color: rgba(42, 157, 143, 0.3);
+}
+
+.playground-option.is-correct.ant-radio-button-wrapper {
+  background: rgba(42, 157, 143, 0.12);
+  border-color: rgba(42, 157, 143, 0.35);
+  color: #1f7f74;
+}
+
+.playground-option.is-wrong.ant-radio-button-wrapper {
+  background: rgba(231, 111, 81, 0.1);
+  border-color: rgba(231, 111, 81, 0.3);
+  color: #c44523;
+}
+
+.playground-feedback {
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.playground-feedback.is-correct {
+  background: rgba(42, 157, 143, 0.08);
+  border-color: rgba(42, 157, 143, 0.22);
+}
+
+.playground-feedback.is-wrong {
+  background: rgba(231, 111, 81, 0.08);
+  border-color: rgba(231, 111, 81, 0.22);
+}
+
+.playground-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.theme-dark .playground-scorebox,
+.theme-dark .playground-word-card,
+.theme-dark .playground-option.ant-radio-button-wrapper {
+  background: rgba(16, 32, 40, 0.84);
+  border-color: rgba(123, 183, 232, 0.18);
+}
+
+.theme-dark .playground-word-scramble,
+.theme-dark .playground-meaning-card {
+  background: rgba(255, 255, 255, 0.06);
+  color: #f3f7f9;
+}
+
+.theme-dark .playground-feedback {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(148, 163, 184, 0.18);
+}
+
+.theme-dark .playground-feedback.is-correct {
+  background: rgba(42, 157, 143, 0.14);
+}
+
+.theme-dark .playground-feedback.is-wrong {
+  background: rgba(231, 111, 81, 0.14);
+}
+
 .planner-upcoming-card {
   border: 1px solid rgba(59, 130, 246, 0.12);
 }
