@@ -28,7 +28,8 @@ export async function createPlannerTaskRecord(input: PlannerTaskInput): Promise<
       due_date: input.dueDate,
       due_time: input.dueTime ?? '',
       priority: input.priority ?? 'medium',
-      repeat_weekly: input.repeatWeekly ?? false,
+      repeat_weekly: input.repeatPattern === 'weekly',
+      repeat_pattern: input.repeatPattern ?? null,
       completed: input.completed ?? false,
     })
     .select()
@@ -54,7 +55,8 @@ export async function updatePlannerTaskRecord(
       due_date: input.dueDate,
       due_time: input.dueTime ?? '',
       priority: input.priority ?? 'medium',
-      repeat_weekly: input.repeatWeekly ?? false,
+      repeat_weekly: input.repeatPattern === 'weekly',
+      repeat_pattern: input.repeatPattern ?? null,
       completed: input.completed ?? false,
       updated_at: new Date().toISOString(),
     })
@@ -76,6 +78,19 @@ export async function deletePlannerTaskRecord(taskId: string, userId: string): P
     .from('planner_tasks')
     .delete()
     .eq('id', taskId)
+    .eq('user_id', userId)
+
+  if (error) {
+    throw error
+  }
+}
+
+export async function deleteMultiplePlannerTaskRecords(taskIds: string[], userId: string): Promise<void> {
+  const supabase = requireSupabaseClient()
+  const { error } = await supabase
+    .from('planner_tasks')
+    .delete()
+    .in('id', taskIds)
     .eq('user_id', userId)
 
   if (error) {

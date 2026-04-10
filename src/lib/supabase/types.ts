@@ -105,6 +105,7 @@ export interface PlannerTaskRecord {
   due_time: string
   priority: 'low' | 'medium' | 'high'
   repeat_weekly: boolean
+  repeat_pattern: string | null
   completed: boolean
   created_at: string
   updated_at: string
@@ -117,6 +118,6 @@ export interface PlannerTaskInput {
   dueDate: string
   dueTime?: string
   priority?: 'low' | 'medium' | 'high'
-  repeatWeekly?: boolean
+  repeatPattern?: string | null
   completed?: boolean
 }

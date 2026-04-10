@@ -1,4 +1,5 @@
 export type PlannerTaskPriority = 'low' | 'medium' | 'high'
+export type PlannerTaskRepeat = 'weekly' | 'biweekly' | 'weekdays'
 
 export interface PlannerTask {
   id: string
@@ -7,7 +8,7 @@ export interface PlannerTask {
   dueDate: string
   dueTime: string
   priority: PlannerTaskPriority
-  repeatWeekly: boolean
+  repeatPattern: string | null
   completed: boolean
   createdAt: string
   updatedAt: string
@@ -19,7 +20,7 @@ export interface PlannerTaskInput {
   dueDate: string
   dueTime?: string
   priority?: PlannerTaskPriority
-  repeatWeekly?: boolean
+  repeatPattern?: string | null
 }
 
 export const PLANNER_STORAGE_KEY = 'english-path-planner-tasks'
@@ -78,7 +79,7 @@ export function createPlannerTask(input: PlannerTaskInput): PlannerTask {
     dueDate: input.dueDate,
     dueTime: input.dueTime ?? '',
     priority: input.priority ?? 'medium',
-    repeatWeekly: input.repeatWeekly ?? false,
+    repeatPattern: input.repeatPattern ?? null,
     completed: false,
     createdAt: now,
     updatedAt: now,
@@ -101,33 +102,29 @@ export function removePlannerTask(taskId: string): PlannerTask[] {
   return sortPlannerTasks(nextTasks)
 }
 
-export function togglePlannerTask(taskId: string): PlannerTask[] {
-  const nextTasks = readPlannerTasks().map((task) => {
-    if (task.id !== taskId) {
-      return task
-    }
-
-    const nextCompleted = task.repeatWeekly ? false : !task.completed
-    const nextDueDate =
-      !task.completed && task.repeatWeekly ? shiftDateByDays(task.dueDate, 7) : task.dueDate
-
-    return {
-      ...task,
-      completed: nextCompleted,
-      dueDate: nextDueDate,
-      updatedAt: new Date().toISOString(),
-    }
-  })
-
-  writePlannerTasks(nextTasks)
-  return sortPlannerTasks(nextTasks)
-}
-
 export function shiftPlannerTaskAfterCompletion(task: PlannerTask): PlannerTask {
-  if (task.repeatWeekly) {
+  if (task.repeatPattern === 'weekly') {
     return {
       ...task,
       dueDate: shiftDateByDays(task.dueDate, 7),
+      completed: false,
+      updatedAt: new Date().toISOString(),
+    }
+  }
+
+  if (task.repeatPattern === 'biweekly') {
+    return {
+      ...task,
+      dueDate: shiftDateByDays(task.dueDate, 14),
+      completed: false,
+      updatedAt: new Date().toISOString(),
+    }
+  }
+
+  if (task.repeatPattern === 'weekdays') {
+    return {
+      ...task,
+      dueDate: getNextWeekday(task.dueDate),
       completed: false,
       updatedAt: new Date().toISOString(),
     }
@@ -198,5 +195,14 @@ export function formatTaskDate(dateString: string, language: 'vi' | 'en'): strin
 function shiftDateByDays(dateString: string, days: number): string {
   const date = new Date(`${dateString}T09:00:00`)
   date.setDate(date.getDate() + days)
+  return date.toISOString().slice(0, 10)
+}
+
+function getNextWeekday(dateString: string): string {
+  const date = new Date(`${dateString}T09:00:00`)
+  date.setDate(date.getDate() + 1)
+  const dow = date.getDay()
+  if (dow === 0) date.setDate(date.getDate() + 1)      // Sunday → Monday
+  else if (dow === 6) date.setDate(date.getDate() + 2) // Saturday → Monday
   return date.toISOString().slice(0, 10)
 }

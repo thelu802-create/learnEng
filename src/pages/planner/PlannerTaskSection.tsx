@@ -17,7 +17,7 @@ interface PlannerTaskSectionProps {
   loadingText: string
   language: 'vi' | 'en'
   savingTask: boolean
-  repeatFieldLabel: string
+  repeatOptions: Array<{ value: string; label: string }>
   editLabel: string
   deleteLabel: string
   deleteTitle: string
@@ -42,7 +42,7 @@ function PlannerTaskSection({
   loadingText,
   language,
   savingTask,
-  repeatFieldLabel,
+  repeatOptions,
   editLabel,
   deleteLabel,
   deleteTitle,
@@ -81,7 +81,7 @@ function PlannerTaskSection({
               task={task}
               language={language}
               savingTask={savingTask}
-              repeatFieldLabel={repeatFieldLabel}
+              repeatOptions={repeatOptions}
               editLabel={editLabel}
               deleteLabel={deleteLabel}
               deleteTitle={deleteTitle}

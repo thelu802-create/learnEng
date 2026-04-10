@@ -1,5 +1,6 @@
 import { memo } from 'react'
 import { Card, Progress, Typography } from 'antd'
+import type { ReactNode } from 'react'
 
 const { Text } = Typography
 
@@ -24,6 +25,7 @@ interface PlannerWeeklyOverviewProps {
   weeklyRangeText: string
   weeklyMetaText: string
   weeklyFocusText: string
+  actionSlot?: ReactNode
   weeklyOverview: {
     days: WeeklyDayItem[]
     total: number
@@ -44,6 +46,7 @@ function PlannerWeeklyOverview({
   weeklyRangeText,
   weeklyMetaText,
   weeklyFocusText,
+  actionSlot,
   weeklyOverview,
 }: PlannerWeeklyOverviewProps) {
   return (
@@ -84,6 +87,7 @@ function PlannerWeeklyOverview({
               <Text type="secondary">{weekFocusLabel}</Text>
             </div>
             <div className="planner-weekly-chart-aside">
+              {actionSlot ? <div className="planner-weekly-actions">{actionSlot}</div> : null}
               <div className="planner-weekly-chip is-ghost">
                 <span>{weekTotalLabel}</span>
                 <strong>{weeklyOverview.total}</strong>

@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { CalendarOutlined } from '@ant-design/icons'
-import { Button, Checkbox, Col, Drawer, Form, Input, Row, Select, Space, Typography } from 'antd'
+import { Button, Col, Drawer, Form, Input, Row, Select, Space, Typography } from 'antd'
 import type { FormInstance } from 'antd'
 import type { FocusEvent, MouseEvent } from 'react'
 import type { PlannerTaskInput, PlannerTaskPriority } from '../../lib/plannerStorage'
@@ -30,6 +30,7 @@ interface PlannerTaskDrawerProps {
   saveAndNewActionText: string
   saveTaskText: string
   priorityOptions: Array<{ value: PlannerTaskPriority; label: string }>
+  repeatOptions: Array<{ value: string; label: string }>
   onClose: () => void
   onSubmit: (keepOpen?: boolean) => void
 }
@@ -68,6 +69,7 @@ function PlannerTaskDrawer({
   saveAndNewActionText,
   saveTaskText,
   priorityOptions,
+  repeatOptions,
   onClose,
   onSubmit,
 }: PlannerTaskDrawerProps) {
@@ -105,7 +107,7 @@ function PlannerTaskDrawer({
         <Form
           form={form}
           layout="vertical"
-          initialValues={{ priority: 'medium', repeatWeekly: false, dueTime: '' }}
+          initialValues={{ priority: 'medium', repeatPattern: null, dueTime: '' }}
         >
           <Form.Item name="title" label={titleField} rules={[{ required: true, message: requiredTitle }]}>
             <Input />
@@ -154,8 +156,8 @@ function PlannerTaskDrawer({
             <Select options={priorityOptions} />
           </Form.Item>
 
-          <Form.Item name="repeatWeekly" valuePropName="checked">
-            <Checkbox>{repeatField}</Checkbox>
+          <Form.Item name="repeatPattern" label={repeatField}>
+            <Select options={repeatOptions} allowClear placeholder="—" />
           </Form.Item>
         </Form>
       </Space>

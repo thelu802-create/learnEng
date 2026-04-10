@@ -12,14 +12,27 @@ interface PlannerOverviewGridProps {
     tone: string
     icon: ReactNode
   }>
+  activeKey?: string
+  onCardClick?: (key: string) => void
 }
 
-function PlannerOverviewGrid({ items }: PlannerOverviewGridProps) {
+function PlannerOverviewGrid({ items, activeKey, onCardClick }: PlannerOverviewGridProps) {
   return (
     <Row gutter={[14, 14]}>
       {items.map((item) => (
         <Col xs={12} lg={6} key={item.key}>
-          <Card className={`content-card planner-overview-card planner-overview-${item.key}`} variant="borderless">
+          <Card
+            className={[
+              'content-card planner-overview-card',
+              `planner-overview-${item.key}`,
+              onCardClick ? 'planner-overview-clickable' : '',
+              activeKey === item.key ? 'planner-overview-active' : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+            variant="borderless"
+            onClick={onCardClick ? () => onCardClick(item.key) : undefined}
+          >
             <div className="planner-overview-head">
               <span className={`planner-overview-icon tone-${item.tone}`}>{item.icon}</span>
               <Tag color={item.tone}>{item.value}</Tag>
