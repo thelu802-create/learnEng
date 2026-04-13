@@ -1024,31 +1024,6 @@ function PlannerPage({ onRegisterTopbarAction }: PlannerPageProps) {
 
   return (
     <Space orientation="vertical" size={20} className="full-width">
-      {/* Print view (hidden on screen, visible when printing) */}
-      <div className="planner-print-view">
-        <div className="planner-print-title">{t('planner.printTitle')}</div>
-        <div className="planner-print-range">{weeklyRangeText}</div>
-        <div className="planner-print-days">
-          {weeklyOverview.days.map((day) => {
-            const dayTasks = tasks.filter((task) => task.dueDate === day.key)
-            return (
-              <div key={day.key} className={`planner-print-day${day.isToday ? ' is-today' : ''}`}>
-                <div className="planner-print-day-label">{day.label} {day.dayNumber}</div>
-                {dayTasks.length === 0 ? (
-                  <div className="planner-print-no-tasks">{t('planner.printNoTasks')}</div>
-                ) : (
-                  dayTasks.map((task) => (
-                    <div key={task.id} className={`planner-print-task-row${task.completed ? ' is-done' : ''}`}>
-                      {task.completed ? '✓' : '☐'} {task.title}
-                      {task.dueTime ? ` · ${task.dueTime}` : ''}
-                    </div>
-                  ))
-                )}
-              </div>
-            )
-          })}
-        </div>
-      </div>
 
       <Card className="hero-card highlight-card planner-hero-card" variant="borderless">
         <div className="planner-hero-head">
