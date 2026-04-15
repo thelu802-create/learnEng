@@ -979,6 +979,14 @@
   gap: 20px;
 }
 
+.topbar-main-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+}
+
 .topbar-left {
   display: flex;
   align-items: center;
@@ -1017,6 +1025,12 @@
   justify-content: flex-end;
   gap: 12px;
   flex-wrap: wrap;
+}
+
+.topbar-action-row {
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
 }
 
 .topbar-page-action.ant-btn {
@@ -4288,15 +4302,17 @@
   }
 
   .topbar {
-    flex-direction: column;
-    align-items: stretch;
     padding: 14px 16px;
-    gap: 14px;
+    gap: 12px;
+  }
+
+  .topbar-main-row {
+    align-items: center;
   }
 
   .topbar-left {
-    width: 100%;
-    justify-content: flex-start;
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   .topbar-grade {
@@ -4304,9 +4320,14 @@
   }
 
   .topbar-actions {
-    justify-content: stretch;
+    width: auto;
+    flex: 0 0 auto;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .topbar-action-row {
     width: 100%;
-    align-items: flex-start;
   }
 
   .topbar-page-action.ant-btn {
@@ -4328,11 +4349,15 @@
   }
 
   .settings-trigger {
-    width: 52px;
+    width: 48px;
+    min-width: 48px;
+    height: 48px;
   }
 
   .settings-trigger-icon {
-    width: 52px;
+    width: 48px;
+    min-width: 48px;
+    height: 48px;
   }
 
   .topbar-actions .ant-segmented {
@@ -4490,6 +4515,10 @@
     padding: 12px 12px 14px;
   }
 
+  .topbar-main-row {
+    gap: 10px;
+  }
+
   .grade-context-bar {
     margin-bottom: 14px;
     padding: 12px;
@@ -4501,6 +4530,14 @@
 
   .topbar-grade .page-title.ant-typography {
     font-size: 1.5rem;
+  }
+
+  .mobile-menu-trigger,
+  .settings-trigger,
+  .settings-trigger-icon {
+    width: 46px;
+    min-width: 46px;
+    height: 46px;
   }
 
   .hero-grid {

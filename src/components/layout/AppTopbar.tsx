@@ -64,39 +64,44 @@ function AppTopbar({
   return (
     <>
       <header className="topbar">
-        <div className="topbar-left">
-          <Button
-            type="default"
-            icon={<MenuOutlined />}
-            className="mobile-menu-trigger"
-            onClick={onOpenMobileMenu}
-            aria-label={t('common.openNavigationMenu')}
-          />
+        <div className="topbar-main-row">
+          <div className="topbar-left">
+            <Button
+              type="default"
+              icon={<MenuOutlined />}
+              className="mobile-menu-trigger"
+              onClick={onOpenMobileMenu}
+              aria-label={t('common.openNavigationMenu')}
+            />
 
-          <div className="topbar-grade">
-            <Text className="page-kicker">{t('common.appName')}</Text>
-            <Title level={4} className="page-title">
-              {menuLabel(currentMenu)}
-            </Title>
+            <div className="topbar-grade">
+              <Text className="page-kicker">{t('common.appName')}</Text>
+              <Title level={4} className="page-title">
+                {menuLabel(currentMenu)}
+              </Title>
+            </div>
+          </div>
+
+          <div className="topbar-actions">
+            <Tooltip title={t('topbar.settingsLabel')}>
+              <Button
+                type="default"
+                icon={<SettingOutlined />}
+                className={`settings-trigger settings-trigger-icon ${isSettingsOpen ? 'is-open' : ''}`}
+                onClick={() => setIsSettingsOpen(true)}
+                aria-label={t('topbar.settingsLabel')}
+              />
+            </Tooltip>
           </div>
         </div>
 
-        <div className="topbar-actions">
-          {pageActionLabel && onPageAction ? (
+        {pageActionLabel && onPageAction ? (
+          <div className="topbar-action-row">
             <Button type="primary" icon={<PlusOutlined />} className="topbar-page-action" onClick={onPageAction}>
               {pageActionLabel}
             </Button>
-          ) : null}
-          <Tooltip title={t('topbar.settingsLabel')}>
-            <Button
-              type="default"
-              icon={<SettingOutlined />}
-              className={`settings-trigger settings-trigger-icon ${isSettingsOpen ? 'is-open' : ''}`}
-              onClick={() => setIsSettingsOpen(true)}
-              aria-label={t('topbar.settingsLabel')}
-            />
-          </Tooltip>
-        </div>
+          </div>
+        ) : null}
       </header>
 
       <Drawer
