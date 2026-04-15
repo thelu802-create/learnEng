@@ -1,6 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import { App as AntdApp, ConfigProvider, Layout, Spin, theme as antdTheme } from 'antd'
-import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { HashRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import './App.css'
 import AppGradeBar from './components/layout/AppGradeBar'
 import AppSidebar from './components/layout/AppSidebar'
@@ -196,9 +196,9 @@ function App() {
   return (
     <I18nProvider>
       <SupabaseAuthProvider>
-        <BrowserRouter>
+        <HashRouter>
           <AppShell />
-        </BrowserRouter>
+        </HashRouter>
       </SupabaseAuthProvider>
     </I18nProvider>
   )
