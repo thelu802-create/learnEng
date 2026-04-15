@@ -3,13 +3,21 @@ export type Language = 'vi' | 'en'
 export type ThemeMode = 'light' | 'dark'
 export type FontSizeMode = 'sm' | 'md' | 'lg'
 
-export type MenuKey = 'home' | 'lessons' | 'practice' | 'playground' | 'planner' | 'progress' | 'help'
+export type MenuKey =
+  | 'home'
+  | 'lessons'
+  | 'practice'
+  | 'playground'
+  | 'planner'
+  | 'progress'
+  | 'officeTips'
+  | 'help'
 export type MenuIconKey = 'rocket' | 'book' | 'play' | 'bulb' | 'calendar' | 'rise' | 'help'
 
 export interface MenuItemConfig {
   key: MenuKey
   icon: MenuIconKey
-  label: string
+  path: string
 }
 
 export interface VocabularyWord {

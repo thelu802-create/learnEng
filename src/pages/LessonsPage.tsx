@@ -85,151 +85,79 @@ function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
   const [autoFillImportIpa, setAutoFillImportIpa] = useState(true)
   const [editingVocabularyId, setEditingVocabularyId] = useState<string | null>(null)
 
-  const lessonsCopy: LessonsCopy =
-    language === 'en'
-      ? {
-          overviewEyebrow: 'Teaching topics',
-          unitSummary: 'ready-to-teach units',
-          openVocabulary: 'Open vocabulary',
-          linkedTopic: 'Linked topic',
-          focusLabel: 'Teaching focus',
-          practiceLabel: 'Class activity',
-          projectLabel: 'Suggested project',
-          vocabularyEyebrow: 'Vocabulary board',
-          vocabularyTitle: 'Search by topic and open a word quickly',
-          wordCountLabel: 'words ready',
-          detailTitle: 'Word details',
-          detailSubtitle: 'Meaning, pronunciation, and a sample sentence',
-          notesTitle: 'Teacher notes',
-          notesCopy: 'Save a short teaching note for the selected topic.',
-          notesPlaceholder: 'Add objectives, reminders, or quick in-class prompts...',
-          saveNote: 'Save note',
-          notesNeedLogin: 'Sign in with GitHub to save teaching notes for this topic.',
-          notesNotReady: 'Supabase is not configured yet in this environment.',
-          notesSaved: 'Note saved successfully.',
-          notesLoadError: 'Unable to load teacher notes.',
-          notesSaveError: 'Unable to save note.',
-          toolsTitle: 'Vocabulary tools',
-          toolsCopy: 'Add a single word or import a CSV/Excel file for the selected grade.',
-          toolsNeedLogin: 'Sign in with GitHub to add and import vocabulary.',
-          addWord: 'Add word',
-          importWords: 'Import words',
-          downloadTemplate: 'Download template',
-          downloadTemplateCsv: 'CSV template',
-          downloadTemplateExcel: 'Excel template',
-          loadWordsError: 'Unable to load teacher vocabulary.',
-          saveWordSuccess: 'New vocabulary added successfully.',
-          saveWordError: 'Unable to save vocabulary.',
-          duplicateWord: 'This word already exists in the selected topic.',
-          editWord: 'Edit',
-          updateWord: 'Save changes',
-          deleteWord: 'Delete',
-          deleteConfirmTitle: 'Delete this teacher-added word?',
-          deleteConfirmContent: 'This action cannot be undone.',
-          deleteSuccess: 'Vocabulary deleted.',
-          deleteError: 'Unable to delete vocabulary.',
-          importSuccess: 'Imported {count} new words.',
-          importPartial: 'Imported {count} words. Skipped {skipped} duplicate or invalid rows.',
-          importEmpty: 'There are no new rows to import.',
-          importReadError: 'Unable to read the import file.',
-          importTitle: 'Import vocabulary',
-          importCopy: 'Use the template file, then upload it back here for the current grade.',
-          importSelectedFile: 'Selected file',
-          importRowsReady: '{count} rows ready to import.',
-          importHint:
-            'Required columns: topic_key, word, meaning. Optional columns: topic_title, ipa, example.',
-          importRun: 'Import now',
-          addWordTitle: 'Add a vocabulary item',
-          addWordCopy: 'This word will be added to the selected topic for the current grade.',
-          fieldTopic: 'Topic',
-          fieldWord: 'Word',
-          fieldIpa: 'IPA',
-          fieldMeaning: 'Meaning',
-          fieldExample: 'Example sentence',
-          fileButton: 'Choose file',
-          teacherTag: 'Teacher added',
-          autoFillIpa: 'Auto-fill IPA',
-          autoFillIpaHint: 'If IPA is blank, try filling it automatically from the dictionary API.',
-        }
-      : {
-          overviewEyebrow: 'Chủ điểm giảng dạy',
-          unitSummary: 'chủ điểm sẵn để triển khai',
-          openVocabulary: 'Xem từ vựng',
-          linkedTopic: 'Chủ điểm liên kết',
-          focusLabel: 'Trọng tâm bài',
-          practiceLabel: 'Hoạt động trên lớp',
-          projectLabel: 'Gợi ý dự án',
-          vocabularyEyebrow: 'Bảng từ vựng',
-          vocabularyTitle: 'Tra cứu theo chủ điểm và mở nhanh từng từ',
-          wordCountLabel: 'từ sẵn dùng',
-          detailTitle: 'Chi tiết từ vựng',
-          detailSubtitle: 'Nghĩa, phiên âm và câu ví dụ',
-          notesTitle: 'Ghi chú giáo viên',
-          notesCopy: 'Lưu nhanh mục tiêu bài dạy, lưu ý hoặc gợi ý triển khai cho chủ điểm đang chọn.',
-          notesPlaceholder: 'Ghi mục tiêu, nhắc nhở hoặc hoạt động triển khai trên lớp...',
-          saveNote: 'Lưu ghi chú',
-          notesNeedLogin: 'Hãy đăng nhập GitHub trong phần Cài đặt để lưu ghi chú lên Supabase.',
-          notesNotReady: 'Môi trường này chưa cấu hình Supabase.',
-          notesSaved: 'Đã lưu ghi chú.',
-          notesLoadError: 'Không tải được ghi chú giáo viên.',
-          notesSaveError: 'Không lưu được ghi chú.',
-          toolsTitle: 'Công cụ từ vựng',
-          toolsCopy: 'Thêm nhanh một từ hoặc import cả file CSV/Excel cho khối đang chọn.',
-          toolsNeedLogin: 'Hãy đăng nhập GitHub để thêm và import từ vựng.',
-          addWord: 'Thêm từ',
-          importWords: 'Import từ',
-          downloadTemplate: 'Tải file mẫu',
-          downloadTemplateCsv: 'Mẫu CSV',
-          downloadTemplateExcel: 'Mẫu Excel',
-          loadWordsError: 'Không tải được từ vựng giáo viên.',
-          saveWordSuccess: 'Đã thêm từ vựng mới.',
-          saveWordError: 'Không lưu được từ vựng.',
-          duplicateWord: 'Từ này đã có trong chủ điểm đang chọn.',
-          editWord: 'Sửa',
-          updateWord: 'Lưu thay đổi',
-          deleteWord: 'Xóa',
-          deleteConfirmTitle: 'Xóa từ do giáo viên thêm?',
-          deleteConfirmContent: 'Thao tác này không thể hoàn tác.',
-          deleteSuccess: 'Đã xóa từ vựng.',
-          deleteError: 'Không xóa được từ vựng.',
-          importSuccess: 'Đã import {count} từ mới.',
-          importPartial: 'Đã import {count} từ. Bỏ qua {skipped} dòng trùng hoặc chưa hợp lệ.',
-          importEmpty: 'Không có dòng mới nào để import.',
-          importReadError: 'Không đọc được file import.',
-          importTitle: 'Import từ vựng',
-          importCopy: 'Tải file mẫu, điền dữ liệu rồi upload lại cho khối đang chọn.',
-          importSelectedFile: 'File đã chọn',
-          importRowsReady: 'Có {count} dòng sẵn sàng để import.',
-          importHint: 'Bắt buộc: topic_key, word, meaning. Tùy chọn: topic_title, ipa, example.',
-          importRun: 'Bắt đầu import',
-          addWordTitle: 'Thêm một mục từ vựng',
-          addWordCopy: 'Từ này sẽ được thêm vào chủ điểm đang chọn của khối hiện tại.',
-          fieldTopic: 'Chủ điểm',
-          fieldWord: 'Từ vựng',
-          fieldIpa: 'Phiên âm',
-          fieldMeaning: 'Nghĩa',
-          fieldExample: 'Câu ví dụ',
-          fileButton: 'Chọn file',
-          teacherTag: 'Giáo viên thêm',
-          autoFillIpa: 'Tự động điền IPA',
-          autoFillIpaHint: 'Nếu ô IPA đang trống, hệ thống sẽ thử tự điền từ dictionary API.',
-        }
+  const lessonsCopy: LessonsCopy = {
+    overviewEyebrow: t('lessonsPage.overviewEyebrow'),
+    unitSummary: t('lessonsPage.unitSummary'),
+    openVocabulary: t('lessonsPage.openVocabulary'),
+    linkedTopic: t('lessonsPage.linkedTopic'),
+    focusLabel: t('lessonsPage.focusLabel'),
+    practiceLabel: t('lessonsPage.practiceLabel'),
+    projectLabel: t('lessonsPage.projectLabel'),
+    vocabularyEyebrow: t('lessonsPage.vocabularyEyebrow'),
+    vocabularyTitle: t('lessonsPage.vocabularyTitle'),
+    wordCountLabel: t('lessonsPage.wordCountLabel'),
+    detailTitle: t('lessonsPage.detailTitle'),
+    detailSubtitle: t('lessonsPage.detailSubtitle'),
+    notesTitle: t('lessonsPage.notesTitle'),
+    notesCopy: t('lessonsPage.notesCopy'),
+    notesPlaceholder: t('lessonsPage.notesPlaceholder'),
+    saveNote: t('lessonsPage.saveNote'),
+    notesNeedLogin: t('lessonsPage.notesNeedLogin'),
+    notesNotReady: t('lessonsPage.notesNotReady'),
+    notesSaved: t('lessonsPage.notesSaved'),
+    notesLoadError: t('lessonsPage.notesLoadError'),
+    notesSaveError: t('lessonsPage.notesSaveError'),
+    toolsTitle: t('lessonsPage.toolsTitle'),
+    toolsCopy: t('lessonsPage.toolsCopy'),
+    toolsNeedLogin: t('lessonsPage.toolsNeedLogin'),
+    addWord: t('lessonsPage.addWord'),
+    importWords: t('lessonsPage.importWords'),
+    downloadTemplate: t('lessonsPage.downloadTemplate'),
+    downloadTemplateCsv: t('lessonsPage.downloadTemplateCsv'),
+    downloadTemplateExcel: t('lessonsPage.downloadTemplateExcel'),
+    loadWordsError: t('lessonsPage.loadWordsError'),
+    saveWordSuccess: t('lessonsPage.saveWordSuccess'),
+    saveWordError: t('lessonsPage.saveWordError'),
+    duplicateWord: t('lessonsPage.duplicateWord'),
+    editWord: t('lessonsPage.editWord'),
+    updateWord: t('lessonsPage.updateWord'),
+    deleteWord: t('lessonsPage.deleteWord'),
+    deleteConfirmTitle: t('lessonsPage.deleteConfirmTitle'),
+    deleteConfirmContent: t('lessonsPage.deleteConfirmContent'),
+    deleteSuccess: t('lessonsPage.deleteSuccess'),
+    deleteError: t('lessonsPage.deleteError'),
+    importSuccess: t('lessonsPage.importSuccess'),
+    importPartial: t('lessonsPage.importPartial'),
+    importEmpty: t('lessonsPage.importEmpty'),
+    importReadError: t('lessonsPage.importReadError'),
+    importTitle: t('lessonsPage.importTitle'),
+    importCopy: t('lessonsPage.importCopy'),
+    importSelectedFile: t('lessonsPage.importSelectedFile'),
+    importRowsReady: t('lessonsPage.importRowsReady'),
+    importHint: t('lessonsPage.importHint'),
+    importRun: t('lessonsPage.importRun'),
+    addWordTitle: t('lessonsPage.addWordTitle'),
+    addWordCopy: t('lessonsPage.addWordCopy'),
+    fieldTopic: t('lessonsPage.fieldTopic'),
+    fieldWord: t('lessonsPage.fieldWord'),
+    fieldIpa: t('lessonsPage.fieldIpa'),
+    fieldMeaning: t('lessonsPage.fieldMeaning'),
+    fieldExample: t('lessonsPage.fieldExample'),
+    fileButton: t('lessonsPage.fileButton'),
+    teacherTag: t('lessonsPage.teacherTag'),
+    autoFillIpa: t('lessonsPage.autoFillIpa'),
+    autoFillIpaHint: t('lessonsPage.autoFillIpaHint'),
+  }
 
-  const notesNeedLoginText =
-    language === 'en'
-      ? lessonsCopy.notesNeedLogin
-      : 'Hãy đăng nhập GitHub để lưu ghi chú giảng dạy cho chủ điểm này.'
-  const toolsNeedLoginText =
-    language === 'en'
-      ? lessonsCopy.toolsNeedLogin
-      : 'Hãy đăng nhập GitHub để thêm và import từ vựng.'
-  const loginActionText = language === 'en' ? 'Sign in with GitHub' : 'Đăng nhập GitHub'
+  const notesNeedLoginText = lessonsCopy.notesNeedLogin
+  const toolsNeedLoginText = lessonsCopy.toolsNeedLogin
+  const loginActionText = t('topbar.signIn')
 
   const handleGithubSignIn = async () => {
     try {
       await signInWithGithub()
     } catch {
-      message.error(language === 'en' ? 'Unable to start GitHub sign-in.' : 'Không thể bắt đầu đăng nhập GitHub.')
+      message.error(t('planner.signInError'))
     }
   }
 
@@ -506,7 +434,7 @@ function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
     const normalizedWord = normalizeWordKey(trimmedWord)
 
     if (!topicTitle) {
-      message.error(language === 'en' ? 'Please choose a valid topic.' : 'Hãy chọn một chủ điểm hợp lệ.')
+      message.error(t('lessonsPage.validTopicRequired'))
       return
     }
 
@@ -553,9 +481,7 @@ function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
         setTeacherVocabularyEntries((currentEntries) =>
           currentEntries.map((entry) => (entry.id === updatedEntry.id ? updatedEntry : entry)),
         )
-        message.success(
-          language === 'en' ? 'Vocabulary updated successfully.' : 'Đã cập nhật từ vựng.',
-        )
+        message.success(t('lessonsPage.updateWordSuccess'))
       } else {
         const [createdEntry] = await createVocabularyEntries([
           {
@@ -627,7 +553,7 @@ function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
         topic_title: fallbackTopicTitle,
         word: 'classmate',
         ipa: '',
-        meaning: language === 'en' ? 'classmate' : 'bạn cùng lớp',
+        meaning: t('lessonsPage.templateMeaningClassmate'),
         example: 'My classmate sits next to me.',
       },
       {
@@ -635,7 +561,7 @@ function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
         topic_title: fallbackTopicTitle,
         word: 'timetable',
         ipa: '',
-        meaning: language === 'en' ? 'timetable' : 'thời khóa biểu',
+        meaning: t('lessonsPage.templateMeaningTimetable'),
         example: 'Our timetable is on the classroom wall.',
       },
     ]
@@ -950,14 +876,10 @@ function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
                     </Space>
                     <Text type="secondary">
                       {isVocabularyLoading
-                        ? language === 'en'
-                          ? 'Loading teacher vocabulary...'
-                          : 'Đang tải từ vựng giáo viên...'
-                        : `${teacherVocabularyEntries.filter((entry) => entry.grade_key === selectedGrade).length} ${
-                            language === 'en'
-                              ? 'teacher-added words in this grade'
-                              : 'từ giáo viên đã thêm ở khối này'
-                          }`}
+                        ? t('lessonsPage.loadingTeacherVocabulary')
+                        : t('lessonsPage.teacherWordsInGrade', {
+                            count: teacherVocabularyEntries.filter((entry) => entry.grade_key === selectedGrade).length,
+                          })}
                     </Text>
                   </>
                 )}

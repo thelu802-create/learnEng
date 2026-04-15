@@ -45,7 +45,7 @@ function scrambleWord(word: string): string {
 }
 
 function PlaygroundPage({ selectedGrade, currentGrade }: PlaygroundPageProps) {
-  const { language, gradeLabel } = useI18n()
+  const { gradeLabel, t } = useI18n()
   const [scrambleIndex, setScrambleIndex] = useState(0)
   const [scrambleAnswer, setScrambleAnswer] = useState('')
   const [scrambleChecked, setScrambleChecked] = useState(false)
@@ -55,52 +55,29 @@ function PlaygroundPage({ selectedGrade, currentGrade }: PlaygroundPageProps) {
   const [meaningChecked, setMeaningChecked] = useState(false)
   const [meaningScore, setMeaningScore] = useState(0)
 
-  const copy =
-    language === 'en'
-      ? {
-          scrambleTitle: 'Word scramble',
-          scrambleCopy: 'Look at the mixed-up word, type the correct answer, then move to the next round.',
-          meaningTitle: 'Meaning sprint',
-          meaningCopy: 'Read the meaning and choose the matching English word as quickly as you can.',
-          check: 'Check answer',
-          next: 'Next round',
-          playAgain: 'Play again',
-          yourAnswer: 'Your answer',
-          answerPlaceholder: 'Type the correct word',
-          correct: 'Correct',
-          tryAgain: 'Not quite right',
-          answerReveal: 'Correct answer',
-          topicLabel: 'Topic',
-          scoreLabel: 'Score',
-          roundsLabel: 'Rounds',
-          readyWords: 'words ready',
-          ofLabel: 'of',
-          modeScramble: 'Scramble',
-          modeMeaning: 'Meaning',
-          progressCopy: 'Quick classroom warm-up or a short homework review.',
-        }
-      : {
-          scrambleTitle: 'Xếp lại chữ',
-          scrambleCopy: 'Nhìn từ bị đảo chữ, nhập đáp án đúng rồi chuyển sang lượt tiếp theo.',
-          meaningTitle: 'Chọn từ đúng theo nghĩa',
-          meaningCopy: 'Đọc nghĩa tiếng Việt và chọn nhanh từ tiếng Anh phù hợp nhất.',
-          check: 'Kiểm tra',
-          next: 'Lượt tiếp theo',
-          playAgain: 'Chơi lại',
-          yourAnswer: 'Câu trả lời của bạn',
-          answerPlaceholder: 'Nhập từ đúng',
-          correct: 'Chính xác rồi',
-          tryAgain: 'Chưa đúng, thử lại nhé',
-          answerReveal: 'Đáp án đúng',
-          topicLabel: 'Chủ điểm',
-          scoreLabel: 'Điểm',
-          roundsLabel: 'Lượt chơi',
-          readyWords: 'từ sẵn sàng',
-          ofLabel: 'trên',
-          modeScramble: 'Đảo chữ',
-          modeMeaning: 'Theo nghĩa',
-          progressCopy: 'Phù hợp để khởi động tiết học hoặc ôn nhanh cuối buổi.',
-        }
+  const copy = {
+    scrambleTitle: t('playgroundPage.scrambleTitle'),
+    scrambleCopy: t('playgroundPage.scrambleCopy'),
+    meaningTitle: t('playgroundPage.meaningTitle'),
+    meaningCopy: t('playgroundPage.meaningCopy'),
+    check: t('playgroundPage.check'),
+    next: t('playgroundPage.next'),
+    playAgain: t('playgroundPage.playAgain'),
+    yourAnswer: t('playgroundPage.yourAnswer'),
+    answerPlaceholder: t('playgroundPage.answerPlaceholder'),
+    correct: t('playgroundPage.correct'),
+    tryAgain: t('playgroundPage.tryAgain'),
+    answerReveal: t('playgroundPage.answerReveal'),
+    topicLabel: t('playgroundPage.topicLabel'),
+    scoreLabel: t('playgroundPage.scoreLabel'),
+    roundsLabel: t('playgroundPage.roundsLabel'),
+    readyWords: t('playgroundPage.readyWords'),
+    ofLabel: t('playgroundPage.ofLabel'),
+    modeScramble: t('playgroundPage.modeScramble'),
+    modeMeaning: t('playgroundPage.modeMeaning'),
+    progressCopy: t('playgroundPage.progressCopy'),
+    notEnoughWords: t('playgroundPage.notEnoughWords'),
+  }
 
   const words = useMemo<PlaygroundWord[]>(
     () =>
@@ -264,7 +241,9 @@ function PlaygroundPage({ selectedGrade, currentGrade }: PlaygroundPageProps) {
                   </div>
 
                   {scrambleChecked ? (
-                    <div className={`playground-feedback ${scrambleAnswer.trim().toLowerCase() === currentScramble.word.toLowerCase() ? 'is-correct' : 'is-wrong'}`}>
+                    <div
+                      className={`playground-feedback ${scrambleAnswer.trim().toLowerCase() === currentScramble.word.toLowerCase() ? 'is-correct' : 'is-wrong'}`}
+                    >
                       <Space size={10} align="start">
                         {scrambleAnswer.trim().toLowerCase() === currentScramble.word.toLowerCase() ? (
                           <CheckCircleOutlined />
@@ -294,13 +273,16 @@ function PlaygroundPage({ selectedGrade, currentGrade }: PlaygroundPageProps) {
                     >
                       {copy.check}
                     </Button>
-                    <Button icon={scrambleIndex >= scrambleRounds.length - 1 ? <ReloadOutlined /> : <RightOutlined />} onClick={nextScramble}>
+                    <Button
+                      icon={scrambleIndex >= scrambleRounds.length - 1 ? <ReloadOutlined /> : <RightOutlined />}
+                      onClick={nextScramble}
+                    >
                       {scrambleIndex >= scrambleRounds.length - 1 ? copy.playAgain : copy.next}
                     </Button>
                   </div>
                 </>
               ) : (
-                <Paragraph className="settings-copy">{language === 'en' ? 'Not enough words yet.' : 'Chưa đủ từ để chơi.'}</Paragraph>
+                <Paragraph className="settings-copy">{copy.notEnoughWords}</Paragraph>
               )}
             </Space>
           </Card>
@@ -393,13 +375,16 @@ function PlaygroundPage({ selectedGrade, currentGrade }: PlaygroundPageProps) {
                     >
                       {copy.check}
                     </Button>
-                    <Button icon={meaningRound >= meaningRounds.length - 1 ? <ReloadOutlined /> : <RightOutlined />} onClick={nextMeaning}>
+                    <Button
+                      icon={meaningRound >= meaningRounds.length - 1 ? <ReloadOutlined /> : <RightOutlined />}
+                      onClick={nextMeaning}
+                    >
                       {meaningRound >= meaningRounds.length - 1 ? copy.playAgain : copy.next}
                     </Button>
                   </div>
                 </>
               ) : (
-                <Paragraph className="settings-copy">{language === 'en' ? 'Not enough words yet.' : 'Chưa đủ từ để chơi.'}</Paragraph>
+                <Paragraph className="settings-copy">{copy.notEnoughWords}</Paragraph>
               )}
             </Space>
           </Card>

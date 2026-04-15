@@ -7,9 +7,9 @@ import {
   RiseOutlined,
   RocketOutlined,
 } from '@ant-design/icons'
-import type { ReactNode } from 'react'
 import { Drawer, Layout, Menu, Typography } from 'antd'
 import type { MenuProps } from 'antd'
+import type { ReactNode } from 'react'
 import { useI18n } from '../../i18n'
 import type { MenuIconKey, MenuItemConfig, MenuKey } from '../../types'
 
@@ -34,6 +34,20 @@ interface AppSidebarProps {
   onMobileClose: () => void
 }
 
+function SidebarBrand() {
+  const { t } = useI18n()
+
+  return (
+    <div className="brand-mark sidebar-brand">
+      <div className="brand-badge">EP</div>
+      <div className="sidebar-brand-copy">
+        <Text className="brand-title">{t('common.appName')}</Text>
+        <Text className="brand-subtitle">{t('common.brandSubtitle')}</Text>
+      </div>
+    </div>
+  )
+}
+
 function AppSidebar({
   menuItems,
   selectedMenu,
@@ -41,26 +55,18 @@ function AppSidebar({
   isMobileOpen,
   onMobileClose,
 }: AppSidebarProps) {
-  const { language, menuLabel } = useI18n()
+  const { menuLabel } = useI18n()
 
   const mappedMenuItems: MenuProps['items'] = menuItems.map((item) => ({
     ...item,
-    label: item.key === 'help' ? (language === 'en' ? 'Help' : 'Hướng dẫn') : menuLabel(item.key),
+    label: menuLabel(item.key),
     icon: iconMap[item.icon],
   }))
 
   return (
     <>
       <Sider width={260} className="app-sider">
-        <div className="brand-mark sidebar-brand">
-        <div className="brand-badge">EP</div>
-        <div className="sidebar-brand-copy">
-          <Text className="brand-title">English Path</Text>
-          <Text className="brand-subtitle">
-            {language === 'en' ? 'Nguyen Ngoc Long Van' : 'Nguyễn Ngọc Long Vân'}
-          </Text>
-        </div>
-      </div>
+        <SidebarBrand />
 
         <Menu
           mode="inline"
@@ -78,17 +84,7 @@ function AppSidebar({
         onClose={onMobileClose}
         className="mobile-nav-drawer"
         rootClassName="mobile-nav-root"
-        title={
-          <div className="brand-mark">
-            <div className="brand-badge">EP</div>
-            <div className="sidebar-brand-copy">
-              <Text className="brand-title">English Path</Text>
-              <Text className="brand-subtitle">
-                {language === 'en' ? 'Nguyen Ngoc Long Van' : 'Nguyễn Ngọc Long Vân'}
-              </Text>
-            </div>
-          </div>
-        }
+        title={<SidebarBrand />}
       >
         <Menu
           mode="inline"

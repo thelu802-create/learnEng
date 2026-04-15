@@ -11,12 +11,7 @@ import {
 import { Button, Card, Col, Progress, Row, Space, Tag, Typography } from 'antd'
 import { useSupabaseAuth } from '../components/providers/SupabaseAuthProvider'
 import { useI18n } from '../i18n'
-import {
-  formatTaskDate,
-  getTaskBucket,
-  getWeekdayLabel,
-  type PlannerTask,
-} from '../lib/plannerStorage'
+import { formatTaskDate, getTaskBucket, getWeekdayLabel, type PlannerTask } from '../lib/plannerStorage'
 import { listPlannerTasks } from '../lib/supabase/plannerApi'
 import type { GradeContent, GradeKey } from '../types'
 
@@ -37,7 +32,7 @@ function HomePage({
   onOpenPlanner,
   onOpenPractice,
 }: HomePageProps) {
-  const { gradeLabel, language } = useI18n()
+  const { gradeLabel, language, t } = useI18n()
   const { configured, user } = useSupabaseAuth()
   const [plannerTasks, setPlannerTasks] = useState<PlannerTask[]>([])
 
@@ -65,10 +60,7 @@ function HomePage({
   }
 
   const topicCount = currentGrade.vocabularyTopics.length
-  const wordCount = currentGrade.vocabularyTopics.reduce(
-    (total, topic) => total + topic.words.length,
-    0,
-  )
+  const wordCount = currentGrade.vocabularyTopics.reduce((total, topic) => total + topic.words.length, 0)
   const skillCount = currentGrade.skills.length
   const unitCount = currentGrade.units.length
   const featuredUnit = currentGrade.units[0]
@@ -128,9 +120,7 @@ function HomePage({
     let active = true
     listPlannerTasks(user.id)
       .then((records) => {
-        if (!active) {
-          return
-        }
+        if (!active) return
 
         setPlannerTasks(
           records.map((task) => ({
@@ -158,132 +148,58 @@ function HomePage({
     }
   }, [configured, user])
 
-  const coverageItems =
-    language === 'en'
-      ? [
-          { label: 'Units', value: unitCount, percent: Math.min(unitCount * 20, 100), color: '#2a9d8f' },
-          { label: 'Words', value: wordCount, percent: Math.min(wordCount, 100), color: '#4fb3a8' },
-          { label: 'Topics', value: topicCount, percent: Math.min(topicCount * 18, 100), color: '#e9a56c' },
-          { label: 'Skills', value: skillCount, percent: Math.min(skillCount * 22, 100), color: '#7bb7e8' },
-        ]
-      : [
-          { label: 'Bài học', value: unitCount, percent: Math.min(unitCount * 20, 100), color: '#2a9d8f' },
-          { label: 'Từ vựng', value: wordCount, percent: Math.min(wordCount, 100), color: '#4fb3a8' },
-          { label: 'Chủ đề', value: topicCount, percent: Math.min(topicCount * 18, 100), color: '#e9a56c' },
-          { label: 'Kỹ năng', value: skillCount, percent: Math.min(skillCount * 22, 100), color: '#7bb7e8' },
-        ]
+  const coverageItems = [
+    { label: t('home.coverageUnits'), value: unitCount, percent: Math.min(unitCount * 20, 100), color: '#2a9d8f' },
+    { label: t('home.coverageWords'), value: wordCount, percent: Math.min(wordCount, 100), color: '#4fb3a8' },
+    { label: t('home.coverageTopics'), value: topicCount, percent: Math.min(topicCount * 18, 100), color: '#e9a56c' },
+    { label: t('home.coverageSkills'), value: skillCount, percent: Math.min(skillCount * 22, 100), color: '#7bb7e8' },
+  ]
 
-  const copy =
-    language === 'en'
-      ? {
-          tag: 'Teacher dashboard',
-          title: `Teaching plan for ${gradeLabel(selectedGrade)}`,
-          intro:
-            'Choose a grade, open the featured unit, and move quickly from lesson content to guided practice.',
-          featuredUnit: 'Featured unit',
-          grammarFocus: 'Grammar focus',
-          vocabularyFocus: 'Vocabulary set',
-          openLessons: 'Open lesson content',
-          openPractice: 'Open practice',
-          selectedGrade: 'Selected grade',
-          progress: 'Current progress',
-          level: 'Level',
-          coverageTitle: 'Teaching coverage',
-          coverageCopy: 'A quick view of the teaching materials available for this grade.',
-          classFlow: 'Quick classroom flow',
-          classFlowCopy: 'A simple sequence to introduce content, reinforce it, and close the lesson.',
-          flow1Title: 'Open the lesson',
-          flow1Copy: 'Review the main topic, grammar point, and project direction before class practice.',
-          flow2Title: 'Highlight vocabulary',
-          flow2Copy: 'Use the topic word list to pre-teach key words and examples for the unit.',
-          flow3Title: 'Run a short practice round',
-          flow3Copy: 'Move students into immediate recall with quick meaning, fill-in, or matching tasks.',
-          actionsTitle: 'Next teaching actions',
-          actionsCopy: 'Start with the lesson content, then switch to practice once students know the topic.',
-          actionLessons: 'Review unit structure',
-          actionLessonsCopy: 'Open the unit, grammar focus, and project task for this grade.',
-          actionPractice: 'Launch practice',
-          actionPracticeCopy: 'Use short activities to reinforce vocabulary in class or for homework.',
-          resourcesTitle: 'Resources ready to use',
-          resourcesCopy: 'Everything below is available for the selected grade right now.',
-          remindersTitle: 'Teaching reminders',
-          remindersCopy: 'Keep the closest tasks visible so nothing important slips past.',
-          openPlanner: 'View all tasks',
-          noReminders: 'No reminders are close yet. Add a task in Planner to see it here.',
-          statusToday: 'Today',
-          statusUpcoming: 'Soon',
-          statusOverdue: 'Overdue',
-        }
-      : {
-          tag: 'Bảng điều khiển giảng dạy',
-          title: `Kế hoạch dạy ${gradeLabel(selectedGrade)}`,
-          intro:
-            'Chọn khối, mở bài nổi bật và chuyển nhanh từ nội dung bài học sang phần luyện tập.',
-          featuredUnit: 'Bài học nổi bật',
-          grammarFocus: 'Trọng tâm ngữ pháp',
-          vocabularyFocus: 'Cụm từ vựng',
-          openLessons: 'Mở bài học',
-          openPractice: 'Mở luyện tập',
-          selectedGrade: 'Khối đang chọn',
-          progress: 'Tiến độ hiện tại',
-          level: 'Mức độ',
-          coverageTitle: 'Biểu đồ tổng quan',
-          coverageCopy: 'Xem nhanh mức độ sẵn sàng của tài nguyên cho khối đang chọn.',
-          classFlow: 'Luồng triển khai nhanh trên lớp',
-          classFlowCopy: 'Một nhịp dạy gọn để vào bài, củng cố kiến thức và chốt hoạt động.',
-          flow1Title: 'Mở bài học',
-          flow1Copy: 'Xem chủ điểm, điểm ngữ pháp chính và hướng project trước khi vào hoạt động lớp.',
-          flow2Title: 'Nhấn vào từ vựng',
-          flow2Copy: 'Dùng danh sách từ theo chủ đề để giới thiệu từ mới và ví dụ trọng tâm của bài.',
-          flow3Title: 'Cho luyện nhanh',
-          flow3Copy: 'Chuyển ngay sang bài tập ngắn để học sinh nhớ từ qua ngữ cảnh và ghép cặp.',
-          actionsTitle: 'Bước tiếp theo',
-          actionsCopy: 'Nên bắt đầu từ bài học trước, sau đó chuyển sang phần luyện tập để học sinh làm ngay.',
-          actionLessons: 'Xem cấu trúc bài dạy',
-          actionLessonsCopy: 'Mở bài, xem ngữ pháp trọng tâm và phần project của khối này.',
-          actionPractice: 'Triển khai luyện tập',
-          actionPracticeCopy: 'Dùng bài tập ngắn để củng cố từ vựng trên lớp hoặc giao về nhà.',
-          resourcesTitle: 'Tài nguyên sẵn để dùng',
-          resourcesCopy: 'Toàn bộ dữ liệu dưới đây đang có sẵn cho khối được chọn.',
-          remindersTitle: 'Nhắc việc giảng dạy',
-          remindersCopy: 'Giữ các việc gần hạn ở ngay trang chủ để không bị sót.',
-          openPlanner: 'Xem tất cả',
-          noReminders: 'Chưa có việc nào gần hạn. Bạn có thể thêm việc trong Planner.',
-          statusToday: 'Hôm nay',
-          statusUpcoming: 'Sắp tới',
-          statusOverdue: 'Quá hạn',
-        }
+  const copy = {
+    tag: t('home.teacherTag'),
+    title: t('home.teacherTitle', { grade: gradeLabel(selectedGrade) }),
+    intro: t('home.teacherIntro'),
+    featuredUnit: t('home.featuredUnit'),
+    grammarFocus: t('home.grammarFocus'),
+    vocabularyFocus: t('home.vocabularyFocus'),
+    openLessons: t('home.openLessonContent'),
+    openPractice: t('home.openPracticePanel'),
+    selectedGrade: t('home.selectedGrade'),
+    progress: t('home.currentProgress'),
+    level: t('home.teacherLevel'),
+    coverageTitle: t('home.coverageTitle'),
+    coverageCopy: t('home.coverageCopy'),
+    classFlow: t('home.classFlow'),
+    classFlowCopy: t('home.classFlowCopy'),
+    flow1Title: t('home.flow1Title'),
+    flow1Copy: t('home.flow1Copy'),
+    flow2Title: t('home.flow2Title'),
+    flow2Copy: t('home.flow2Copy'),
+    flow3Title: t('home.flow3Title'),
+    flow3Copy: t('home.flow3Copy'),
+    actionsTitle: t('home.actionsTitle'),
+    actionsCopy: t('home.actionsCopy'),
+    actionLessons: t('home.actionLessons'),
+    actionLessonsCopy: t('home.actionLessonsCopy'),
+    actionPractice: t('home.actionPractice'),
+    actionPracticeCopy: t('home.actionPracticeCopy'),
+    resourcesTitle: t('home.resourcesTitle'),
+    resourcesCopy: t('home.resourcesCopy'),
+    openPlanner: t('home.openPlanner'),
+    noReminders: t('home.noReminders'),
+    statusToday: t('home.statusToday'),
+    statusUpcoming: t('home.statusUpcoming'),
+    statusOverdue: t('home.statusOverdue'),
+    plannerChartTitle: t('home.plannerChartTitle'),
+    plannerDoneLabel: t('home.plannerDoneLabel'),
+    plannerThisWeekLabel: t('home.plannerThisWeekLabel'),
+  }
 
-  const plannerChartTitle = language === 'en' ? 'Weekly plan' : 'Kế hoạch tuần'
-  const plannerChartCopy =
-    language === 'en'
-      ? 'A quick look at this week and how much is already done.'
-      : 'Xem nhanh khối lượng việc trong tuần và mức độ đã hoàn thành.'
-  const plannerDoneLabel = language === 'en' ? 'done' : 'đã xong'
-  const plannerThisWeekLabel = language === 'en' ? 'tasks this week' : 'việc trong tuần'
   const plannerStats = [
     { label: copy.statusToday, value: plannerTasks.filter((task) => getTaskBucket(task) === 'today').length, tone: 'gold' },
-    {
-      label: copy.statusUpcoming,
-      value: plannerTasks.filter((task) => getTaskBucket(task) === 'upcoming').length,
-      tone: 'cyan',
-    },
-    {
-      label: copy.statusOverdue,
-      value: plannerTasks.filter((task) => getTaskBucket(task) === 'overdue').length,
-      tone: 'volcano',
-    },
+    { label: copy.statusUpcoming, value: plannerTasks.filter((task) => getTaskBucket(task) === 'upcoming').length, tone: 'cyan' },
+    { label: copy.statusOverdue, value: plannerTasks.filter((task) => getTaskBucket(task) === 'overdue').length, tone: 'volcano' },
   ] as const
-  const plannerChartTitleText = language === 'en' ? 'Weekly plan' : 'Kế hoạch tuần'
-  const plannerChartCopyText =
-    language === 'en'
-      ? 'A quick look at this week and how much is already done.'
-      : 'Xem nhanh khối lượng việc trong tuần và mức độ đã hoàn thành.'
-  const plannerDoneLabelText = language === 'en' ? 'done' : 'đã xong'
-  const plannerThisWeekLabelText = language === 'en' ? 'tasks this week' : 'việc trong tuần'
-  void plannerChartTitle
-  void plannerChartCopy
-  void plannerChartCopyText
 
   return (
     <Space orientation="vertical" size={20} className="full-width">
@@ -368,13 +284,9 @@ function HomePage({
                     />
                   </div>
                   <div className="planner-home-chart-copy">
-                    <Text className="planner-home-chart-title">{plannerChartTitleText}</Text>
+                    <Text className="planner-home-chart-title">{copy.plannerChartTitle}</Text>
                     <Text className="planner-home-chart-meta">
-                      {weeklyPlanner.completed} {plannerDoneLabel} · {weeklyPlanner.total} {plannerThisWeekLabel}
-                    </Text>
-                    <Text className="planner-home-chart-meta planner-home-chart-meta-live">
-                      {weeklyPlanner.completed} {plannerDoneLabelText} · {weeklyPlanner.total}{' '}
-                      {plannerThisWeekLabelText}
+                      {weeklyPlanner.completed} {copy.plannerDoneLabel} · {weeklyPlanner.total} {copy.plannerThisWeekLabel}
                     </Text>
                     <div className="planner-home-legend">
                       {plannerStats.map((item) => (

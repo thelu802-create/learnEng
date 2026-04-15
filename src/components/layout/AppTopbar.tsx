@@ -13,8 +13,8 @@ import {
 import { App as AntdApp, Button, Divider, Drawer, Segmented, Tooltip, Typography } from 'antd'
 import { useState } from 'react'
 import { useI18n } from '../../i18n'
-import { useSupabaseAuth } from '../providers/SupabaseAuthProvider'
 import type { FontSizeMode, MenuKey, ThemeMode } from '../../types'
+import { useSupabaseAuth } from '../providers/SupabaseAuthProvider'
 
 const { Paragraph, Text, Title } = Typography
 
@@ -44,76 +44,20 @@ function AppTopbar({
   const { language, setLanguage, t, menuLabel } = useI18n()
   const { configured, loading, user, signInWithGithub, signOut } = useSupabaseAuth()
 
-  const settingsCopy =
-    language === 'en'
-      ? {
-          settingsTitle: 'Quick settings',
-          settingsSubtitle:
-            'Adjust the learning experience in the way that feels most comfortable.',
-          languageCopy: 'Choose the display language for the whole application.',
-          themeTitle: 'Theme',
-          themeCopy: 'Switch appearance with one tap.',
-          fontSizeTitle: 'Font size',
-          fontSizeCopy: 'Adjust text size for a more comfortable reading experience.',
-          accountTitle: 'Teacher account',
-          accountCopy: 'Sign in with GitHub to save notes and generated worksheets to Supabase.',
-          accountNotReady: 'Supabase is not configured yet in this environment.',
-          signIn: 'Sign in with GitHub',
-          signOut: 'Sign out',
-          connectedAs: 'Connected as',
-          aboutTitle: 'About app',
-          aboutCopy:
-            'English Path brings lessons, vocabulary lookup, and practice into one focused interface for lower secondary students.',
-          aboutOwnerPrefix: 'Crafted for teaching by',
-          aboutOwnerName: 'Nguyen The Lu',
-          settingsLabel: 'Settings',
-          lightMode: 'Light mode',
-          darkMode: 'Dark mode',
-          fontSizeSmall: 'Small',
-          fontSizeMedium: 'Default',
-          fontSizeLarge: 'Large',
-        }
-      : {
-          settingsTitle: 'Cài đặt nhanh',
-          settingsSubtitle: 'Tùy chỉnh trải nghiệm học tập theo cách bạn thấy thoải mái nhất.',
-          languageCopy: 'Chọn ngôn ngữ hiển thị cho toàn bộ ứng dụng.',
-          themeTitle: 'Giao diện',
-          themeCopy: 'Chuyển nhanh giữa chế độ sáng và tối.',
-          fontSizeTitle: 'Cỡ chữ',
-          fontSizeCopy: 'Điều chỉnh kích thước chữ để đọc thoải mái hơn.',
-          accountTitle: 'Tài khoản giáo viên',
-          accountCopy: 'Đăng nhập GitHub để lưu ghi chú và bộ đề đã tạo lên Supabase.',
-          accountNotReady: 'Môi trường này chưa cấu hình Supabase.',
-          signIn: 'Đăng nhập GitHub',
-          signOut: 'Đăng xuất',
-          connectedAs: 'Đang kết nối với',
-          aboutTitle: 'Về ứng dụng',
-          aboutCopy:
-            'English Path gom bài học, tra từ vựng và luyện tập trong một giao diện gọn, dễ dùng cho học sinh THCS.',
-          aboutOwnerPrefix: 'Phát triển và biên soạn bởi',
-          aboutOwnerName: 'Nguyễn Thế Lữ',
-          settingsLabel: 'Cài đặt',
-          lightMode: 'Chế độ sáng',
-          darkMode: 'Chế độ tối',
-          fontSizeSmall: 'Nhỏ',
-          fontSizeMedium: 'Vừa',
-          fontSizeLarge: 'Lớn',
-        }
-
   const handleGithubSignIn = async () => {
     try {
       await signInWithGithub()
     } catch (error) {
-      message.error(error instanceof Error ? error.message : 'Không thể đăng nhập GitHub.')
+      message.error(error instanceof Error ? error.message : t('topbar.githubSignInError'))
     }
   }
 
   const handleSignOut = async () => {
     try {
       await signOut()
-      message.success(language === 'en' ? 'Signed out.' : 'Đã đăng xuất.')
+      message.success(t('common.signedOut'))
     } catch (error) {
-      message.error(error instanceof Error ? error.message : 'Không thể đăng xuất.')
+      message.error(error instanceof Error ? error.message : t('topbar.signOutError'))
     }
   }
 
@@ -126,11 +70,11 @@ function AppTopbar({
             icon={<MenuOutlined />}
             className="mobile-menu-trigger"
             onClick={onOpenMobileMenu}
-            aria-label={language === 'en' ? 'Open navigation menu' : 'Mở menu điều hướng'}
+            aria-label={t('common.openNavigationMenu')}
           />
 
           <div className="topbar-grade">
-            <Text className="page-kicker">English Path</Text>
+            <Text className="page-kicker">{t('common.appName')}</Text>
             <Title level={4} className="page-title">
               {menuLabel(currentMenu)}
             </Title>
@@ -143,20 +87,20 @@ function AppTopbar({
               {pageActionLabel}
             </Button>
           ) : null}
-          <Tooltip title={settingsCopy.settingsLabel}>
+          <Tooltip title={t('topbar.settingsLabel')}>
             <Button
               type="default"
               icon={<SettingOutlined />}
               className={`settings-trigger settings-trigger-icon ${isSettingsOpen ? 'is-open' : ''}`}
               onClick={() => setIsSettingsOpen(true)}
-              aria-label={settingsCopy.settingsLabel}
+              aria-label={t('topbar.settingsLabel')}
             />
           </Tooltip>
         </div>
       </header>
 
       <Drawer
-        title={settingsCopy.settingsTitle}
+        title={t('topbar.settingsTitle')}
         placement="right"
         size={380}
         styles={{ body: { paddingBottom: 32 } }}
@@ -166,24 +110,24 @@ function AppTopbar({
       >
         <div className="settings-stack">
           <div className="settings-section">
-            <Text className="settings-eyebrow">{settingsCopy.settingsTitle}</Text>
-            <Paragraph className="settings-copy">{settingsCopy.settingsSubtitle}</Paragraph>
+            <Text className="settings-eyebrow">{t('topbar.settingsTitle')}</Text>
+            <Paragraph className="settings-copy">{t('topbar.settingsSubtitle')}</Paragraph>
           </div>
 
           <div className="settings-section">
             <div className="settings-heading">
               <GithubOutlined />
-              <Title level={5}>{settingsCopy.accountTitle}</Title>
+              <Title level={5}>{t('topbar.accountTitle')}</Title>
             </div>
             <Paragraph className="settings-copy">
-              {configured ? settingsCopy.accountCopy : settingsCopy.accountNotReady}
+              {configured ? t('topbar.accountCopy') : t('topbar.accountNotReady')}
             </Paragraph>
             {user ? (
               <div className="settings-account-card">
-                <Text className="page-kicker">{settingsCopy.connectedAs}</Text>
+                <Text className="page-kicker">{t('topbar.connectedAs')}</Text>
                 <Text strong>{user.email ?? user.user_metadata.user_name ?? user.id}</Text>
                 <Button icon={<LogoutOutlined />} onClick={handleSignOut} disabled={loading}>
-                  {settingsCopy.signOut}
+                  {t('topbar.signOut')}
                 </Button>
               </div>
             ) : (
@@ -193,7 +137,7 @@ function AppTopbar({
                 onClick={handleGithubSignIn}
                 disabled={!configured || loading}
               >
-                {settingsCopy.signIn}
+                {t('topbar.signIn')}
               </Button>
             )}
           </div>
@@ -205,7 +149,7 @@ function AppTopbar({
               <GlobalOutlined />
               <Title level={5}>{t('common.language')}</Title>
             </div>
-            <Paragraph className="settings-copy">{settingsCopy.languageCopy}</Paragraph>
+            <Paragraph className="settings-copy">{t('topbar.languageCopy')}</Paragraph>
             <Segmented
               block
               options={[
@@ -223,9 +167,9 @@ function AppTopbar({
           <div className="settings-section">
             <div className="settings-heading">
               <FontSizeOutlined />
-              <Title level={5}>{settingsCopy.fontSizeTitle}</Title>
+              <Title level={5}>{t('topbar.fontSizeTitle')}</Title>
             </div>
-            <Paragraph className="settings-copy">{settingsCopy.fontSizeCopy}</Paragraph>
+            <Paragraph className="settings-copy">{t('topbar.fontSizeCopy')}</Paragraph>
             <Segmented
               block
               options={[
@@ -238,9 +182,9 @@ function AppTopbar({
               className="settings-segmented font-size-segmented"
             />
             <div className="font-size-hints" aria-hidden="true">
-              <span>{settingsCopy.fontSizeSmall}</span>
-              <span>{settingsCopy.fontSizeMedium}</span>
-              <span>{settingsCopy.fontSizeLarge}</span>
+              <span>{t('topbar.fontSizeSmall')}</span>
+              <span>{t('topbar.fontSizeMedium')}</span>
+              <span>{t('topbar.fontSizeLarge')}</span>
             </div>
           </div>
 
@@ -249,29 +193,29 @@ function AppTopbar({
           <div className="settings-section">
             <div className="settings-heading">
               <SettingOutlined />
-              <Title level={5}>{settingsCopy.themeTitle}</Title>
+              <Title level={5}>{t('topbar.themeTitle')}</Title>
             </div>
-            <Paragraph className="settings-copy">{settingsCopy.themeCopy}</Paragraph>
+            <Paragraph className="settings-copy">{t('topbar.themeCopy')}</Paragraph>
 
-            <div className="theme-toggle-grid" role="group" aria-label={settingsCopy.themeTitle}>
-              <Tooltip title={settingsCopy.lightMode}>
+            <div className="theme-toggle-grid" role="group" aria-label={t('topbar.themeTitle')}>
+              <Tooltip title={t('topbar.lightMode')}>
                 <button
                   type="button"
                   className={`theme-toggle-button ${themeMode === 'light' ? 'is-active is-light' : ''}`}
                   onClick={() => onThemeChange('light')}
-                  aria-label={settingsCopy.lightMode}
+                  aria-label={t('topbar.lightMode')}
                   aria-pressed={themeMode === 'light'}
                 >
                   <SunOutlined />
                 </button>
               </Tooltip>
 
-              <Tooltip title={settingsCopy.darkMode}>
+              <Tooltip title={t('topbar.darkMode')}>
                 <button
                   type="button"
                   className={`theme-toggle-button ${themeMode === 'dark' ? 'is-active is-dark' : ''}`}
                   onClick={() => onThemeChange('dark')}
-                  aria-label={settingsCopy.darkMode}
+                  aria-label={t('topbar.darkMode')}
                   aria-pressed={themeMode === 'dark'}
                 >
                   <MoonOutlined />
@@ -285,12 +229,12 @@ function AppTopbar({
           <div className="settings-section">
             <div className="settings-heading">
               <InfoCircleOutlined />
-              <Title level={5}>{settingsCopy.aboutTitle}</Title>
+              <Title level={5}>{t('topbar.aboutTitle')}</Title>
             </div>
-            <Paragraph className="settings-copy">{settingsCopy.aboutCopy}</Paragraph>
+            <Paragraph className="settings-copy">{t('topbar.aboutCopy')}</Paragraph>
             <Paragraph className="settings-copy settings-about-note">
-              {settingsCopy.aboutOwnerPrefix}{' '}
-              <span className="settings-about-owner-name">{settingsCopy.aboutOwnerName}</span>
+              {t('topbar.aboutOwnerPrefix')}{' '}
+              <span className="settings-about-owner-name">{t('common.appOwner')}</span>
             </Paragraph>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import { Form, Input, Modal, Select, Space, Switch, Typography } from 'antd'
+import { useI18n } from '../../i18n'
 import type { VocabularyAddModalProps } from './types'
 
 const { Paragraph, Text } = Typography
@@ -9,7 +10,6 @@ function VocabularyAddModal({
   onSubmit,
   confirmLoading,
   copy,
-  language,
   form,
   autoFillIpa,
   onAutoFillIpaChange,
@@ -17,18 +17,12 @@ function VocabularyAddModal({
   mode,
   submitLabel,
 }: VocabularyAddModalProps) {
-  const validationMessages =
-    language === 'en'
-      ? {
-          topic: 'Please choose a topic.',
-          word: 'Please enter a word.',
-          meaning: 'Please enter the meaning.',
-        }
-      : {
-          topic: 'Hãy chọn chủ điểm.',
-          word: 'Hãy nhập từ vựng.',
-          meaning: 'Hãy nhập nghĩa.',
-        }
+  const { t } = useI18n()
+  const validationMessages = {
+    topic: t('lessons.validationTopic'),
+    word: t('lessons.validationWord'),
+    meaning: t('lessons.validationMeaning'),
+  }
 
   return (
     <Modal

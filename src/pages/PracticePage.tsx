@@ -836,48 +836,26 @@ interface PassageGeneratorPanelProps {
 }
 
 function PassageGeneratorPanel({ distractorPool }: PassageGeneratorPanelProps) {
-  const { language } = useI18n()
+  const { t } = useI18n()
   const [passage, setPassage] = useState('')
   const [questions, setQuestions] = useState<PassageQuestion[]>([])
 
-  const copy =
-    language === 'en'
-      ? {
-          title: 'Passage quiz generator',
-          intro: 'Paste a passage and generate fill-in multiple-choice questions automatically.',
-          placeholder:
-            'Paste an English paragraph here. The generator will create 4 to 10 fill-in questions depending on the passage length.',
-          generate: 'Generate questions',
-          reset: 'Clear passage',
-          requirement:
-            'Use a passage with at least 4 meaningful sentences so the generator can build a stronger question set.',
-          empty: 'No questions yet',
-          emptyCopy: 'Paste a passage and press Generate questions to create a quick worksheet.',
-          resultTitle: 'Generated question set',
-          originalSentence: 'Original sentence',
-          correctAnswer: 'Correct answer',
-          noQuestions:
-            'The passage is still too short or too simple. Try a longer paragraph with clearer full sentences.',
-          question: 'Question',
-        }
-      : {
-          title: 'Passage quiz generator',
-          intro: 'Dán một đoạn văn để hệ thống tự tạo bộ câu hỏi điền từ trắc nghiệm.',
-          placeholder:
-            'Dán đoạn văn tiếng Anh vào đây. Hệ thống sẽ tạo từ 4 đến 10 câu hỏi điền từ tùy theo độ dài và số câu của đoạn.',
-          generate: 'Tạo câu hỏi',
-          reset: 'Xóa đoạn văn',
-          requirement:
-            'Nên dùng đoạn văn có ít nhất 4 câu rõ nghĩa để bộ câu hỏi tạo ra sát nội dung hơn.',
-          empty: 'Chưa có câu hỏi',
-          emptyCopy: 'Dán đoạn văn rồi bấm Tạo câu hỏi để tạo nhanh một bộ bài tập.',
-          resultTitle: 'Bộ câu hỏi đã tạo',
-          originalSentence: 'Câu gốc',
-          correctAnswer: 'Đáp án đúng',
-          noQuestions:
-            'Đoạn văn hiện còn quá ngắn hoặc chưa đủ rõ. Hãy thử một đoạn dài hơn với nhiều câu đầy đủ hơn.',
-          question: 'Câu',
-        }
+  const copy = {
+    title: t('practiceGenerator.title'),
+    intro: t('practiceGenerator.intro'),
+    placeholder: t('practiceGenerator.placeholder'),
+    generate: t('practiceGenerator.generate'),
+    reset: t('practiceGenerator.reset'),
+    requirement: t('practiceGenerator.requirement'),
+    empty: t('practiceGenerator.empty'),
+    emptyCopy: t('practiceGenerator.emptyCopy'),
+    resultTitle: t('practiceGenerator.resultTitle'),
+    originalSentence: t('practiceGenerator.originalSentence'),
+    correctAnswer: t('practiceGenerator.correctAnswer'),
+    noQuestions: t('practiceGenerator.noQuestions'),
+    question: t('practiceGenerator.question'),
+    quizReady: t('practiceGenerator.quizReady'),
+  }
 
   const handleGenerate = () => {
     setQuestions(buildPassageQuestions(passage, distractorPool))
@@ -953,7 +931,7 @@ function PassageGeneratorPanel({ distractorPool }: PassageGeneratorPanelProps) {
               <div>
                 <Text className="page-kicker">{copy.resultTitle}</Text>
                 <Title level={3} className="practice-word-title">
-                  {questions.length} {language === 'en' ? 'questions ready' : 'câu đã sẵn sàng'}
+                  {questions.length} {copy.quizReady}
                 </Title>
               </div>
               <Tag color="cyan">MCQ</Tag>
@@ -1008,81 +986,43 @@ function PassageGeneratorPanel({ distractorPool }: PassageGeneratorPanelProps) {
 void PassageGeneratorPanel
 
 function PassageGeneratorWorkbench({ distractorPool }: PassageGeneratorPanelProps) {
-  const { language } = useI18n()
+  const { t } = useI18n()
   const [passage, setPassage] = useState('')
   const [questions, setQuestions] = useState<PassageQuestion[]>([])
   const [generatorView, setGeneratorView] = useState<GeneratorViewKey>('create')
   const [studentAnswers, setStudentAnswers] = useState<Record<string, string>>({})
   const [submitted, setSubmitted] = useState(false)
 
-  const copy =
-    language === 'en'
-      ? {
-          title: 'Passage quiz generator',
-          createTab: 'Create quiz',
-          takeTab: 'Take quiz',
-          intro: 'Paste a passage and generate fill-in multiple-choice questions automatically.',
-          placeholder:
-            'Paste an English paragraph here. The generator will create 4 to 10 fill-in questions depending on the passage length.',
-          generate: 'Generate questions',
-          reset: 'Clear passage',
-          submit: 'Submit quiz',
-          retry: 'Try again',
-          switchHint: 'Use Create quiz to prepare the worksheet, then switch to Take quiz for students.',
-          requirement:
-            'Use a passage with at least 4 meaningful sentences so the generator can build a stronger question set.',
-          empty: 'No questions yet',
-          emptyCopy: 'Paste a passage and press Generate questions to create a quick worksheet.',
-          emptyTakeTitle: 'Quiz not ready yet',
-          emptyTakeCopy: 'Generate a question set first, then switch here so students can answer it.',
-          resultTitle: 'Generated question set',
-          takeTitle: 'Student quiz',
-          takeIntro: 'Students can answer the questions below and only see the correct answers after submitting.',
-          originalSentence: 'Original sentence',
-          correctAnswer: 'Correct answer',
-          noQuestions:
-            'The passage is still too short or too simple. Try a longer paragraph with clearer full sentences.',
-          question: 'Question',
-          quizReady: 'questions ready',
-          studentProgress: 'Completed',
-          studentScore: 'Score',
-          chooseAnswer: 'Choose all answers, then submit to reveal the result.',
-          correct: 'Correct',
-          wrong: 'Incorrect',
-        }
-      : {
-          title: 'Passage quiz generator',
-          createTab: 'Tạo bài',
-          takeTab: 'Làm bài',
-          intro: 'Dán một đoạn văn để hệ thống tự tạo bộ câu hỏi điền từ trắc nghiệm.',
-          placeholder:
-            'Dán đoạn văn tiếng Anh vào đây. Hệ thống sẽ tạo từ 4 đến 10 câu hỏi điền từ tùy theo độ dài và số câu của đoạn.',
-          generate: 'Tạo câu hỏi',
-          reset: 'Xóa đoạn văn',
-          submit: 'Nộp bài',
-          retry: 'Làm lại',
-          switchHint: 'Dùng mục Tạo bài để chuẩn bị đề, sau đó chuyển sang Làm bài để học sinh làm trực tiếp.',
-          requirement:
-            'Nên dùng đoạn văn có ít nhất 4 câu rõ nghĩa để bộ câu hỏi tạo ra sát nội dung hơn.',
-          empty: 'Chưa có câu hỏi',
-          emptyCopy: 'Dán đoạn văn rồi bấm Tạo câu hỏi để tạo nhanh một bộ bài tập.',
-          emptyTakeTitle: 'Chưa có bài để làm',
-          emptyTakeCopy: 'Hãy tạo bộ câu hỏi trước, rồi chuyển sang mục này để học sinh làm bài.',
-          resultTitle: 'Bộ câu hỏi đã tạo',
-          takeTitle: 'Chế độ học sinh',
-          takeIntro: 'Học sinh làm bài trực tiếp bên dưới và chỉ xem đáp án sau khi nộp.',
-          originalSentence: 'Câu gốc',
-          correctAnswer: 'Đáp án đúng',
-          noQuestions:
-            'Đoạn văn hiện còn quá ngắn hoặc chưa đủ rõ. Hãy thử một đoạn dài hơn với nhiều câu đầy đủ hơn.',
-          question: 'Câu',
-          quizReady: 'câu đã sẵn sàng',
-          studentProgress: 'Đã làm',
-          studentScore: 'Điểm',
-          chooseAnswer: 'Chọn đủ đáp án rồi nộp bài để xem kết quả.',
-          correct: 'Đúng',
-          wrong: 'Sai',
-        }
+  const copy = {
+    title: t('practiceGenerator.title'),
+    createTab: t('practiceGenerator.createTab'),
+    takeTab: t('practiceGenerator.takeTab'),
+    intro: t('practiceGenerator.intro'),
+    placeholder: t('practiceGenerator.placeholder'),
+    generate: t('practiceGenerator.generate'),
+    reset: t('practiceGenerator.reset'),
+    submit: t('practiceGenerator.submit'),
+    retry: t('practiceGenerator.retry'),
+    switchHint: t('practiceGenerator.switchHint'),
+    requirement: t('practiceGenerator.requirement'),
+    empty: t('practiceGenerator.empty'),
+    emptyCopy: t('practiceGenerator.emptyCopy'),
+    emptyTakeTitle: t('practiceGenerator.emptyTakeTitle'),
+    emptyTakeCopy: t('practiceGenerator.emptyTakeCopy'),
+    resultTitle: t('practiceGenerator.resultTitle'),
+    takeTitle: t('practiceGenerator.takeTitle'),
+    takeIntro: t('practiceGenerator.takeIntro'),
+    originalSentence: t('practiceGenerator.originalSentence'),
+    correctAnswer: t('practiceGenerator.correctAnswer'),
+    noQuestions: t('practiceGenerator.noQuestions'),
+    question: t('practiceGenerator.question'),
+    quizReady: t('practiceGenerator.quizReady'),
+    studentProgress: t('practiceGenerator.studentProgress'),
+    studentScore: t('practiceGenerator.studentScore'),
+    chooseAnswer: t('practiceGenerator.chooseAnswer'),
+    correct: t('practiceGenerator.correct'),
+    wrong: t('practiceGenerator.wrong'),
+  }
 
   const answeredCount = Object.keys(studentAnswers).length
   const score = questions.filter((question) => studentAnswers[question.id] === question.answer).length
@@ -1345,25 +1285,24 @@ function PassageGeneratorWorkbench({ distractorPool }: PassageGeneratorPanelProp
 }
 
 function PracticePage({ selectedGrade, currentGrade, learningSteps }: PracticePageProps) {
-  const { t, gradeLabel, language } = useI18n()
+  const { t, gradeLabel } = useI18n()
   const [selectedSection, setSelectedSection] = useState<PracticeSectionKey>('word')
   const [selectedTopicKey, setSelectedTopicKey] = useState('all')
   const [selectedMode, setSelectedMode] = useState<PracticeModeKey>('meaning')
 
-  const pageCopy =
-    language === 'en'
-      ? {
-          wordPractice: 'Word practice',
-          wordPracticeCopy: 'Use the built-in vocabulary practice modes for the selected grade.',
-          generator: 'Passage quiz generator',
-          generatorCopy: 'Turn any English paragraph into a quick fill-in question set.',
-        }
-      : {
-          wordPractice: 'Word practice',
-          wordPracticeCopy: 'Dùng các chế độ luyện từ vựng có sẵn theo khối đang chọn.',
-          generator: 'Passage quiz generator',
-          generatorCopy: 'Biến một đoạn văn tiếng Anh thành bộ câu hỏi điền từ nhanh.',
-        }
+  const pageCopy = {
+    wordPractice: t('practicePage.wordPractice'),
+    wordPracticeCopy: t('practicePage.wordPracticeCopy'),
+    generator: t('practicePage.generator'),
+    generatorCopy: t('practicePage.generatorCopy'),
+    generatorReady: t('practicePage.generatorReady'),
+    generatorQuizItems: t('practicePage.generatorQuizItems'),
+    generatorAutoFromPassage: t('practicePage.generatorAutoFromPassage'),
+    generatorTipsTitle: t('practicePage.generatorTipsTitle'),
+    generatorTip1: t('practicePage.generatorTip1'),
+    generatorTip2: t('practicePage.generatorTip2'),
+    generatorTip3: t('practicePage.generatorTip3'),
+  }
 
   const practiceModes: PracticeMode[] = [
     {
@@ -1528,9 +1467,7 @@ function PracticePage({ selectedGrade, currentGrade, learningSteps }: PracticePa
                   <Title level={4} className="practice-score-title">
                     {selectedSection === 'word'
                       ? `${vocabularyPool.length} ${t('common.levelReady')}`
-                      : language === 'en'
-                        ? 'Generator ready'
-                        : 'Sẵn sàng tạo bài'}
+                      : pageCopy.generatorReady}
                   </Title>
                 </div>
                 <TrophyOutlined className="practice-score-icon" />
@@ -1552,9 +1489,7 @@ function PracticePage({ selectedGrade, currentGrade, learningSteps }: PracticePa
                   <Text>
                     {selectedSection === 'word'
                       ? `${activeTopicCount} ${t('common.topicsOpen')}`
-                      : language === 'en'
-                        ? '4-10 quiz items'
-                        : '4-10 câu hỏi'}
+                      : pageCopy.generatorQuizItems}
                   </Text>
                 </div>
                 <div className="practice-score-box">
@@ -1562,9 +1497,7 @@ function PracticePage({ selectedGrade, currentGrade, learningSteps }: PracticePa
                   <Text>
                     {selectedSection === 'word'
                       ? `${Math.min(vocabularyPool.length, 8)} ${t('common.questionsPerRound')}`
-                      : language === 'en'
-                        ? 'Auto from passage'
-                        : 'Tự tạo từ đoạn văn'}
+                      : pageCopy.generatorAutoFromPassage}
                   </Text>
                 </div>
               </div>
@@ -1586,23 +1519,11 @@ function PracticePage({ selectedGrade, currentGrade, learningSteps }: PracticePa
               <Title level={5} className="practice-mini-title">
                 {selectedSection === 'word'
                   ? t('practice.todayPractice')
-                  : language === 'en'
-                    ? 'Generator tips'
-                    : 'Gợi ý khi tạo bài'}
+                  : pageCopy.generatorTipsTitle}
               </Title>
               {(selectedSection === 'word'
                 ? currentGrade.exercises
-                : language === 'en'
-                  ? [
-                      'Paste a passage with 4 or more full sentences',
-                      'Use topic vocabulary you want students to revise',
-                      'Review the generated options before giving the worksheet',
-                    ]
-                  : [
-                      'Dùng đoạn văn có từ 4 câu đầy đủ trở lên',
-                      'Ưu tiên đoạn có từ vựng đúng chủ điểm cần ôn',
-                      'Kiểm tra lại đáp án trước khi giao cho học sinh',
-                    ]
+                : [pageCopy.generatorTip1, pageCopy.generatorTip2, pageCopy.generatorTip3]
               ).map((item) => (
                 <div key={item} className="practice-mini-item">
                   <PlayCircleOutlined className="accent-icon" />
