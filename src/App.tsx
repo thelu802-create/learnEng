@@ -12,13 +12,13 @@ import { gradeContent, learningSteps } from './data'
 import type { FontSizeMode, GradeKey, MenuKey, ThemeMode } from './types'
 
 const { Content } = Layout
-const HomePage = lazy(() => import('./pages/HomePage'))
+const HomePage = lazy(() => import('./pages/home/HomePage'))
 const HelpPage = lazy(() => import('./pages/HelpPage'))
-const LessonsPage = lazy(() => import('./pages/LessonsPage'))
-const OfficeTipsPage = lazy(() => import('./pages/OfficeTipsPage'))
-const PlannerPage = lazy(() => import('./pages/PlannerPage'))
+const LessonsPage = lazy(() => import('./pages/lessons/LessonsPage'))
+const OfficeTipsPage = lazy(() => import('./pages/officeTips/OfficeTipsPage'))
+const PlannerPage = lazy(() => import('./pages/planner/PlannerPage'))
 const PlaygroundPage = lazy(() => import('./pages/PlaygroundPage'))
-const PracticePage = lazy(() => import('./pages/PracticePage'))
+const PracticePage = lazy(() => import('./pages/practice/PracticePage'))
 const ProgressPage = lazy(() => import('./pages/ProgressPage'))
 const THEME_STORAGE_KEY = 'learneng-theme'
 const FONT_SIZE_STORAGE_KEY = 'learneng-font-size'

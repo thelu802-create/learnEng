@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "server": "node server.mjs",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "node --test src/pages/practice/utils.test.ts src/pages/planner/utils.test.ts"
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",

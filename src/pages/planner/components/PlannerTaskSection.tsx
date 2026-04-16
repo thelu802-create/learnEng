@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import type { ReactNode } from 'react'
 import { Empty, Space, Tag, Typography } from 'antd'
-import type { PlannerTask, PlannerTaskPriority } from '../../lib/plannerStorage'
+import type { PlannerTask, PlannerTaskPriority } from '../../../lib/plannerStorage'
 import PlannerTaskItem from './PlannerTaskItem'
 
 const { Paragraph, Title } = Typography

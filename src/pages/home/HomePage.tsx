@@ -1,4 +1,3 @@
-import { useEffect, useMemo, useState } from 'react'
 import {
   ArrowRightOutlined,
   BookOutlined,
@@ -9,21 +8,13 @@ import {
   SoundOutlined,
 } from '@ant-design/icons'
 import { Button, Card, Col, Progress, Row, Space, Tag, Typography } from 'antd'
-import { useSupabaseAuth } from '../components/providers/SupabaseAuthProvider'
-import { useI18n } from '../i18n'
-import { formatTaskDate, getTaskBucket, getWeekdayLabel, type PlannerTask } from '../lib/plannerStorage'
-import { listPlannerTasks } from '../lib/supabase/plannerApi'
-import type { GradeContent, GradeKey } from '../types'
+import { useSupabaseAuth } from '../../components/providers/SupabaseAuthProvider'
+import { useI18n } from '../../i18n'
+import { formatTaskDate, getWeekdayLabel } from '../../lib/plannerStorage'
+import { useHomePlannerSummary } from './hooks/useHomePlannerSummary'
+import type { HomePageProps } from './types'
 
 const { Title, Paragraph, Text } = Typography
-
-interface HomePageProps {
-  selectedGrade: GradeKey
-  currentGrade: GradeContent
-  onOpenLessons: () => void
-  onOpenPlanner: () => void
-  onOpenPractice: () => void
-}
 
 function HomePage({
   selectedGrade,
@@ -34,30 +25,10 @@ function HomePage({
 }: HomePageProps) {
   const { gradeLabel, language, t } = useI18n()
   const { configured, user } = useSupabaseAuth()
-  const [plannerTasks, setPlannerTasks] = useState<PlannerTask[]>([])
-
-  const getReminderStatus = (task: PlannerTask) => {
-    const bucket = getTaskBucket(task)
-
-    if (bucket === 'today') {
-      return { key: 'today' as const, color: 'gold' }
-    }
-
-    if (bucket === 'overdue') {
-      return { key: 'overdue' as const, color: 'volcano' }
-    }
-
-    return { key: 'upcoming' as const, color: 'cyan' }
-  }
-
-  const getStartOfWeek = (date: Date) => {
-    const next = new Date(date)
-    const day = next.getDay()
-    const offset = day === 0 ? -6 : 1 - day
-    next.setHours(0, 0, 0, 0)
-    next.setDate(next.getDate() + offset)
-    return next
-  }
+  const { reminderTasks, plannerStats, weeklyPlanner, getReminderStatus } = useHomePlannerSummary({
+    configured,
+    userId: user?.id,
+  })
 
   const topicCount = currentGrade.vocabularyTopics.length
   const wordCount = currentGrade.vocabularyTopics.reduce((total, topic) => total + topic.words.length, 0)
@@ -65,89 +36,6 @@ function HomePage({
   const unitCount = currentGrade.units.length
   const featuredUnit = currentGrade.units[0]
   const featuredTopic = currentGrade.vocabularyTopics[0]
-  const reminderTasks = plannerTasks
-    .filter((task) => {
-      const bucket = getTaskBucket(task)
-      return bucket === 'today' || bucket === 'upcoming' || bucket === 'overdue'
-    })
-    .slice(0, 3)
-
-  const weeklyPlanner = useMemo(() => {
-    const start = getStartOfWeek(new Date())
-    const days = Array.from({ length: 7 }, (_, index) => {
-      const date = new Date(start)
-      date.setDate(start.getDate() + index)
-      return {
-        key: date.toISOString(),
-        date,
-        total: 0,
-        completed: 0,
-      }
-    })
-
-    plannerTasks.forEach((task) => {
-      const dueDate = new Date(`${task.dueDate}T00:00:00`)
-      dueDate.setHours(0, 0, 0, 0)
-      const diff = Math.round((dueDate.getTime() - start.getTime()) / 86400000)
-
-      if (diff >= 0 && diff < 7) {
-        days[diff].total += 1
-        if (task.completed) {
-          days[diff].completed += 1
-        }
-      }
-    })
-
-    const total = days.reduce((sum, day) => sum + day.total, 0)
-    const completed = days.reduce((sum, day) => sum + day.completed, 0)
-    const max = Math.max(...days.map((day) => day.total), 1)
-
-    return {
-      days,
-      total,
-      completed,
-      percent: total > 0 ? Math.round((completed / total) * 100) : 0,
-      max,
-    }
-  }, [plannerTasks])
-
-  useEffect(() => {
-    if (!configured || !user) {
-      setPlannerTasks([])
-      return
-    }
-
-    let active = true
-    listPlannerTasks(user.id)
-      .then((records) => {
-        if (!active) return
-
-        setPlannerTasks(
-          records.map((task) => ({
-            id: task.id,
-            title: task.title,
-            note: task.note,
-            dueDate: task.due_date,
-            dueTime: task.due_time,
-            priority: task.priority,
-            repeatPattern: task.repeat_pattern ?? (task.repeat_weekly ? 'weekly' : null),
-            completed: task.completed,
-            createdAt: task.created_at,
-            updatedAt: task.updated_at,
-          })),
-        )
-      })
-      .catch(() => {
-        if (active) {
-          setPlannerTasks([])
-        }
-      })
-
-    return () => {
-      active = false
-    }
-  }, [configured, user])
-
   const coverageItems = [
     { label: t('home.coverageUnits'), value: unitCount, percent: Math.min(unitCount * 20, 100), color: '#2a9d8f' },
     { label: t('home.coverageWords'), value: wordCount, percent: Math.min(wordCount, 100), color: '#4fb3a8' },
@@ -195,10 +83,10 @@ function HomePage({
     plannerThisWeekLabel: t('home.plannerThisWeekLabel'),
   }
 
-  const plannerStats = [
-    { label: copy.statusToday, value: plannerTasks.filter((task) => getTaskBucket(task) === 'today').length, tone: 'gold' },
-    { label: copy.statusUpcoming, value: plannerTasks.filter((task) => getTaskBucket(task) === 'upcoming').length, tone: 'cyan' },
-    { label: copy.statusOverdue, value: plannerTasks.filter((task) => getTaskBucket(task) === 'overdue').length, tone: 'volcano' },
+  const plannerStatItems = [
+    { label: copy.statusToday, value: plannerStats.today, tone: 'gold' },
+    { label: copy.statusUpcoming, value: plannerStats.upcoming, tone: 'cyan' },
+    { label: copy.statusOverdue, value: plannerStats.overdue, tone: 'volcano' },
   ] as const
 
   return (
@@ -289,7 +177,7 @@ function HomePage({
                       {weeklyPlanner.completed} {copy.plannerDoneLabel} · {weeklyPlanner.total} {copy.plannerThisWeekLabel}
                     </Text>
                     <div className="planner-home-legend">
-                      {plannerStats.map((item) => (
+                      {plannerStatItems.map((item) => (
                         <div className="planner-home-legend-item" key={item.label}>
                           <span
                             className={`planner-home-legend-dot planner-home-legend-dot-${item.tone}`}

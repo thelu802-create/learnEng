@@ -10,7 +10,7 @@ import {
   getWeekdayLabel,
   type PlannerTask,
   type PlannerTaskPriority,
-} from '../../lib/plannerStorage'
+} from '../../../lib/plannerStorage'
 
 const { Paragraph, Text } = Typography
 

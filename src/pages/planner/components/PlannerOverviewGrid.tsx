@@ -1,17 +1,11 @@
 import { memo } from 'react'
 import { Card, Col, Row, Tag, Typography } from 'antd'
-import type { ReactNode } from 'react'
+import type { PlannerOverviewCardItem } from '../types'
 
 const { Text } = Typography
 
 interface PlannerOverviewGridProps {
-  items: Array<{
-    key: string
-    title: string
-    value: number
-    tone: string
-    icon: ReactNode
-  }>
+  items: PlannerOverviewCardItem[]
   activeKey?: string
   onCardClick?: (key: string) => void
 }

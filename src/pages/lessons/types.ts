@@ -1,5 +1,10 @@
 import type { FormInstance } from 'antd'
-import type { GradeKey, VocabularyTopic, VocabularyWord } from '../../types'
+import type { GradeContent, GradeKey, VocabularyTopic, VocabularyWord } from '../../types'
+
+export interface LessonsPageProps {
+  selectedGrade: GradeKey
+  currentGrade: GradeContent
+}
 
 export interface DisplayVocabularyWord extends VocabularyWord {
   id?: string

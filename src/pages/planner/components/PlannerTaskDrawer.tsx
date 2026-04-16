@@ -3,7 +3,7 @@ import { CalendarOutlined } from '@ant-design/icons'
 import { Button, Col, Drawer, Form, Input, Row, Select, Space, Typography } from 'antd'
 import type { FormInstance } from 'antd'
 import type { FocusEvent, MouseEvent } from 'react'
-import type { PlannerTaskInput, PlannerTaskPriority } from '../../lib/plannerStorage'
+import type { PlannerTaskInput, PlannerTaskPriority } from '../../../lib/plannerStorage'
 
 const { Paragraph, Text } = Typography
 

@@ -1,18 +1,9 @@
 import { memo } from 'react'
 import { Card, Progress, Typography } from 'antd'
 import type { ReactNode } from 'react'
+import type { WeeklyOverview } from '../types'
 
 const { Text } = Typography
-
-interface WeeklyDayItem {
-  key: string
-  label: string
-  dayNumber: number
-  total: number
-  completed: number
-  pending: number
-  isToday: boolean
-}
 
 interface PlannerWeeklyOverviewProps {
   weekOverviewLabel: string
@@ -26,13 +17,7 @@ interface PlannerWeeklyOverviewProps {
   weeklyMetaText: string
   weeklyFocusText: string
   actionSlot?: ReactNode
-  weeklyOverview: {
-    days: WeeklyDayItem[]
-    total: number
-    completed: number
-    percent: number
-    max: number
-  }
+  weeklyOverview: Pick<WeeklyOverview, 'days' | 'total' | 'completed' | 'percent' | 'max'>
 }
 
 function PlannerWeeklyOverview({

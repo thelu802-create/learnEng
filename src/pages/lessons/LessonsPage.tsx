@@ -1,66 +1,41 @@
 import { useEffect, useMemo, useState } from 'react'
-import {
-  CheckCircleOutlined,
-  DownloadOutlined,
-  PlusOutlined,
-  SearchOutlined,
-  UploadOutlined,
-} from '@ant-design/icons'
+import { SearchOutlined } from '@ant-design/icons'
 import {
   App as AntdApp,
-  Button,
   Card,
   Col,
   Form,
   Input,
   Row,
   Space,
-  Spin,
   Tabs,
   Typography,
 } from 'antd'
 import type { TabsProps } from 'antd'
-import { useSupabaseAuth } from '../components/providers/SupabaseAuthProvider'
-import { gradeContent } from '../data'
-import { useI18n } from '../i18n'
-import { listTeacherNotes, upsertTeacherNote } from '../lib/supabase/notesApi'
+import { useSupabaseAuth } from '../../components/providers/SupabaseAuthProvider'
+import { useI18n } from '../../i18n'
 import {
   createVocabularyEntries,
   deleteVocabularyEntry,
-  listVocabularyEntries,
   updateVocabularyEntry,
-} from '../lib/supabase/vocabularyEntriesApi'
-import { lookupIpaMap } from '../lib/vocabularyApi'
-import type { VocabularyEntryRecord } from '../lib/supabase/types'
-import type { GradeContent, GradeKey } from '../types'
-import VocabularyAddModal from './lessons/VocabularyAddModal'
-import VocabularyImportModal from './lessons/VocabularyImportModal'
-import LessonsUnitsTab from './lessons/LessonsUnitsTab'
-import LessonsVocabularyTab from './lessons/LessonsVocabularyTab'
+} from '../../lib/supabase/vocabularyEntriesApi'
+import { upsertTeacherNote } from '../../lib/supabase/notesApi'
+import { lookupIpaMap } from '../../lib/vocabularyApi'
+import VocabularyAddModal from './VocabularyAddModal'
+import VocabularyImportModal from './VocabularyImportModal'
+import LessonsSidebar from './components/LessonsSidebar'
+import LessonsUnitsTab from './LessonsUnitsTab'
+import LessonsVocabularyTab from './LessonsVocabularyTab'
+import { useLessonsTeacherTools } from './hooks/useLessonsTeacherTools'
+import { useLessonsVocabularyData } from './hooks/useLessonsVocabularyData'
 import type {
   AddWordFormValues,
-  ImportVocabularyRow,
   LessonsCopy,
-  SearchableVocabularyTopic,
-  SelectedVocabulary,
-} from './lessons/types'
-import {
-  downloadCsvFile,
-  downloadXlsxFile,
-  matchesVocabulary,
-  normalizeSpreadsheetRows,
-  normalizeWordKey,
-  parseVocabularyCsv,
-  readSpreadsheetRows,
-  slugifyTopicKey,
-} from './lessons/utils'
+  LessonsPageProps,
+} from './types'
+import { downloadCsvFile, downloadXlsxFile, normalizeWordKey, slugifyTopicKey } from './utils'
 
-const { Title, Paragraph, Text } = Typography
-
-interface LessonsPageProps {
-  selectedGrade: GradeKey
-  currentGrade: GradeContent
-}
+const { Title, Paragraph } = Typography
 
 function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
   const { message } = AntdApp.useApp()
@@ -70,20 +45,8 @@ function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
   const [selectedVocabularyKey, setSelectedVocabularyKey] = useState('')
   const [searchKeyword, setSearchKeyword] = useState('')
   const [activeTabKey, setActiveTabKey] = useState('units')
-  const [topicNotes, setTopicNotes] = useState<Record<string, string>>({})
   const [noteDraft, setNoteDraft] = useState('')
-  const [isNotesLoading, setIsNotesLoading] = useState(false)
   const [isSavingNote, setIsSavingNote] = useState(false)
-  const [teacherVocabularyEntries, setTeacherVocabularyEntries] = useState<VocabularyEntryRecord[]>([])
-  const [isVocabularyLoading, setIsVocabularyLoading] = useState(false)
-  const [isAddWordOpen, setIsAddWordOpen] = useState(false)
-  const [isImportOpen, setIsImportOpen] = useState(false)
-  const [isSavingVocabulary, setIsSavingVocabulary] = useState(false)
-  const [importRows, setImportRows] = useState<ImportVocabularyRow[]>([])
-  const [importFileName, setImportFileName] = useState('')
-  const [autoFillSingleIpa, setAutoFillSingleIpa] = useState(true)
-  const [autoFillImportIpa, setAutoFillImportIpa] = useState(true)
-  const [editingVocabularyId, setEditingVocabularyId] = useState<string | null>(null)
 
   const lessonsCopy: LessonsCopy = {
     overviewEyebrow: t('lessonsPage.overviewEyebrow'),
@@ -152,212 +115,56 @@ function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
   const notesNeedLoginText = lessonsCopy.notesNeedLogin
   const toolsNeedLoginText = lessonsCopy.toolsNeedLogin
   const loginActionText = t('topbar.signIn')
+  const {
+    topicNotes,
+    isNotesLoading,
+    teacherVocabularyEntries,
+    isVocabularyLoading,
+    isAddWordOpen,
+    isImportOpen,
+    isSavingVocabulary,
+    importRows,
+    importFileName,
+    autoFillSingleIpa,
+    setAutoFillSingleIpa,
+    autoFillImportIpa,
+    setAutoFillImportIpa,
+    editingVocabularyId,
+    handleGithubSignIn,
+    handleOpenAddWord,
+    handleCloseAddWord,
+    handleOpenImport,
+    handleCloseImport,
+    handleImportFile,
+    setTeacherVocabularyEntries,
+    setTopicNotes,
+    setIsSavingVocabulary,
+    setEditingVocabularyId,
+    setIsAddWordOpen,
+  } = useLessonsTeacherTools({
+    configured,
+    userId: user?.id,
+    lessonsCopy,
+    t,
+    message,
+    signInWithGithub,
+    addWordForm,
+  })
 
-  const handleGithubSignIn = async () => {
-    try {
-      await signInWithGithub()
-    } catch {
-      message.error(t('planner.signInError'))
-    }
-  }
-
-  const mergedVocabularyTopicsByGrade = useMemo<Record<GradeKey, SearchableVocabularyTopic[]>>(() => {
-    // Start with the bundled course data, then layer teacher-added rows on top for the active session.
-    const baseMap = (Object.entries(gradeContent) as [GradeKey, GradeContent][]).reduce<
-      Record<GradeKey, SearchableVocabularyTopic[]>
-    >((result, [grade, content]) => {
-      result[grade] = content.vocabularyTopics.map((topic) => ({
-        ...topic,
-        grade,
-        words: topic.words.map((word) => ({
-          ...word,
-          source: 'system' as const,
-        })),
-      }))
-      return result
-    }, {} as Record<GradeKey, SearchableVocabularyTopic[]>)
-
-    teacherVocabularyEntries.forEach((entry) => {
-      const grade = entry.grade_key as GradeKey
-
-      if (!baseMap[grade]) {
-        return
-      }
-
-      let topic = baseMap[grade].find((item) => item.key === entry.topic_key)
-
-      if (!topic) {
-        topic = {
-          key: entry.topic_key,
-          title: entry.topic_title,
-          grade,
-          words: [],
-        }
-        baseMap[grade] = [...baseMap[grade], topic]
-      }
-
-      const existingIndex = topic.words.findIndex(
-        (word) =>
-          normalizeWordKey(word.word) === normalizeWordKey(entry.word) &&
-          (word.source !== 'teacher' || word.id === entry.id),
-      )
-
-      const nextWord = {
-        id: entry.id,
-        word: entry.word,
-        ipa: entry.ipa,
-        meaning: entry.meaning,
-        example: entry.example,
-        source: entry.source,
-      } as const
-
-      if (existingIndex >= 0) {
-        if (topic.words[existingIndex].source === 'teacher') {
-          topic.words = topic.words.map((word, index) => (index === existingIndex ? nextWord : word))
-        }
-      } else {
-        topic.words = [...topic.words, nextWord]
-      }
-    })
-
-    return baseMap
-  }, [teacherVocabularyEntries])
-
-  const selectedGradeTopics = mergedVocabularyTopicsByGrade[selectedGrade] ?? []
-
-  const searchableTopics = useMemo<SearchableVocabularyTopic[]>(() => {
-    if (!searchKeyword.trim()) {
-      return selectedGradeTopics
-    }
-
-    return (Object.entries(mergedVocabularyTopicsByGrade) as [GradeKey, SearchableVocabularyTopic[]][])
-      .flatMap(([, topics]) => topics)
-  }, [mergedVocabularyTopicsByGrade, searchKeyword, selectedGradeTopics])
-
-  const filteredVocabularyTopics = useMemo(
-    () =>
-      searchableTopics
-        .map((topic) => ({
-          ...topic,
-          words: topic.words.filter((word) => matchesVocabulary(word, searchKeyword)),
-        }))
-        .filter((topic) => topic.words.length > 0),
-    [searchKeyword, searchableTopics],
-  )
-  const totalMatchedWords = useMemo(
-    () => filteredVocabularyTopics.reduce((total, topic) => total + topic.words.length, 0),
-    [filteredVocabularyTopics],
-  )
-  const activeTopicKey = useMemo(
-    () => currentGrade.units[0]?.vocabularyTopicKey ?? selectedGradeTopics[0]?.key ?? '',
-    [currentGrade.units, selectedGradeTopics],
-  )
-  const selectedTopicLookup = useMemo<Record<string, string>>(
-    () => Object.fromEntries(selectedGradeTopics.map((topic) => [topic.key, topic.title])),
-    [selectedGradeTopics],
-  )
-
-  const selectedVocabulary = useMemo<SelectedVocabulary | null>(() => {
-    for (const topic of filteredVocabularyTopics) {
-      const matchedWord = topic.words.find(
-        (word) => `${topic.grade}-${topic.key}-${word.word}` === selectedVocabularyKey,
-      )
-
-      if (matchedWord) {
-        return {
-          ...matchedWord,
-          grade: topic.grade,
-          topicTitle: topic.title,
-          topicKey: topic.key,
-        }
-      }
-    }
-
-    for (const topic of filteredVocabularyTopics) {
-      const firstWord = topic.words[0]
-
-      if (firstWord) {
-        return {
-          ...firstWord,
-          grade: topic.grade,
-          topicTitle: topic.title,
-          topicKey: topic.key,
-        }
-      }
-    }
-
-    return null
-  }, [filteredVocabularyTopics, selectedVocabularyKey])
-
-  useEffect(() => {
-    if (!configured || !user) {
-      setTopicNotes({})
-      return
-    }
-
-    let active = true
-    setIsNotesLoading(true)
-
-    listTeacherNotes(user.id)
-      .then((notes) => {
-        if (!active) {
-          return
-        }
-
-        const mappedNotes = notes.reduce<Record<string, string>>((result, note) => {
-          result[`${note.grade_key}-${note.topic_key}`] = note.content
-          return result
-        }, {})
-
-        setTopicNotes(mappedNotes)
-      })
-      .catch(() => {
-        if (active) {
-          message.error(lessonsCopy.notesLoadError)
-        }
-      })
-      .finally(() => {
-        if (active) {
-          setIsNotesLoading(false)
-        }
-      })
-
-    return () => {
-      active = false
-    }
-  }, [configured, lessonsCopy.notesLoadError, user])
-
-  useEffect(() => {
-    if (!configured || !user) {
-      setTeacherVocabularyEntries([])
-      return
-    }
-
-    // Teacher vocabulary stays private per account, so it is only loaded after sign-in.
-    let active = true
-    setIsVocabularyLoading(true)
-
-    listVocabularyEntries(user.id)
-      .then((entries) => {
-        if (active) {
-          setTeacherVocabularyEntries(entries.filter((entry) => entry.source === 'teacher'))
-        }
-      })
-      .catch(() => {
-        if (active) {
-          message.error(lessonsCopy.loadWordsError)
-        }
-      })
-      .finally(() => {
-        if (active) {
-          setIsVocabularyLoading(false)
-        }
-      })
-
-    return () => {
-      active = false
-    }
-  }, [configured, lessonsCopy.loadWordsError, user])
+  const {
+    selectedGradeTopics,
+    filteredVocabularyTopics,
+    totalMatchedWords,
+    activeTopicKey,
+    selectedTopicLookup,
+    selectedVocabulary,
+  } = useLessonsVocabularyData({
+    selectedGrade,
+    currentGrade,
+    teacherVocabularyEntries,
+    searchKeyword,
+    selectedVocabularyKey,
+  })
 
   useEffect(() => {
     const noteKey = `${selectedGrade}-${activeTopicKey}`
@@ -392,6 +199,16 @@ function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
       example: '',
     })
   }, [activeTopicKey, addWordForm, editingVocabularyId, isAddWordOpen, teacherVocabularyEntries])
+
+  const teacherWordsInGrade = useMemo(
+    () => teacherVocabularyEntries.filter((entry) => entry.grade_key === selectedGrade).length,
+    [selectedGrade, teacherVocabularyEntries],
+  )
+
+  const topicsForAddModal = useMemo(
+    () => selectedGradeTopics.map((topic) => ({ key: topic.key, title: topic.title })),
+    [selectedGradeTopics],
+  )
 
   const handleSaveNote = async () => {
     if (!user || !activeTopicKey) {
@@ -505,9 +322,7 @@ function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
       setSelectedVocabularyKey(`${selectedGrade}-${values.topicKey}-${trimmedWord}`)
       setActiveTabKey('vocabulary')
       setSearchKeyword('')
-      setIsAddWordOpen(false)
-      setEditingVocabularyId(null)
-      addWordForm.resetFields()
+      handleCloseAddWord()
     } catch {
       message.error(lessonsCopy.saveWordError)
     } finally {
@@ -598,27 +413,6 @@ function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
     )
   }
 
-  const handleImportFile = async (file: File) => {
-    try {
-      const fileName = file.name.toLowerCase()
-      let rows: ImportVocabularyRow[] = []
-
-        if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
-          const buffer = await file.arrayBuffer()
-          rows = normalizeSpreadsheetRows(await readSpreadsheetRows(buffer))
-        } else {
-          rows = parseVocabularyCsv(await file.text())
-        }
-
-      setImportRows(rows)
-      setImportFileName(file.name)
-    } catch {
-      setImportRows([])
-      setImportFileName('')
-      message.error(lessonsCopy.importReadError)
-    }
-  }
-
   const handleImportVocabulary = async () => {
     if (!user) {
       return
@@ -686,9 +480,7 @@ function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
       )
 
       setTeacherVocabularyEntries((currentEntries) => [...currentEntries, ...createdEntries])
-      setIsImportOpen(false)
-      setImportRows([])
-      setImportFileName('')
+      handleCloseImport()
 
       const skippedCount = importRows.length - rowsToCreate.length
       if (skippedCount > 0) {
@@ -817,122 +609,37 @@ function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
         </Col>
 
         <Col xs={24} xl={8}>
-          <Space orientation="vertical" size={18} className="full-width">
-            <Card className="content-card side-card" variant="borderless">
-              <Text className="eyebrow">{t('common.keySkills')}</Text>
-              <Space orientation="vertical" size={10} className="full-width">
-                {currentGrade.skills.map((skill) => (
-                  <div className="skill-item" key={skill}>
-                    <CheckCircleOutlined className="accent-icon" />
-                    <Text>{skill}</Text>
-                  </div>
-                ))}
-              </Space>
-            </Card>
-
-            <Card className="content-card highlight-card" variant="borderless">
-              <Text className="eyebrow">{t('common.projectApply')}</Text>
-              <Paragraph>{currentGrade.project}</Paragraph>
-            </Card>
-
-            <Card className="content-card vocabulary-tools-card" variant="borderless">
-              <Space orientation="vertical" size={14} className="full-width">
-                <div>
-                  <Text className="eyebrow">{lessonsCopy.toolsTitle}</Text>
-                  <Paragraph className="settings-copy">{lessonsCopy.toolsCopy}</Paragraph>
-                </div>
-
-                {!configured ? (
-                  <Paragraph className="practice-empty-copy">{lessonsCopy.notesNotReady}</Paragraph>
-                ) : !user ? (
-                  <Space orientation="vertical" size={10}>
-                    <Paragraph className="practice-empty-copy">{toolsNeedLoginText}</Paragraph>
-                    <Button type="primary" onClick={() => void handleGithubSignIn()}>
-                      {loginActionText}
-                    </Button>
-                  </Space>
-                ) : (
-                  <>
-                    <Space wrap size={10}>
-                      <Button
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        onClick={() => {
-                          setEditingVocabularyId(null)
-                          setIsAddWordOpen(true)
-                        }}
-                      >
-                        {lessonsCopy.addWord}
-                      </Button>
-                      <Button icon={<UploadOutlined />} onClick={() => setIsImportOpen(true)}>
-                        {lessonsCopy.importWords}
-                      </Button>
-                      <Button icon={<DownloadOutlined />} onClick={handleDownloadTemplateCsv}>
-                        {lessonsCopy.downloadTemplateCsv}
-                      </Button>
-                      <Button icon={<DownloadOutlined />} onClick={handleDownloadTemplateExcel}>
-                        {lessonsCopy.downloadTemplateExcel}
-                      </Button>
-                    </Space>
-                    <Text type="secondary">
-                      {isVocabularyLoading
-                        ? t('lessonsPage.loadingTeacherVocabulary')
-                        : t('lessonsPage.teacherWordsInGrade', {
-                            count: teacherVocabularyEntries.filter((entry) => entry.grade_key === selectedGrade).length,
-                          })}
-                    </Text>
-                  </>
-                )}
-              </Space>
-            </Card>
-
-            <Card className="content-card teacher-notes-card" variant="borderless">
-              <Space orientation="vertical" size={14} className="full-width">
-                <div>
-                  <Text className="eyebrow">{lessonsCopy.notesTitle}</Text>
-                  <Paragraph className="settings-copy">{lessonsCopy.notesCopy}</Paragraph>
-                </div>
-
-                {!configured ? (
-                  <Paragraph className="practice-empty-copy">{lessonsCopy.notesNotReady}</Paragraph>
-                ) : !user ? (
-                  <Space orientation="vertical" size={10}>
-                    <Paragraph className="practice-empty-copy">{notesNeedLoginText}</Paragraph>
-                    <Button type="primary" onClick={() => void handleGithubSignIn()}>
-                      {loginActionText}
-                    </Button>
-                  </Space>
-                ) : isNotesLoading ? (
-                  <div className="teacher-notes-loading">
-                    <Spin />
-                  </div>
-                ) : (
-                  <>
-                    <Input.TextArea
-                      rows={7}
-                      value={noteDraft}
-                      onChange={(event) => setNoteDraft(event.target.value)}
-                      placeholder={lessonsCopy.notesPlaceholder}
-                      className="teacher-notes-input"
-                    />
-                    <Button type="primary" onClick={handleSaveNote} loading={isSavingNote}>
-                      {lessonsCopy.saveNote}
-                    </Button>
-                  </>
-                )}
-              </Space>
-            </Card>
-          </Space>
+          <LessonsSidebar
+            currentGradeSkills={currentGrade.skills}
+            currentGradeProject={currentGrade.project}
+            copy={lessonsCopy}
+            configured={configured}
+            hasUser={Boolean(user)}
+            loginActionText={loginActionText}
+            notesNeedLoginText={notesNeedLoginText}
+            toolsNeedLoginText={toolsNeedLoginText}
+            loadingTeacherVocabularyText={t('lessonsPage.loadingTeacherVocabulary')}
+            teacherWordsInGradeText={t('lessonsPage.teacherWordsInGrade', { count: teacherWordsInGrade })}
+            noteDraft={noteDraft}
+            isNotesLoading={isNotesLoading}
+            isSavingNote={isSavingNote}
+            isVocabularyLoading={isVocabularyLoading}
+            onNoteDraftChange={setNoteDraft}
+            onSaveNote={() => void handleSaveNote()}
+            onGithubSignIn={() => void handleGithubSignIn()}
+            onOpenAddWord={handleOpenAddWord}
+            onOpenImport={handleOpenImport}
+            onDownloadTemplateCsv={handleDownloadTemplateCsv}
+            onDownloadTemplateExcel={() => void handleDownloadTemplateExcel()}
+            keySkillsLabel={t('common.keySkills')}
+            projectApplyLabel={t('common.projectApply')}
+          />
         </Col>
       </Row>
 
       <VocabularyAddModal
         open={isAddWordOpen}
-        onCancel={() => {
-          setIsAddWordOpen(false)
-          setEditingVocabularyId(null)
-          addWordForm.resetFields()
-        }}
+        onCancel={handleCloseAddWord}
         onSubmit={() => void handleSubmitAddWord()}
         confirmLoading={isSavingVocabulary}
         copy={lessonsCopy}
@@ -940,21 +647,14 @@ function LessonsPage({ selectedGrade, currentGrade }: LessonsPageProps) {
         form={addWordForm}
         autoFillIpa={autoFillSingleIpa}
         onAutoFillIpaChange={setAutoFillSingleIpa}
-        topics={selectedGradeTopics.map((topic) => ({
-          key: topic.key,
-          title: topic.title,
-        }))}
+        topics={topicsForAddModal}
         mode={editingVocabularyId ? 'edit' : 'create'}
         submitLabel={editingVocabularyId ? lessonsCopy.updateWord : lessonsCopy.addWord}
       />
 
       <VocabularyImportModal
         open={isImportOpen}
-        onCancel={() => {
-          setIsImportOpen(false)
-          setImportRows([])
-          setImportFileName('')
-        }}
+        onCancel={handleCloseImport}
         onSubmit={() => void handleImportVocabulary()}
         confirmLoading={isSavingVocabulary}
         copy={lessonsCopy}

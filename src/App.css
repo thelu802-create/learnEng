@@ -2110,6 +2110,36 @@
     padding: 13px;
   }
 
+  .office-tool-tab-topline {
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .office-subnav-tag {
+    min-width: 34px;
+    justify-content: center;
+  }
+
+  .office-shortcut-toolbar {
+    padding: 10px;
+    border-radius: 18px;
+  }
+
+  .office-filter-chip {
+    min-height: 42px;
+    padding-inline: 14px;
+    justify-content: flex-start;
+  }
+
+  .office-shortcut-overview {
+    gap: 6px;
+  }
+
+  .office-shortcut-overview-item {
+    width: 100%;
+    justify-content: center;
+  }
+
   .office-block-heading {
     align-items: flex-start;
   }
