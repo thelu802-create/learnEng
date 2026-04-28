@@ -28,6 +28,7 @@ const OAUTH_URL_PARAM_KEYS = [
   'state',
   'token_type',
 ] as const
+const OAUTH_RETURN_PATH_KEY = 'learneng-oauth-return-path'
 
 function removeOAuthParams(params: URLSearchParams): boolean {
   let changed = false
@@ -46,7 +47,30 @@ function buildCleanRedirectUrl() {
   const url = new URL(window.location.href)
   removeOAuthParams(url.searchParams)
   url.hash = ''
+
   return url.toString()
+}
+
+function saveOAuthReturnPath() {
+  if (!window.location.hash.startsWith('#/')) {
+    return
+  }
+
+  window.sessionStorage.setItem(OAUTH_RETURN_PATH_KEY, window.location.hash)
+}
+
+function restoreOAuthReturnPath() {
+  const returnPath = window.sessionStorage.getItem(OAUTH_RETURN_PATH_KEY)
+
+  if (!returnPath) {
+    return
+  }
+
+  window.sessionStorage.removeItem(OAUTH_RETURN_PATH_KEY)
+
+  if (window.location.hash !== returnPath) {
+    window.history.replaceState({}, document.title, `${window.location.pathname}${window.location.search}${returnPath}`)
+  }
 }
 
 function clearOAuthParamsFromBrowserUrl() {
@@ -86,12 +110,18 @@ function SupabaseAuthProvider({ children }: PropsWithChildren) {
 
       setSession(data.session)
       clearOAuthParamsFromBrowserUrl()
+      if (data.session) {
+        restoreOAuthReturnPath()
+      }
       setLoading(false)
     })
 
     const { data } = client.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession)
       clearOAuthParamsFromBrowserUrl()
+      if (nextSession) {
+        restoreOAuthReturnPath()
+      }
       setLoading(false)
     })
 
@@ -132,6 +162,7 @@ function SupabaseAuthProvider({ children }: PropsWithChildren) {
           throw new Error('Supabase chưa được cấu hình.')
         }
 
+        saveOAuthReturnPath()
         const redirectTo = buildCleanRedirectUrl()
         const { error } = await client.auth.signInWithOAuth({
           provider: 'github',

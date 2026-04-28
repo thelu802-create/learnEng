@@ -15,6 +15,7 @@ const { Content } = Layout
 const HomePage = lazy(() => import('./pages/home/HomePage'))
 const HelpPage = lazy(() => import('./pages/HelpPage'))
 const LessonsPage = lazy(() => import('./pages/lessons/LessonsPage'))
+const MakeupSchedulePage = lazy(() => import('./pages/makeupSchedule/MakeupSchedulePage'))
 const OfficeTipsPage = lazy(() => import('./pages/officeTips/OfficeTipsPage'))
 const PlannerPage = lazy(() => import('./pages/planner/PlannerPage'))
 const PlaygroundPage = lazy(() => import('./pages/PlaygroundPage'))
@@ -176,6 +177,7 @@ function AppShell() {
                     <Route path="/lessons" element={<LessonsPage {...pageProps} />} />
                     <Route path="/practice" element={<PracticePage {...pageProps} learningSteps={learningSteps} />} />
                     <Route path="/planner" element={<PlannerPage onRegisterTopbarAction={registerTopbarPageAction} />} />
+                    <Route path="/makeup-schedule" element={<MakeupSchedulePage />} />
                     <Route path="/playground" element={<PlaygroundPage {...pageProps} />} />
                     <Route path="/progress" element={<ProgressPage {...pageProps} />} />
                     <Route path="/office-tips" element={<OfficeTipsPage />} />

@@ -27,29 +27,34 @@ Luu vao Supabase:
 - quiz questions
 - quiz attempts
 - profiles
+- makeup schedules
 
 ## Buoc setup nhanh
 
 1. Tao project Supabase
 2. Vao SQL Editor va chay file `supabase/schema.sql`
-3. Lay:
+3. Chay them cac file tinh nang neu can:
+- `supabase/planner_tasks.sql`
+- `supabase/add_repeat_pattern.sql`
+- `supabase/makeup_schedules.sql`
+4. Lay:
 - Project URL
 - anon public key
-4. Tao file `.env.local` tu `.env.example`
-5. Dien:
+5. Tao file `.env.local` tu `.env.example`
+6. Dien:
 
 ```bash
 VITE_SUPABASE_URL=your-project-url
 VITE_SUPABASE_ANON_KEY=your-anon-key
 ```
 
-6. Cai dependency:
+7. Cai dependency:
 
 ```bash
 npm install
 ```
 
-7. Build lai:
+8. Build lai:
 
 ```bash
 npm run build

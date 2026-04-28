@@ -121,3 +121,28 @@ export interface PlannerTaskInput {
   repeatPattern?: string | null
   completed?: boolean
 }
+
+export type MakeupScheduleStatus = 'planned' | 'completed' | 'cancelled'
+
+export interface MakeupScheduleRecord {
+  id: string
+  user_id: string
+  class_name: string
+  missed_date: string
+  makeup_date: string
+  makeup_time: string
+  note: string
+  status: MakeupScheduleStatus
+  created_at: string
+  updated_at: string
+}
+
+export interface MakeupScheduleInput {
+  userId: string
+  className: string
+  missedDate: string
+  makeupDate: string
+  makeupTime?: string
+  note?: string
+  status?: MakeupScheduleStatus
+}

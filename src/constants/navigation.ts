@@ -6,6 +6,7 @@ export const menuItems: MenuItemConfig[] = [
   { key: 'practice', icon: 'play', path: '/practice' },
   { key: 'playground', icon: 'bulb', path: '/playground' },
   { key: 'planner', icon: 'calendar', path: '/planner' },
+  { key: 'makeupSchedule', icon: 'calendar', path: '/makeup-schedule' },
   { key: 'progress', icon: 'rise', path: '/progress' },
   { key: 'officeTips', icon: 'bulb', path: '/office-tips' },
   { key: 'help', icon: 'help', path: '/help' },

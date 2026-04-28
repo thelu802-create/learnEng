@@ -171,6 +171,166 @@
   border: 1px solid rgba(91, 192, 235, 0.16);
 }
 
+.makeup-hero-card {
+  background:
+    radial-gradient(circle at top right, rgba(42, 157, 143, 0.11), transparent 34%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.99), rgba(248, 251, 253, 0.99)),
+    #ffffff;
+}
+
+.makeup-hero-card .ant-card-body {
+  padding: 24px !important;
+}
+
+.makeup-hero-card .ant-btn {
+  min-height: 42px;
+  padding-inline: 16px;
+  font-weight: 700;
+}
+
+.makeup-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.makeup-stat-card {
+  display: grid;
+  gap: 7px;
+  min-height: 86px;
+  padding: 15px 16px;
+  border: 1px solid rgba(42, 157, 143, 0.16);
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(248, 251, 253, 0.9)),
+    rgba(42, 157, 143, 0.05);
+}
+
+.makeup-stat-card .ant-typography {
+  color: #5f6b76;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.makeup-stat-card strong {
+  color: #1d7f73;
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.makeup-form-card .ant-input,
+.makeup-form-card .ant-input-affix-wrapper,
+.makeup-form-card .ant-select-selector,
+.makeup-list-card .ant-select-selector,
+.makeup-drawer .ant-input,
+.makeup-drawer .ant-input-affix-wrapper,
+.makeup-drawer .ant-select-selector {
+  border-radius: 14px !important;
+}
+
+.makeup-list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 2px;
+}
+
+.makeup-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.makeup-filter {
+  min-width: 180px;
+}
+
+.makeup-list {
+  display: grid;
+  gap: 12px;
+}
+
+.makeup-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  padding: 16px 18px;
+  border: 1px solid #e8edf2;
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(250, 252, 253, 0.98)),
+    #ffffff;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+
+.makeup-item:hover {
+  border-color: #d8e6ec;
+  box-shadow: 0 10px 24px rgba(16, 24, 40, 0.055);
+  transform: translateY(-1px);
+}
+
+.makeup-item-main {
+  display: grid;
+  gap: 10px;
+}
+
+.makeup-item-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.makeup-item-title-row .ant-typography {
+  margin: 0;
+}
+
+.makeup-item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.makeup-item-actions {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  min-width: 220px;
+}
+
+.makeup-item-actions .ant-btn {
+  border-radius: 12px;
+}
+
+.makeup-drawer .ant-drawer-header {
+  padding: 18px 20px;
+}
+
+.makeup-drawer .ant-drawer-body {
+  padding: 18px 20px 12px;
+}
+
+.makeup-drawer .ant-drawer-footer {
+  padding: 14px 20px 18px;
+}
+
+.makeup-drawer-copy {
+  margin-bottom: 18px !important;
+}
+
+.makeup-drawer-footer {
+  width: 100%;
+  justify-content: flex-end;
+}
+
 .playground-hero-card {
   overflow: hidden;
 }
@@ -393,6 +553,23 @@
 
 .theme-dark .planner-task-item.is-completed {
   background: rgba(148, 163, 184, 0.12);
+}
+
+.theme-dark .makeup-hero-card,
+.theme-dark .makeup-item {
+  background:
+    linear-gradient(180deg, rgba(16, 32, 40, 0.96), rgba(13, 26, 33, 0.96)),
+    #102028;
+  border-color: #1f3641;
+}
+
+.theme-dark .makeup-stat-card {
+  background: rgba(42, 157, 143, 0.1);
+  border-color: rgba(42, 157, 143, 0.22);
+}
+
+.theme-dark .makeup-stat-card strong {
+  color: #76d4c7;
 }
 
 .theme-dark .planner-completed-summary,
@@ -4615,6 +4792,34 @@
     min-height: 30px;
     padding: 7px 10px;
     font-size: 11px;
+  }
+
+  .makeup-stat-grid,
+  .makeup-item {
+    grid-template-columns: 1fr;
+  }
+
+  .makeup-hero-card .ant-btn {
+    width: 100%;
+  }
+
+  .makeup-list-head,
+  .makeup-item-title-row {
+    display: grid;
+    align-items: stretch;
+  }
+
+  .makeup-filter {
+    width: 100%;
+  }
+
+  .makeup-toolbar {
+    justify-content: stretch;
+  }
+
+  .makeup-item-actions {
+    justify-content: flex-start;
+    min-width: 0;
   }
 
   .practice-item {

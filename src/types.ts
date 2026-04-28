@@ -9,6 +9,7 @@ export type MenuKey =
   | 'practice'
   | 'playground'
   | 'planner'
+  | 'makeupSchedule'
   | 'progress'
   | 'officeTips'
   | 'help'
