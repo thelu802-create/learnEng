@@ -128,6 +128,7 @@ export interface MakeupScheduleRecord {
   id: string
   user_id: string
   class_name: string
+  lesson_period: string
   missed_date: string
   makeup_date: string
   makeup_time: string
@@ -140,6 +141,7 @@ export interface MakeupScheduleRecord {
 export interface MakeupScheduleInput {
   userId: string
   className: string
+  lessonPeriod?: string
   missedDate: string
   makeupDate: string
   makeupTime?: string

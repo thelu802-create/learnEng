@@ -248,65 +248,68 @@
   min-width: 180px;
 }
 
-.makeup-list {
-  display: grid;
-  gap: 12px;
-}
-
-.makeup-item {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 16px;
-  padding: 16px 18px;
+.makeup-table .ant-table {
   border: 1px solid #e8edf2;
   border-radius: 14px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(250, 252, 253, 0.98)),
-    #ffffff;
-  transition:
-    border-color 0.18s ease,
-    box-shadow 0.18s ease,
-    transform 0.18s ease;
+  overflow: hidden;
 }
 
-.makeup-item:hover {
-  border-color: #d8e6ec;
-  box-shadow: 0 10px 24px rgba(16, 24, 40, 0.055);
-  transform: translateY(-1px);
+.makeup-table .ant-table-thead > tr > th {
+  background: #f7fafc;
+  color: #475467;
+  font-size: 12px;
+  font-weight: 800;
 }
 
-.makeup-item-main {
-  display: grid;
-  gap: 10px;
+.makeup-table .ant-table-tbody > tr > td {
+  vertical-align: top;
 }
 
-.makeup-item-title-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+.makeup-table .ant-table-tbody > tr:hover > td {
+  background: rgba(42, 157, 143, 0.035) !important;
 }
 
-.makeup-item-title-row .ant-typography {
-  margin: 0;
+.makeup-class-cell {
+  min-width: 0;
 }
 
-.makeup-item-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+.makeup-class-title {
+  display: block;
+  max-width: 210px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.makeup-item-actions {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  flex-wrap: wrap;
+.makeup-date-tag.ant-tag {
+  margin-inline-end: 0;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.makeup-period-tag.ant-tag {
+  max-width: 112px;
+  margin-inline-end: 0;
+  border-radius: 999px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.makeup-note-cell {
+  display: -webkit-box;
+  max-width: 360px;
+  overflow: hidden;
+  color: #5f6b76;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.makeup-table-actions {
   justify-content: flex-end;
-  min-width: 220px;
+  width: 100%;
 }
 
-.makeup-item-actions .ant-btn {
+.makeup-table-actions .ant-btn {
   border-radius: 12px;
 }
 
@@ -555,12 +558,28 @@
   background: rgba(148, 163, 184, 0.12);
 }
 
-.theme-dark .makeup-hero-card,
-.theme-dark .makeup-item {
+.theme-dark .makeup-hero-card {
   background:
     linear-gradient(180deg, rgba(16, 32, 40, 0.96), rgba(13, 26, 33, 0.96)),
     #102028;
   border-color: #1f3641;
+}
+
+.theme-dark .makeup-table .ant-table {
+  border-color: #1f3641;
+}
+
+.theme-dark .makeup-table .ant-table-thead > tr > th {
+  background: #12242d;
+  color: #c0ccd2;
+}
+
+.theme-dark .makeup-table .ant-table-tbody > tr:hover > td {
+  background: rgba(42, 157, 143, 0.08) !important;
+}
+
+.theme-dark .makeup-note-cell {
+  color: #c0ccd2;
 }
 
 .theme-dark .makeup-stat-card {
@@ -4794,8 +4813,7 @@
     font-size: 11px;
   }
 
-  .makeup-stat-grid,
-  .makeup-item {
+  .makeup-stat-grid {
     grid-template-columns: 1fr;
   }
 
@@ -4803,8 +4821,7 @@
     width: 100%;
   }
 
-  .makeup-list-head,
-  .makeup-item-title-row {
+  .makeup-list-head {
     display: grid;
     align-items: stretch;
   }
@@ -4815,11 +4832,6 @@
 
   .makeup-toolbar {
     justify-content: stretch;
-  }
-
-  .makeup-item-actions {
-    justify-content: flex-start;
-    min-width: 0;
   }
 
   .practice-item {

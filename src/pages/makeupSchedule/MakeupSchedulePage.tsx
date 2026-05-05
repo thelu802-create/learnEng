@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
+  BookOutlined,
   CalendarOutlined,
   CheckOutlined,
   DeleteOutlined,
@@ -19,10 +20,11 @@ import {
   Row,
   Select,
   Space,
-  Spin,
+  Table,
   Tag,
   Typography,
 } from 'antd'
+import type { ColumnsType } from 'antd/es/table'
 import { useSupabaseAuth } from '../../components/providers/SupabaseAuthProvider'
 import { useI18n } from '../../i18n'
 import {
@@ -39,6 +41,7 @@ type MakeupFilter = MakeupScheduleStatus | 'all'
 
 interface MakeupFormValues {
   className: string
+  lessonPeriod?: string
   missedDate: string
   makeupDate: string
   makeupTime?: string
@@ -165,6 +168,7 @@ function MakeupSchedulePage() {
       const createdItem = await createMakeupScheduleRecord({
         userId: user.id,
         className: values.className.trim(),
+        lessonPeriod: values.lessonPeriod?.trim() ?? '',
         missedDate: values.missedDate,
         makeupDate: values.makeupDate,
         makeupTime: values.makeupTime ?? '',
@@ -222,6 +226,107 @@ function MakeupSchedulePage() {
       setBusyItemId(null)
     }
   }
+
+  const columns: ColumnsType<MakeupScheduleRecord> = [
+    {
+      title: t('makeupSchedule.classColumn'),
+      dataIndex: 'class_name',
+      key: 'class_name',
+      width: 220,
+      render: (value: string) => (
+        <Space orientation="vertical" size={4} className="makeup-class-cell">
+          <Text strong className="makeup-class-title">
+            {value}
+          </Text>
+        </Space>
+      ),
+    },
+    {
+      title: t('makeupSchedule.periodLabel'),
+      dataIndex: 'lesson_period',
+      key: 'lesson_period',
+      width: 130,
+      render: (value: string) =>
+        value ? (
+          <Tag icon={<BookOutlined />} color="gold" className="makeup-period-tag">
+            {value}
+          </Tag>
+        ) : (
+          <Text type="secondary">-</Text>
+        ),
+    },
+    {
+      title: t('makeupSchedule.missedDateLabel'),
+      dataIndex: 'missed_date',
+      key: 'missed_date',
+      width: 170,
+      render: (value: string) => (
+        <Tag icon={<CalendarOutlined />} className="makeup-date-tag">
+          {formatDate(value, language)}
+        </Tag>
+      ),
+    },
+    {
+      title: t('makeupSchedule.makeupDateLabel'),
+      dataIndex: 'makeup_date',
+      key: 'makeup_date',
+      width: 190,
+      render: (_value: string, item) => (
+        <Tag icon={<FieldTimeOutlined />} color="cyan" className="makeup-date-tag">
+          {formatDate(item.makeup_date, language)}
+          {item.makeup_time ? ` ${item.makeup_time}` : ''}
+        </Tag>
+      ),
+    },
+    {
+      title: t('makeupSchedule.noteLabel'),
+      dataIndex: 'note',
+      key: 'note',
+      render: (value: string) =>
+        value ? <Text className="makeup-note-cell">{value}</Text> : <Text type="secondary">-</Text>,
+    },
+    {
+      title: t('makeupSchedule.statusColumn'),
+      dataIndex: 'status',
+      key: 'status',
+      width: 130,
+      render: (status: MakeupScheduleStatus) => (
+        <Tag color={getStatusColor(status)}>{t(`makeupSchedule.${status}`)}</Tag>
+      ),
+    },
+    {
+      title: t('makeupSchedule.actionsColumn'),
+      key: 'actions',
+      width: 230,
+      align: 'right',
+      render: (_value, item) => (
+        <Space size={8} className="makeup-table-actions">
+          {item.status !== 'completed' ? (
+            <Button
+              icon={<CheckOutlined />}
+              loading={busyItemId === item.id}
+              onClick={() => updateStatus(item.id, 'completed')}
+            >
+              {t('makeupSchedule.completeAction')}
+            </Button>
+          ) : null}
+          {item.status !== 'cancelled' ? (
+            <Button loading={busyItemId === item.id} onClick={() => updateStatus(item.id, 'cancelled')}>
+              {t('makeupSchedule.cancelAction')}
+            </Button>
+          ) : null}
+          <Popconfirm
+            title={t('makeupSchedule.deleteConfirm')}
+            okText={t('makeupSchedule.deleteOk')}
+            cancelText={t('makeupSchedule.deleteCancel')}
+            onConfirm={() => deleteItem(item.id)}
+          >
+            <Button danger icon={<DeleteOutlined />} loading={busyItemId === item.id} />
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ]
 
   const canManageSchedules = configured && !!user
 
@@ -289,60 +394,16 @@ function MakeupSchedulePage() {
                 </div>
               </div>
 
-              {loadingItems ? (
-                <div className="page-loading-shell">
-                  <Spin size="large" />
-                </div>
-              ) : visibleItems.length === 0 ? (
-                <Empty description={t('makeupSchedule.empty')} />
-              ) : (
-                <div className="makeup-list">
-                  {visibleItems.map((item) => (
-                    <div className="makeup-item" key={item.id}>
-                      <div className="makeup-item-main">
-                        <div className="makeup-item-title-row">
-                          <Title level={5}>{item.class_name}</Title>
-                          <Tag color={getStatusColor(item.status)}>{t(`makeupSchedule.${item.status}`)}</Tag>
-                        </div>
-                        <div className="makeup-item-meta">
-                          <Tag icon={<CalendarOutlined />}>
-                            {t('makeupSchedule.missedShort')}: {formatDate(item.missed_date, language)}
-                          </Tag>
-                          <Tag icon={<FieldTimeOutlined />}>
-                            {t('makeupSchedule.makeupShort')}: {formatDate(item.makeup_date, language)}
-                            {item.makeup_time ? ` ${item.makeup_time}` : ''}
-                          </Tag>
-                        </div>
-                        {item.note ? <Paragraph className="settings-copy">{item.note}</Paragraph> : null}
-                      </div>
-                      <div className="makeup-item-actions">
-                        {item.status !== 'completed' ? (
-                          <Button
-                            icon={<CheckOutlined />}
-                            loading={busyItemId === item.id}
-                            onClick={() => updateStatus(item.id, 'completed')}
-                          >
-                            {t('makeupSchedule.completeAction')}
-                          </Button>
-                        ) : null}
-                        {item.status !== 'cancelled' ? (
-                          <Button loading={busyItemId === item.id} onClick={() => updateStatus(item.id, 'cancelled')}>
-                            {t('makeupSchedule.cancelAction')}
-                          </Button>
-                        ) : null}
-                        <Popconfirm
-                          title={t('makeupSchedule.deleteConfirm')}
-                          okText={t('makeupSchedule.deleteOk')}
-                          cancelText={t('makeupSchedule.deleteCancel')}
-                          onConfirm={() => deleteItem(item.id)}
-                        >
-                          <Button danger icon={<DeleteOutlined />} loading={busyItemId === item.id} />
-                        </Popconfirm>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <Table
+                rowKey="id"
+                columns={columns}
+                dataSource={visibleItems}
+                loading={loadingItems}
+                pagination={false}
+                scroll={{ x: 1080 }}
+                className="makeup-table"
+                locale={{ emptyText: <Empty description={t('makeupSchedule.empty')} /> }}
+              />
             </Space>
           </Card>
         </Col>
@@ -372,13 +433,22 @@ function MakeupSchedulePage() {
           onFinish={addItem}
           disabled={!canManageSchedules || savingItem}
         >
-          <Form.Item
-            name="className"
-            label={t('makeupSchedule.classLabel')}
-            rules={[{ required: true, message: t('makeupSchedule.required') }]}
-          >
-            <Input placeholder={t('makeupSchedule.classPlaceholder')} />
-          </Form.Item>
+          <Row gutter={12}>
+            <Col xs={24} sm={15}>
+              <Form.Item
+                name="className"
+                label={t('makeupSchedule.classLabel')}
+                rules={[{ required: true, message: t('makeupSchedule.required') }]}
+              >
+                <Input placeholder={t('makeupSchedule.classPlaceholder')} />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={9}>
+              <Form.Item name="lessonPeriod" label={t('makeupSchedule.periodLabel')}>
+                <Input prefix={<BookOutlined />} placeholder={t('makeupSchedule.periodPlaceholder')} />
+              </Form.Item>
+            </Col>
+          </Row>
           <Form.Item
             name="missedDate"
             label={t('makeupSchedule.missedDateLabel')}

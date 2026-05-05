@@ -2,6 +2,7 @@ create table if not exists public.makeup_schedules (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users (id) on delete cascade,
   class_name text not null,
+  lesson_period text not null default '',
   missed_date date not null,
   makeup_date date not null,
   makeup_time text not null default '',
@@ -10,6 +11,9 @@ create table if not exists public.makeup_schedules (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.makeup_schedules
+add column if not exists lesson_period text not null default '';
 
 create index if not exists makeup_schedules_user_makeup_idx
 on public.makeup_schedules (user_id, makeup_date, makeup_time);

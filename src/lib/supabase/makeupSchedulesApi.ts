@@ -24,6 +24,7 @@ export async function createMakeupScheduleRecord(input: MakeupScheduleInput): Pr
     .insert({
       user_id: input.userId,
       class_name: input.className,
+      lesson_period: input.lessonPeriod ?? '',
       missed_date: input.missedDate,
       makeup_date: input.makeupDate,
       makeup_time: input.makeupTime ?? '',
