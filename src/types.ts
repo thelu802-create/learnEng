@@ -6,6 +6,8 @@ export type FontSizeMode = 'sm' | 'md' | 'lg'
 export type MenuKey =
   | 'home'
   | 'lessons'
+  | 'mosLessons'
+  | 'mosExams'
   | 'practice'
   | 'playground'
   | 'planner'

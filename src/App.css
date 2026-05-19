@@ -5134,3 +5134,449 @@
   }
 }
 
+/* MOS lesson workspace */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.mos-lessons-toolbar {
+  padding-top: 2px;
+}
+
+h1.page-title {
+  margin: 0;
+  color: #101828;
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.page-subtitle {
+  margin: 4px 0 0;
+  color: #667085;
+  line-height: 1.55;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 16px;
+}
+
+.full-span {
+  grid-column: 1 / -1;
+}
+
+.lesson-workspace {
+  display: grid;
+  grid-template-columns: minmax(240px, 300px) minmax(0, 1fr) minmax(240px, 300px);
+  gap: 16px;
+  align-items: start;
+}
+
+.lesson-workspace.is-focus {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.lesson-workspace.is-focus .lesson-roadmap,
+.lesson-workspace.is-focus .lesson-side {
+  display: none;
+}
+
+.lesson-roadmap,
+.lesson-main,
+.lesson-side {
+  position: sticky;
+  top: 92px;
+  max-height: calc(100vh - 112px);
+  overflow: auto;
+}
+
+.lesson-roadmap .ant-card-body,
+.lesson-main .ant-card-body,
+.lesson-side .ant-card-body {
+  max-height: calc(100vh - 176px);
+  overflow: auto;
+}
+
+.lesson-main,
+.lesson-roadmap,
+.lesson-side {
+  border-color: #e6ebf2;
+}
+
+.lesson-roadmap-item {
+  display: grid;
+  grid-template-columns: 8px 36px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  min-height: 58px;
+  padding: 9px 10px;
+  text-align: left;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.lesson-roadmap-item:hover,
+.lesson-roadmap-item.is-active {
+  border-color: #2a9d8f;
+  background: #eef9f7;
+}
+
+.lesson-roadmap-order {
+  color: #475467;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.lesson-roadmap-body {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lesson-checklist {
+  display: grid;
+  gap: 10px;
+}
+
+.lesson-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #98a2b3;
+}
+
+.lesson-status-dot.status-teaching {
+  background: #1677ff;
+}
+
+.lesson-status-dot.status-completed {
+  background: #12b76a;
+}
+
+.lesson-status-dot.status-review {
+  background: #f79009;
+}
+
+.lesson-reader-header {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #edf1f7;
+}
+
+.lesson-reader-title {
+  margin: 10px 0 12px !important;
+  color: #101828 !important;
+  font-size: 28px !important;
+  line-height: 1.22 !important;
+}
+
+.lesson-plan-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.lesson-section-stack,
+.lesson-theory-list {
+  display: grid;
+  gap: 14px;
+}
+
+.lesson-theory-list {
+  gap: 22px;
+}
+
+.lesson-section {
+  padding: 16px;
+  border: 1px solid #e6ebf2;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.lesson-theory-topic {
+  padding-bottom: 22px;
+  border-bottom: 1px solid #edf1f7;
+}
+
+.lesson-theory-topic:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.lesson-theory-topic h4 {
+  margin-top: 0 !important;
+  margin-bottom: 8px !important;
+}
+
+.lesson-theory-summary,
+.lesson-section p {
+  margin: 8px 0 0;
+  color: #475467;
+  line-height: 1.65;
+}
+
+.clean-list {
+  margin: 10px 0 0;
+  padding-left: 18px;
+}
+
+.clean-list li {
+  margin: 7px 0;
+  color: #344054;
+  line-height: 1.55;
+}
+
+.theme-dark h1.page-title,
+.theme-dark .lesson-reader-title {
+  color: #f3f7f9 !important;
+}
+
+.theme-dark .page-subtitle,
+.theme-dark .lesson-theory-summary,
+.theme-dark .lesson-section p,
+.theme-dark .clean-list li,
+.theme-dark .lesson-roadmap-order {
+  color: #c0ccd2;
+}
+
+.theme-dark .lesson-section,
+.theme-dark .lesson-roadmap-item {
+  background: rgba(16, 32, 40, 0.84);
+  border-color: #1f3641;
+}
+
+.theme-dark .lesson-roadmap-item:hover,
+.theme-dark .lesson-roadmap-item.is-active {
+  background: rgba(42, 157, 143, 0.12);
+  border-color: #2a9d8f;
+}
+
+.theme-dark .lesson-reader-header,
+.theme-dark .lesson-theory-topic {
+  border-color: #1f3641;
+}
+
+.mos-exam-control-card .ant-card-body {
+  padding: 14px 16px !important;
+}
+
+.mos-exam-control-card {
+  border-top: 3px solid #2f80ed;
+}
+
+.mos-exam-control-card.is-excel {
+  border-top-color: #107c41;
+}
+
+.mos-exam-control-card.is-powerpoint {
+  border-top-color: #d24726;
+}
+
+.mos-exam-controls {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+  align-items: end;
+}
+
+.mos-exam-app-badge.ant-tag {
+  width: fit-content;
+  margin-inline-end: 0;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-weight: 800;
+}
+
+.mos-exam-control-title h2.ant-typography {
+  margin: 4px 0 0;
+}
+
+.mos-exam-control-fields {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.7fr) minmax(120px, 0.8fr) minmax(170px, 1fr) minmax(220px, 1.35fr);
+  gap: 10px;
+  min-width: 0;
+}
+
+.mos-exam-control-fields > div {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.mos-exam-control-fields .ant-select {
+  min-width: 0;
+  width: 100%;
+}
+
+.mos-exam-control-fields .ant-select-selection-item {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mos-exam-source-box {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px dashed rgba(42, 157, 143, 0.24);
+  border-radius: 8px;
+  background: rgba(42, 157, 143, 0.04);
+}
+
+.mos-exam-weight-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mos-exam-weight-tag.ant-tag {
+  margin-inline-end: 0;
+  white-space: normal;
+}
+
+.mos-exam-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 180px;
+  gap: 18px;
+  align-items: center;
+}
+
+.mos-exam-score-panel {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.mos-exam-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid #e8edf2;
+}
+
+.mos-exam-meta-grid > div {
+  display: grid;
+  gap: 8px;
+}
+
+.mos-exam-actions {
+  margin-top: 18px;
+}
+
+.mos-exam-task-list {
+  display: grid;
+  gap: 14px;
+}
+
+.mos-exam-task-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.mos-exam-task-head h4.ant-typography {
+  margin: 10px 0 8px;
+}
+
+.mos-exam-task-card .ant-card-body {
+  display: grid;
+  gap: 10px;
+}
+
+.mos-exam-checklist {
+  display: grid;
+  gap: 7px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.035);
+}
+
+.theme-dark .mos-exam-source-box,
+.theme-dark .mos-exam-checklist {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: #1f3641;
+}
+
+.theme-dark .mos-exam-meta-grid {
+  border-color: #1f3641;
+}
+
+@media (max-width: 1100px) {
+  .lesson-workspace,
+  .lesson-workspace.is-focus {
+    grid-template-columns: 1fr;
+  }
+
+  .lesson-roadmap,
+  .lesson-main,
+  .lesson-side {
+    position: static;
+    max-height: none;
+  }
+
+  .lesson-roadmap .ant-card-body,
+  .lesson-main .ant-card-body,
+  .lesson-side .ant-card-body {
+    max-height: none;
+  }
+
+  .mos-exam-controls,
+  .mos-exam-control-fields {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 767px) {
+  .form-grid,
+  .lesson-plan-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .full-span {
+    grid-column: auto;
+  }
+
+  .lesson-reader-header,
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .mos-exam-hero-grid,
+  .mos-exam-meta-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media print {
+  .app-sider,
+  .topbar,
+  .grade-context-bar,
+  .mos-exam-control-card,
+  .mos-exam-actions {
+    display: none !important;
+  }
+
+  .app-content {
+    padding: 0 !important;
+  }
+}
+

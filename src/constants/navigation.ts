@@ -3,6 +3,8 @@ import type { MenuItemConfig, MenuKey } from '../types'
 export const menuItems: MenuItemConfig[] = [
   { key: 'home', icon: 'rocket', path: '/' },
   { key: 'lessons', icon: 'book', path: '/lessons' },
+  { key: 'mosLessons', icon: 'book', path: '/mos-lessons' },
+  { key: 'mosExams', icon: 'play', path: '/mos-exams' },
   { key: 'practice', icon: 'play', path: '/practice' },
   { key: 'playground', icon: 'bulb', path: '/playground' },
   { key: 'planner', icon: 'calendar', path: '/planner' },

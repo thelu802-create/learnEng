@@ -34,6 +34,8 @@ export const translations = {
     menu: {
       home: 'Trang chủ',
       lessons: 'Bài học',
+      mosLessons: 'Bài giảng MOS',
+      mosExams: 'Đề thi thử MOS',
       practice: 'Luyện tập',
       playground: 'Vừa học vừa chơi',
       planner: 'Nhắc việc',
@@ -611,6 +613,8 @@ export const translations = {
     menu: {
       home: 'Home',
       lessons: 'Lessons',
+      mosLessons: 'MOS lessons',
+      mosExams: 'MOS mock exams',
       practice: 'Practice',
       playground: 'Play & Learn',
       planner: 'Planner',
