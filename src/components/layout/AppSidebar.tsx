@@ -10,6 +10,7 @@ import {
 import { Drawer, Layout, Menu, Typography } from 'antd'
 import type { MenuProps } from 'antd'
 import type { ReactNode } from 'react'
+import { useSupabaseAuth } from '../providers/SupabaseAuthProvider'
 import { useI18n } from '../../i18n'
 import type { MenuIconKey, MenuItemConfig, MenuKey } from '../../types'
 
@@ -36,13 +37,16 @@ interface AppSidebarProps {
 
 function SidebarBrand() {
   const { t } = useI18n()
+  const { user } = useSupabaseAuth()
+  const emailName = user?.email?.split('@', 1)[0]?.trim()
+  const subtitle = emailName || t('common.brandSubtitle')
 
   return (
     <div className="brand-mark sidebar-brand">
       <div className="brand-badge">EP</div>
       <div className="sidebar-brand-copy">
         <Text className="brand-title">{t('common.appName')}</Text>
-        <Text className="brand-subtitle">{t('common.brandSubtitle')}</Text>
+        <Text className="brand-subtitle" title={subtitle}>{subtitle}</Text>
       </div>
     </div>
   )
