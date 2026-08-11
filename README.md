@@ -1,65 +1,88 @@
-# English Path
+# English Path (learnEng)
 
-English Path is a web app designed to support lower secondary English teaching and review. The project is built with React, Vite, Ant Design, and Supabase.
+English Path is a web app that supports lower secondary English teaching and review, plus teacher-productivity tools such as Planner, Office tips, and make-up scheduling. The project is built with React, Vite, Ant Design, React Router, and Supabase.
 
 ## What The App Covers
 
-At the moment, the app focuses on these main areas:
+The app is organized as a sidebar of feature areas ([`src/constants/navigation.ts`](src/constants/navigation.ts)):
 
-- lesson overview and vocabulary lookup for grades 6-9
-- teacher notes by topic
-- word practice and passage quiz generation
-- planner for weekly teaching tasks and reminders
-- GitHub sign-in for teacher-specific data
+- **Trang chủ / Home** — dashboard with a weekly planner summary
+- **Bài học / Lessons** — lesson overview and vocabulary lookup for grades 6-9, teacher notes by topic, and teacher-added vocabulary
+- **Luyện tập / Practice** — word practice and passage quiz generation, saved quizzes, and quiz attempts
+- **Vừa học vừa chơi / Playground** — lightweight learning games built from grade data
+- **Nhắc việc / Planner** — weekly teaching tasks and reminders with PDF export
+- **Lịch dạy bù / Make-up Schedule** — make-up class scheduling
+- **Tiến độ / Progress** — progress overview by grade
+- **Mẹo Office / Office Tips** — Office productivity tips with local notes
+- **Hướng dẫn / Help** — in-app usage guide
+
+Teacher-specific data (notes, vocabulary, planner tasks, quizzes, attempts, make-up schedules) is stored in Supabase and unlocked by GitHub sign-in. Office Tips keeps its notes in the browser via `localStorage`.
+
+The former MOS Lessons and MOS Exams modules are no longer registered in the web menu or router. Their source snapshot is preserved under [`mobile-source/mos`](mobile-source/mos) for future mobile-specific development and is excluded from the current Vite/TypeScript build.
 
 ## Main Data Flow
 
-The app follows a fairly straightforward flow:
-
-- page components render the teaching UI and collect user actions
-- shared helpers normalize input, sort data, and prepare payloads
-- Supabase service functions in [`src/lib/supabase/teacherData.ts`](src/lib/supabase/teacherData.ts) handle reads and writes
-- Supabase stores teacher notes, vocabulary additions, planner tasks, saved quizzes, and quiz attempts
+- page components under [`src/pages`](src/pages) render the teaching UI and collect user actions
+- shared helpers (`utils.ts`, `hooks/`) normalize input, sort data, and prepare payloads
+- domain-specific Supabase service functions under [`src/lib/supabase`](src/lib/supabase) handle reads and writes
+- Supabase stores teacher notes, vocabulary additions, planner tasks, saved quizzes, quiz attempts, make-up schedules, and profiles
 
 Some features include one small extra step:
 
-- vocabulary import can auto-fill IPA before saving
-- planner tasks are sorted again in the client after add, edit, delete, or complete actions
+- vocabulary import can auto-fill IPA (via an Edge Function) before saving
+- Planner, Home, and browser reminders share one client-side task snapshot; mutations update it immediately and periodic polling only runs while reminders are enabled
+- signed-in teachers can enable Planner browser reminders; the current implementation checks while the website is open
 - topic notes and teacher vocabulary are loaded only after GitHub sign-in succeeds
+- a profile row is ensured automatically the first time a user signs in
 
 ## Project Structure
 
-The main folders are organized like this:
-
-- [`src/pages`](src/pages): top-level screens such as Home, Lessons, Practice, Planner, and Help
-- [`src/components`](src/components): reusable layout and provider components
-- [`src/lib/supabase`](src/lib/supabase): Supabase client setup, types, and service functions
-- [`src/pages/lessons`](src/pages/lessons): modal components and import helpers for vocabulary tools
+- [`src/pages`](src/pages): feature areas, each grouped in its own folder (see [`src/pages/README.md`](src/pages/README.md)) with `FeaturePage.tsx`, `components/`, `hooks/`, `utils.ts`, `types.ts`, and optional `data.ts` / `storage.ts` / `pdf.ts`
+- [`src/components`](src/components): shared layout (`AppSidebar`, `AppTopbar`, `AppGradeBar`) and providers (`SupabaseAuthProvider`, `I18nProvider`)
+- [`src/constants`](src/constants): navigation config
+- [`src/data`](src/data): local grade content (grades 6-9) and learning steps
+- [`src/lib/supabase`](src/lib/supabase): Supabase client plus per-domain service modules
+- [`mobile-source/mos`](mobile-source/mos): disconnected MOS source snapshot reserved for future mobile work
 - [`supabase`](supabase): SQL schema files and Edge Function source
-- [`docs`](docs): setup and architecture notes
+- [`docs`](docs): setup, architecture, and requirements notes
+
+### Supabase service modules
+
+The service layer is split by domain. [`teacherData.ts`](src/lib/supabase/teacherData.ts) is a compatibility barrel that re-exports the modules below for older imports:
+
+- [`notesApi.ts`](src/lib/supabase/notesApi.ts) — teacher notes
+- [`vocabularyEntriesApi.ts`](src/lib/supabase/vocabularyEntriesApi.ts) — teacher-added vocabulary
+- [`plannerApi.ts`](src/lib/supabase/plannerApi.ts) — planner tasks
+- [`quizzesApi.ts`](src/lib/supabase/quizzesApi.ts) — saved quizzes, quiz questions, quiz attempts
+- [`makeupSchedulesApi.ts`](src/lib/supabase/makeupSchedulesApi.ts) — make-up schedules
+- [`profilesApi.ts`](src/lib/supabase/profilesApi.ts) — user profiles
 
 ## Supabase Setup
 
-The app expects these environment variables:
+The app expects these environment variables (see [`.env.example`](.env.example)):
 
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_ANON_KEY`
 
-These SQL files are part of the current setup:
+Run these SQL files in the Supabase SQL Editor:
 
-- [`supabase/schema.sql`](supabase/schema.sql)
-- [`supabase/vocabulary_entries.sql`](supabase/vocabulary_entries.sql)
+- [`supabase/schema.sql`](supabase/schema.sql) — core tables (profiles, teacher_notes, saved_quizzes, saved_quiz_questions, quiz_attempts, vocabulary_entries)
 - [`supabase/planner_tasks.sql`](supabase/planner_tasks.sql)
+- [`supabase/add_repeat_pattern.sql`](supabase/add_repeat_pattern.sql) — adds the planner repeat column
+- [`supabase/vocabulary_entries.sql`](supabase/vocabulary_entries.sql)
+- [`supabase/makeup_schedules.sql`](supabase/makeup_schedules.sql)
 - [`supabase/ipa_cache.sql`](supabase/ipa_cache.sql)
+- [`supabase/profiles_policy.sql`](supabase/profiles_policy.sql) and [`supabase/planner_tasks_with_profiles.sql`](supabase/planner_tasks_with_profiles.sql) — supporting policies/views
 
-If you want auto IPA lookup on the deployed app, you should also deploy:
+For auto IPA lookup on the deployed app, also deploy the Edge Function:
 
 - [`supabase/functions/ipa-lookup/index.ts`](supabase/functions/ipa-lookup/index.ts)
 
-For the full setup checklist and a broader overview, see:
+For the full checklist and a broader overview, see:
 
 - [`docs/backend-setup.md`](docs/backend-setup.md)
 - [`docs/architecture.md`](docs/architecture.md)
+- [`docs/requirements.md`](docs/requirements.md)
 
 ## Deploy Notes
 
@@ -68,6 +91,6 @@ For GitHub Pages, the build workflow reads these repository secrets:
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_ANON_KEY`
 
-The Pages site is expected at:
+The app uses `HashRouter` so client-side routes survive a page refresh on GitHub Pages. The Pages site is expected at:
 
 - `https://thelu802-create.github.io/learnEng/`

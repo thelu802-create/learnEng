@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>English Path — Tổng quan hệ thống</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#08090a;
+    --bg-grad:#010102;
+    --panel:#0f1011;
+    --surface:#191a1b;
+    --surface-2:#28282c;
+    --text:#f7f8f8;
+    --text-2:#d0d6e0;
+    --text-3:#8a8f98;
+    --text-4:#62666d;
+    --indigo:#5e6ad2;
+    --violet:#7170ff;
+    --violet-hi:#828fff;
+    --green:#27a644;
+    --emerald:#10b981;
+    --amber:#e5a63b;
+    --border:rgba(255,255,255,0.08);
+    --border-sub:rgba(255,255,255,0.05);
+    --maxw:1120px;
+    --radius:12px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter','SF Pro Display',-apple-system,system-ui,'Segoe UI',Roboto,sans-serif;
+    font-feature-settings:"cv01","ss03";
+    background:var(--bg);
+    color:var(--text-2);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none}
+  ::selection{background:rgba(113,112,255,.3)}
+
+  /* ambient glow */
+  .glow{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  .glow::before{
+    content:"";position:absolute;top:-30%;left:50%;transform:translateX(-50%);
+    width:900px;height:700px;
+    background:radial-gradient(ellipse at center,rgba(94,106,210,.16),transparent 62%);
+    filter:blur(30px);
+  }
+
+  /* NAV */
+  nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(15,16,17,.72);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--border-sub);
+  }
+  .nav-in{
+    max-width:var(--maxw);margin:0 auto;padding:0 24px;height:56px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--text);font-size:15px;letter-spacing:-.2px}
+  .brand-mark{
+    width:26px;height:26px;border-radius:7px;
+    background:linear-gradient(135deg,var(--indigo),var(--violet));
+    display:grid;place-items:center;color:#fff;font-weight:700;font-size:14px;
+    box-shadow:0 0 0 1px rgba(255,255,255,.08);
+  }
+  .nav-links{display:flex;gap:4px;align-items:center}
+  .nav-links a{
+    font-size:13px;font-weight:510;color:var(--text-3);
+    padding:6px 10px;border-radius:6px;transition:.15s;
+  }
+  .nav-links a:hover{color:var(--text);background:rgba(255,255,255,.04)}
+
+  /* hamburger */
+  .nav-toggle{
+    display:none;width:38px;height:34px;border-radius:8px;cursor:pointer;
+    background:rgba(255,255,255,.03);border:1px solid var(--border);
+    align-items:center;justify-content:center;flex-direction:column;gap:4px;
+  }
+  .nav-toggle span{display:block;width:17px;height:2px;border-radius:2px;background:var(--text-2);transition:.25s}
+  .nav-toggle.open span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+  .nav-toggle.open span:nth-child(2){opacity:0}
+  .nav-toggle.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+  .mobile-menu{
+    display:block;overflow:hidden;max-height:0;transition:max-height .3s ease;
+    background:rgba(15,16,17,.96);backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--border-sub);
+  }
+  .mobile-menu.open{max-height:340px}
+  .mobile-menu a{
+    display:block;padding:13px 24px;font-size:15px;font-weight:510;color:var(--text-2);
+    border-bottom:1px solid var(--border-sub);transition:.15s;
+  }
+  .mobile-menu a:active,.mobile-menu a:hover{background:rgba(255,255,255,.05);color:var(--text)}
+
+  @media(max-width:760px){
+    .nav-links,.nav-in>.btn-ghost{display:none}
+    .nav-toggle{display:flex}
+  }
+  @media(min-width:761px){.mobile-menu{display:none!important}}
+
+  /* LAYOUT */
+  main{position:relative;z-index:1;max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  section{padding:64px 0;border-bottom:1px solid var(--border-sub)}
+  section:last-child{border-bottom:none}
+
+  /* HERO */
+  .hero{padding:96px 0 72px;text-align:center;border-bottom:1px solid var(--border-sub)}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:12px;font-weight:510;color:var(--text-3);
+    padding:5px 12px 5px 8px;border-radius:9999px;
+    border:1px solid var(--border);background:rgba(255,255,255,.03);
+    margin-bottom:26px;
+  }
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--emerald);box-shadow:0 0 8px var(--emerald)}
+  h1{
+    font-size:clamp(38px,7vw,66px);font-weight:600;line-height:1.02;
+    letter-spacing:-.03em;color:var(--text);margin-bottom:22px;
+  }
+  h1 .grad{background:linear-gradient(120deg,var(--violet-hi),var(--indigo));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lede{font-size:clamp(16px,2.4vw,19px);color:var(--text-3);max-width:640px;margin:0 auto 34px;line-height:1.6}
+  .hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .btn{
+    font-family:inherit;font-size:14px;font-weight:510;cursor:pointer;
+    padding:9px 18px;border-radius:8px;transition:.15s;border:1px solid transparent;
+  }
+  .btn-primary{background:var(--indigo);color:#fff;box-shadow:0 4px 16px rgba(94,106,210,.35)}
+  .btn-primary:hover{background:var(--violet)}
+  .btn-ghost{background:rgba(255,255,255,.03);color:var(--text-2);border-color:var(--border)}
+  .btn-ghost:hover{background:rgba(255,255,255,.06);color:var(--text)}
+
+  /* STAT ROW */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-top:56px;
+    border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:var(--border-sub)}
+  .stat{background:var(--panel);padding:22px 20px;text-align:center}
+  .stat .num{font-size:30px;font-weight:600;color:var(--text);letter-spacing:-.02em}
+  .stat .num .u{color:var(--violet)}
+  .stat .lbl{font-size:12.5px;color:var(--text-3);margin-top:4px}
+  @media(max-width:680px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+  /* SECTION HEADS */
+  .sec-head{margin-bottom:36px;max-width:680px}
+  .kicker{font-size:12px;font-weight:590;letter-spacing:.08em;text-transform:uppercase;color:var(--violet);margin-bottom:12px}
+  h2{font-size:clamp(26px,4vw,34px);font-weight:600;line-height:1.12;letter-spacing:-.02em;color:var(--text)}
+  .sec-head p{margin-top:12px;color:var(--text-3);font-size:15.5px}
+
+  /* PRINCIPLE PILLS */
+  .pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+  .pill{
+    font-size:12.5px;font-weight:510;color:var(--text-2);
+    padding:6px 12px;border-radius:9999px;border:1px solid var(--border);
+    background:rgba(255,255,255,.02);
+  }
+  .pill b{color:var(--text)}
+
+  /* USER TABLE */
+  .utable{display:grid;gap:12px}
+  .urow{
+    display:grid;grid-template-columns:200px 132px 1fr;gap:20px;align-items:center;
+    padding:18px 20px;border:1px solid var(--border);border-radius:var(--radius);
+    background:rgba(255,255,255,.02);transition:.15s;
+  }
+  .urow:hover{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.12)}
+  .urole{font-weight:590;color:var(--text);font-size:15px}
+  .urole small{display:block;font-weight:400;color:var(--text-4);font-size:12px;margin-top:2px}
+  .udesc{color:var(--text-3);font-size:14px}
+  @media(max-width:760px){.urow{grid-template-columns:1fr;gap:8px}}
+
+  .badge{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:510;padding:4px 10px;border-radius:9999px;white-space:nowrap}
+  .b-done{background:rgba(16,185,129,.12);color:#4ade80;border:1px solid rgba(16,185,129,.25)}
+  .b-partial{background:rgba(229,166,59,.12);color:var(--amber);border:1px solid rgba(229,166,59,.28)}
+  .b-planned{background:rgba(255,255,255,.04);color:var(--text-3);border:1px solid var(--border)}
+
+  /* MODULE GRID */
+  .mgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  @media(max-width:800px){.mgrid{grid-template-columns:1fr}}
+  .mcard{
+    border:1px solid var(--border);border-radius:14px;padding:22px;
+    background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));
+    position:relative;transition:.18s;overflow:hidden;
+  }
+  .mcard:hover{border-color:rgba(113,112,255,.35);transform:translateY(-2px)}
+  .mcard::after{content:"";position:absolute;inset:0;border-radius:14px;pointer-events:none;
+    background:radial-gradient(400px at var(--mx,50%) 0,rgba(113,112,255,.06),transparent 70%);opacity:0;transition:.2s}
+  .mcard:hover::after{opacity:1}
+  .mtop{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+  .micon{
+    width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font-size:19px;
+    background:rgba(94,106,210,.14);border:1px solid rgba(113,112,255,.22);
+  }
+  .mtitle{font-size:16.5px;font-weight:600;color:var(--text);letter-spacing:-.01em}
+  .mtitle small{display:block;font-size:12px;font-weight:400;color:var(--text-4);letter-spacing:0}
+  .mlist{list-style:none;display:grid;gap:9px;margin-top:6px}
+  .mlist li{display:flex;gap:10px;font-size:13.5px;color:var(--text-2);line-height:1.45}
+  .mk{flex-shrink:0;margin-top:1px;font-size:12px;width:16px;text-align:center}
+  .mk.done{color:#4ade80}
+  .mk.partial{color:var(--amber)}
+  .mk.planned{color:var(--text-4)}
+  .mlist li.planned span:last-child{color:var(--text-3)}
+
+  /* ARCH / TECH */
+  .tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:800px){.tgrid{grid-template-columns:1fr}}
+  .tcard{border:1px solid var(--border);border-radius:12px;padding:20px;background:rgba(255,255,255,.02)}
+  .tcard h3{font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .tcard h3 .ti{font-size:16px}
+  .tcard ul{list-style:none;display:grid;gap:8px}
+  .tcard li{font-size:13px;color:var(--text-3);display:flex;gap:8px}
+  .tcard li::before{content:"→";color:var(--violet);flex-shrink:0}
+  .tcard code{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11.5px;color:var(--text-2);background:rgba(255,255,255,.05);padding:1px 5px;border-radius:4px}
+
+  /* ARCH RULES */
+  .rules{display:grid;gap:12px;counter-reset:r}
+  .rule{display:flex;gap:16px;padding:16px 18px;border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,.02)}
+  .rule::before{counter-increment:r;content:counter(r);flex-shrink:0;
+    width:26px;height:26px;border-radius:7px;background:rgba(94,106,210,.16);color:var(--violet-hi);
+    display:grid;place-items:center;font-size:13px;font-weight:600;border:1px solid rgba(113,112,255,.25)}
+  .rule p{font-size:13.5px;color:var(--text-2)}
+  .rule code{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--violet-hi);background:rgba(113,112,255,.1);padding:1px 5px;border-radius:4px}
+
+  /* ROADMAP TIMELINE */
+  .timeline{position:relative;padding-left:34px}
+  .timeline::before{content:"";position:absolute;left:11px;top:6px;bottom:6px;width:2px;
+    background:linear-gradient(180deg,var(--violet),rgba(113,112,255,.15))}
+  .phase{position:relative;margin-bottom:28px}
+  .phase::before{content:"";position:absolute;left:-27px;top:4px;width:12px;height:12px;border-radius:50%;
+    background:var(--panel);border:2px solid var(--violet);box-shadow:0 0 0 4px rgba(113,112,255,.12)}
+  .phase.p1::before{background:var(--emerald);border-color:var(--emerald)}
+  .phase h3{font-size:16px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .phase-tag{font-size:11px;font-weight:510;padding:2px 9px;border-radius:9999px}
+  .phase ul{list-style:none;margin-top:12px;display:grid;gap:8px}
+  .phase li{font-size:13.5px;color:var(--text-2);display:flex;gap:9px}
+  .phase li .mk{flex-shrink:0}
+
+  /* RISKS */
+  .rgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  @media(max-width:760px){.rgrid{grid-template-columns:1fr}}
+  .risk{border:1px solid var(--border);border-left:3px solid var(--amber);border-radius:10px;padding:16px 18px;background:rgba(229,166,59,.04)}
+  .risk h4{font-size:13.5px;font-weight:600;color:var(--text);margin-bottom:6px;display:flex;gap:8px;align-items:center}
+  .risk p{font-size:13px;color:var(--text-3);line-height:1.5}
+
+  /* FOOTER */
+  footer{padding:40px 0 60px;text-align:center;color:var(--text-4);font-size:13px}
+  footer .brand{justify-content:center;margin-bottom:10px}
+
+  .fade{opacity:0;transform:translateY(16px);transition:.6s cubic-bezier(.2,.7,.3,1)}
+  .fade.in{opacity:1;transform:none}
+
+  /* light mode */
+  @media(prefers-color-scheme:light){
+    :root:not([data-theme="dark"]){
+      --bg:#f7f8f8;--bg-grad:#fff;--panel:#fff;--surface:#fff;--surface-2:#f3f4f5;
+      --text:#0d0e10;--text-2:#3a3d44;--text-3:#6b7079;--text-4:#9aa0a8;
+      --border:rgba(9,11,16,.1);--border-sub:rgba(9,11,16,.06);
+    }
+  }
+</style>
+</head>
+<body>
+<div class="glow"></div>
+
+<nav>
+  <div class="nav-in">
+    <a class="brand" href="#top"><span class="brand-mark">E</span>English Path</a>
+    <div class="nav-links">
+      <a href="#vision">Tầm nhìn</a>
+      <a href="#users">Người dùng</a>
+      <a href="#modules">Tính năng</a>
+      <a href="#tech">Kiến trúc</a>
+      <a href="#roadmap">Lộ trình</a>
+      <a href="#risks">Rủi ro</a>
+    </div>
+    <a class="btn btn-ghost" href="#modules" style="padding:6px 14px">Khám phá ↓</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Mở menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#vision">Tầm nhìn</a>
+    <a href="#users">Người dùng</a>
+    <a href="#modules">Tính năng</a>
+    <a href="#tech">Kiến trúc</a>
+    <a href="#roadmap">Lộ trình</a>
+    <a href="#risks">Rủi ro</a>
+  </div>
+</nav>
+
+<main id="top">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="eyebrow"><span class="dot"></span> Cập nhật 14/07/2026 · Tài liệu hệ thống</div>
+    <h1>Nền tảng dạy học <span class="grad">tiếng Anh THCS</span><br>cho giáo viên hiện đại</h1>
+    <p class="lede">English Path giúp giáo viên khối 6–9 soạn bài, quản lý từ vựng, lên kế hoạch giảng dạy và tạo hoạt động luyện tập — nhẹ, riêng tư, chạy trọn trên hạ tầng free tier.</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="#modules">Xem 9 module đang hoạt động</a>
+      <a class="btn btn-ghost" href="#roadmap">Lộ trình phát triển</a>
+    </div>
+
+    <div class="stats fade">
+      <div class="stat"><div class="num"><span class="u">9</span></div><div class="lbl">Module web đang hoạt động</div></div>
+      <div class="stat"><div class="num">6–9</div><div class="lbl">Khối lớp hỗ trợ</div></div>
+      <div class="stat"><div class="num">3</div><div class="lbl">Giai đoạn lộ trình</div></div>
+      <div class="stat"><div class="num">2</div><div class="lbl">Vai trò người dùng</div></div>
+    </div>
+  </header>
+
+  <!-- VISION -->
+  <section id="vision">
+    <div class="sec-head">
+      <div class="kicker">01 — Tầm nhìn sản phẩm</div>
+      <h2>Công cụ cá nhân cho giáo viên, dữ liệu riêng theo từng tài khoản</h2>
+      <p>English Path là công cụ cho giáo viên tiếng Anh THCS, kết hợp nội dung học tập và tiện ích hỗ trợ công việc giảng dạy. Bốn mục tiêu cốt lõi:</p>
+    </div>
+    <div class="mgrid">
+      <div class="mcard"><div class="mtop"><div class="micon">📚</div><div class="mtitle">Soạn & tra cứu nhanh</div></div><p style="font-size:14px;color:var(--text-3)">Bài học và từ vựng theo khối, tra cứu tức thì, ghi chú riêng theo chủ điểm.</p></div>
+      <div class="mcard"><div class="mtop"><div class="micon">🗂️</div><div class="mtitle">Quản lý công việc dạy học</div></div><p style="font-size:14px;color:var(--text-3)">Nhắc việc theo tuần, mẫu lặp lại và lịch dạy bù được theo dõi tập trung.</p></div>
+      <div class="mcard"><div class="mtop"><div class="micon">🎯</div><div class="mtitle">Tạo hoạt động luyện tập</div></div><p style="font-size:14px;color:var(--text-3)">Sinh quiz từ đoạn văn, luyện từ vựng và trò chơi nhẹ cho học sinh.</p></div>
+      <div class="mcard"><div class="mtop"><div class="micon">📱</div><div class="mtitle">Chuẩn bị source mobile</div></div><p style="font-size:14px;color:var(--text-3)">Source MOS được tách khỏi web và bảo lưu riêng để chuyển đổi cho mobile sau này.</p></div>
+    </div>
+    <div class="pills">
+      <span class="pill">Nguyên tắc:</span>
+      <span class="pill"><b>Nhẹ</b> — chạy trên free tier</span>
+      <span class="pill"><b>Riêng tư</b> — dữ liệu theo tài khoản</span>
+      <span class="pill"><b>Ưu tiên</b> giáo viên dùng cá nhân</span>
+    </div>
+  </section>
+
+  <!-- USERS -->
+  <section id="users">
+    <div class="sec-head">
+      <div class="kicker">02 — Người dùng & phạm vi</div>
+      <h2>Ba vai trò, hai đã hỗ trợ</h2>
+      <p>Khách xem nội dung tĩnh; giáo viên đăng nhập GitHub để mở khóa dữ liệu riêng; học sinh nằm trong roadmap.</p>
+    </div>
+    <div class="utable">
+      <div class="urow">
+        <div class="urole">Khách <small>Chưa đăng nhập</small></div>
+        <div><span class="badge b-done">✓ Đã hỗ trợ</span></div>
+        <div class="udesc">Xem nội dung tĩnh: bài học, từ vựng gốc, Office tips và playground.</div>
+      </div>
+      <div class="urow">
+        <div class="urole">Giáo viên <small>Đăng nhập GitHub</small></div>
+        <div><span class="badge b-done">✓ Đã hỗ trợ</span></div>
+        <div class="udesc">Mở khóa dữ liệu riêng: ghi chú, từ vựng tự thêm, planner, quiz, lịch dạy bù.</div>
+      </div>
+      <div class="urow">
+        <div class="urole">Học sinh <small>Roadmap</small></div>
+        <div><span class="badge b-planned">◇ Dự kiến</span></div>
+        <div class="udesc">Dự kiến: làm quiz được giao, xem tiến độ học tập cá nhân.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODULES -->
+  <section id="modules">
+    <div class="sec-head">
+      <div class="kicker">03 — Yêu cầu chức năng theo module</div>
+      <h2>9 module web đang hoạt động, 2 module MOS đã lưu trữ</h2>
+      <p style="display:flex;gap:16px;flex-wrap:wrap;margin-top:14px">
+        <span class="badge b-done">✓ Đã có</span>
+        <span class="badge b-partial">◑ Có một phần</span>
+        <span class="badge b-planned">◇ Dự kiến</span>
+      </p>
+    </div>
+
+    <div class="mgrid">
+      <!-- 3.1 Home -->
+      <div class="mcard">
+        <div class="mtop"><div class="micon">🏠</div><div class="mtitle">Trang chủ<small>Home</small></div></div>
+        <ul class="mlist">
+          <li><span class="mk done">✓</span><span>Tổng quan planner tuần (số việc, việc đã xong)</span></li>
+          <li><span class="mk done">✓</span><span>Lối tắt sang Lessons / Practice / Planner</span></li>
+          <li class="planned"><span class="mk planned">◇</span><span>Widget tổng hợp tiến độ học sinh</span></li>
+        </ul>
+      </div>
+      <!-- 3.2 Lessons -->
+      <div class="mcard">
+        <div class="mtop"><div class="micon">📖</div><div class="mtitle">Bài học<small>Lessons</small></div></div>
+        <ul class="mlist">
+          <li><span class="mk done">✓</span><span>Xem bài học theo khối 6–9 (dữ liệu tĩnh)</span></li>
+          <li><span class="mk done">✓</span><span>Tra từ vựng gốc của hệ thống</span></li>
+          <li><span class="mk done">✓</span><span>Ghi chú giáo viên theo chủ điểm (Supabase)</span></li>
+          <li><span class="mk done">✓</span><span>Thêm / import / sửa / xóa từ vựng riêng</span></li>
+          <li><span class="mk done">✓</span><span>Tự động điền IPA (Edge Function + cache)</span></li>
+          <li class="planned"><span class="mk planned">◇</span><span>Xuất bộ từ vựng ra PDF/CSV</span></li>
+        </ul>
+      </div>
+      <!-- 3.3 Practice -->
+      <div class="mcard">
+        <div class="mtop"><div class="micon">🎯</div><div class="mtitle">Luyện tập<small>Practice</small></div></div>
+        <ul class="mlist">
+          <li><span class="mk done">✓</span><span>Word practice từ dữ liệu khối</span></li>
+          <li><span class="mk done">✓</span><span>Passage Quiz Generator từ đoạn văn tự nhập</span></li>
+          <li><span class="mk done">✓</span><span>Lưu quiz, câu hỏi & lịch sử làm bài lên Supabase</span></li>
+          <li><span class="mk partial">◑</span><span>Chấm điểm / thống kê kết quả cơ bản</span></li>
+          <li class="planned"><span class="mk planned">◇</span><span>Giao quiz cho học sinh và thu kết quả</span></li>
+        </ul>
+      </div>
+      <!-- 3.4 Archived MOS Lessons -->
+      <div class="mcard">
+        <div class="mtop"><div class="micon">🎓</div><div class="mtitle">MOS Lessons<small>Bài giảng MOS</small></div></div>
+        <ul class="mlist">
+          <li><span class="mk done">✓</span><span>Source được bảo lưu tại mobile-source/mos</span></li>
+          <li><span class="mk done">✓</span><span>Đã gỡ khỏi menu, router và build web</span></li>
+          <li class="planned"><span class="mk planned">◇</span><span>Chuyển đổi cho kiến trúc mobile tương lai</span></li>
+        </ul>
+      </div>
+      <!-- 3.5 Archived MOS Exams -->
+      <div class="mcard">
+        <div class="mtop"><div class="micon">📝</div><div class="mtitle">MOS Exams<small>Đề thi thử</small></div></div>
+        <ul class="mlist">
+          <li><span class="mk done">✓</span><span>Source đề thi và PDF được bảo lưu</span></li>
+          <li><span class="mk done">✓</span><span>Đã gỡ khỏi menu, router và build web</span></li>
+          <li class="planned"><span class="mk planned">◇</span><span>Thiết kế trải nghiệm làm đề cho mobile</span></li>
+        </ul>
+      </div>
+      <!-- 3.6 Playground -->
+      <div class="mcard">
+        <div class="mtop"><div class="micon">🎮</div><div class="mtitle">Vừa học vừa chơi<small>Playground</small></div></div>
+        <ul class="mlist">
+          <li><span class="mk done">✓</span><span>Trò chơi/hoạt động nhẹ từ dữ liệu khối</span></li>
+          <li class="planned"><span class="mk planned">◇</span><span>Thêm dạng game mới, bảng xếp hạng lớp</span></li>
+        </ul>
+      </div>
+      <!-- 3.7 Planner -->
+      <div class="mcard">
+        <div class="mtop"><div class="micon">✅</div><div class="mtitle">Nhắc việc<small>Planner</small></div></div>
+        <ul class="mlist">
+          <li><span class="mk done">✓</span><span>CRUD công việc theo tuần, đánh dấu hoàn thành</span></li>
+          <li><span class="mk done">✓</span><span>Nhóm today / upcoming / overdue / later</span></li>
+          <li><span class="mk done">✓</span><span>Mẫu lặp lại (repeat pattern)</span></li>
+          <li><span class="mk done">✓</span><span>Xuất PDF</span></li>
+          <li><span class="mk done">✓</span><span>Browser notification khi đăng nhập, cấp quyền và web đang mở</span></li>
+          <li><span class="mk done">✓</span><span>Planner, Home và notification dùng chung một snapshot task</span></li>
+          <li class="planned"><span class="mk planned">◇</span><span>Push notification khi website đóng</span></li>
+        </ul>
+      </div>
+      <!-- 3.8 Make-up -->
+      <div class="mcard">
+        <div class="mtop"><div class="micon">📅</div><div class="mtitle">Lịch dạy bù<small>Make-up Schedule</small></div></div>
+        <ul class="mlist">
+          <li><span class="mk done">✓</span><span>Tạo / cập nhật trạng thái / xóa lịch (Supabase)</span></li>
+          <li class="planned"><span class="mk planned">◇</span><span>Đồng bộ với Planner và lịch tuần</span></li>
+        </ul>
+      </div>
+      <!-- 3.9 Progress -->
+      <div class="mcard">
+        <div class="mtop"><div class="micon">📊</div><div class="mtitle">Tiến độ<small>Progress</small></div></div>
+        <ul class="mlist">
+          <li><span class="mk partial">◑</span><span>Tổng quan tiến độ theo khối</span></li>
+          <li class="planned"><span class="mk planned">◇</span><span>Tiến độ theo lớp / theo học sinh</span></li>
+        </ul>
+      </div>
+      <!-- 3.10 Office tips -->
+      <div class="mcard">
+        <div class="mtop"><div class="micon">💡</div><div class="mtitle">Mẹo Office<small>Office Tips</small></div></div>
+        <ul class="mlist">
+          <li><span class="mk done">✓</span><span>Danh sách mẹo Office (tĩnh) + ghi chú localStorage</span></li>
+          <li class="planned"><span class="mk planned">◇</span><span>Phân loại Word/Excel/PowerPoint, tìm kiếm</span></li>
+        </ul>
+      </div>
+      <!-- 3.11 Help -->
+      <div class="mcard">
+        <div class="mtop"><div class="micon">❓</div><div class="mtitle">Hướng dẫn<small>Help</small></div></div>
+        <ul class="mlist">
+          <li><span class="mk done">✓</span><span>Hướng dẫn sử dụng ngay trong app</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- TECH / NON-FUNCTIONAL -->
+  <section id="tech">
+    <div class="sec-head">
+      <div class="kicker">04 — Yêu cầu phi chức năng</div>
+      <h2>Kiến trúc kỹ thuật & ràng buộc nền tảng</h2>
+      <p>Ưu tiên nhẹ, an toàn theo tài khoản, và có khả năng suy biến khi thiếu backend.</p>
+    </div>
+    <div class="tgrid">
+      <div class="tcard">
+        <h3><span class="ti">⚛️</span> Frontend</h3>
+        <ul>
+          <li>React + Vite + TypeScript</li>
+          <li>Ant Design làm hệ UI</li>
+          <li>React Router — <code>HashRouter</code> cho GitHub Pages</li>
+          <li>Trang được lazy-load</li>
+          <li>i18n qua <code>src/i18n.ts</code>, mặc định tiếng Việt</li>
+        </ul>
+      </div>
+      <div class="tcard">
+        <h3><span class="ti">🗄️</span> Backend</h3>
+        <ul>
+          <li>Supabase (Postgres + Auth + Edge Functions)</li>
+          <li>Chạy trên free tier</li>
+          <li>Đăng nhập qua GitHub OAuth</li>
+          <li>Edge Function tự sinh IPA + cache</li>
+          <li>Suy biến: <code>isSupabaseConfigured</code> khi thiếu env</li>
+        </ul>
+      </div>
+      <div class="tcard">
+        <h3><span class="ti">🔒</span> Bảo mật</h3>
+        <ul>
+          <li>RLS bật cho mọi bảng dữ liệu người dùng</li>
+          <li>Chỉ dùng <code>anon key</code> ở frontend</li>
+          <li>Không đưa <code>service role key</code> vào client</li>
+        </ul>
+      </div>
+      <div class="tcard">
+        <h3><span class="ti">🎨</span> Giao diện</h3>
+        <ul>
+          <li>Hỗ trợ light / dark mode</li>
+          <li>3 cỡ chữ: sm / md / lg</li>
+          <li>Lưu tùy chọn ở <code>localStorage</code></li>
+          <li>Responsive: topbar/sidebar thu gọn trên mobile</li>
+        </ul>
+      </div>
+      <div class="tcard">
+        <h3><span class="ti">🧪</span> Kiểm thử</h3>
+        <ul>
+          <li>Logic thuần có unit test</li>
+          <li><code>planner/utils.test.ts</code></li>
+          <li><code>practice/utils.test.ts</code></li>
+          <li>Mở rộng độ phủ khi thêm logic</li>
+        </ul>
+      </div>
+      <div class="tcard">
+        <h3><span class="ti">⚡</span> Hiệu năng & dữ liệu</h3>
+        <ul>
+          <li>Dữ liệu tĩnh tách khỏi dữ liệu người dùng</li>
+          <li>Nội dung tĩnh vẫn chạy khi không có backend</li>
+          <li>Tối ưu tải trang qua lazy-load</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sec-head" style="margin-top:56px">
+      <div class="kicker">05 — Quy ước kiến trúc</div>
+      <h2>Bắt buộc khi phát triển tiếp</h2>
+    </div>
+    <div class="rules">
+      <div class="rule"><p>Mỗi tính năng nằm trong 1 thư mục dưới <code>src/pages</code> theo mẫu ở <code>src/pages/README.md</code>: <code>FeaturePage.tsx</code>, <code>components/</code>, <code>hooks/</code>, <code>utils.ts</code>, <code>types.ts</code>, tùy chọn <code>data.ts</code> / <code>storage.ts</code> / <code>pdf.ts</code>.</p></div>
+      <div class="rule"><p>Truy cập Supabase đi qua module dịch vụ theo domain trong <code>src/lib/supabase</code> — không rải query trong UI. <code>teacherData.ts</code> chỉ là barrel tương thích ngược.</p></div>
+      <div class="rule"><p>Cần bảng/policy mới → thêm file <code>.sql</code> trong <code>supabase/</code>, bật RLS ngay từ đầu.</p></div>
+      <div class="rule"><p>Chuỗi hiển thị đưa vào i18n; logic thuần tách khỏi JSX để test được.</p></div>
+    </div>
+  </section>
+
+  <!-- ROADMAP -->
+  <section id="roadmap">
+    <div class="sec-head">
+      <div class="kicker">06 — Lộ trình phát triển</div>
+      <h2>Từ nền tảng giáo viên đến mở rộng cho học sinh</h2>
+    </div>
+    <div class="timeline">
+      <div class="phase p1">
+        <h3>Giai đoạn 1 — Nền tảng giáo viên <span class="phase-tag b-done" style="background:rgba(16,185,129,.14);color:#4ade80">Hoàn thành phần lớn</span></h3>
+        <ul>
+          <li><span class="mk done">✓</span><span>Đăng nhập GitHub + profiles</span></li>
+          <li><span class="mk done">✓</span><span>Lessons + từ vựng giáo viên + IPA tự động</span></li>
+          <li><span class="mk done">✓</span><span>Practice + lưu quiz/attempts</span></li>
+          <li><span class="mk done">✓</span><span>Planner (repeat, PDF) + Make-up Schedule</span></li>
+          <li><span class="mk done">✓</span><span>Office Tips / Playground</span></li>
+          <li><span class="mk done">✓</span><span>Tách source MOS khỏi web và bảo lưu cho mobile</span></li>
+        </ul>
+      </div>
+      <div class="phase">
+        <h3>Giai đoạn 2 — Hoàn thiện & đồng bộ <span class="phase-tag b-partial" style="background:rgba(229,166,59,.14);color:var(--amber)">Kế tiếp</span></h3>
+        <ul>
+          <li><span class="mk planned">◇</span><span>Đồng bộ ghi chú Office từ localStorage lên Supabase</span></li>
+          <li><span class="mk done">✓</span><span>Dùng một nguồn task chung cho Planner, Home và notification</span></li>
+          <li><span class="mk planned">◇</span><span>Thống kê kết quả Practice (biểu đồ, tỷ lệ đúng theo chủ điểm)</span></li>
+          <li><span class="mk planned">◇</span><span>Xuất dữ liệu (từ vựng, quiz) ra PDF/CSV</span></li>
+          <li><span class="mk planned">◇</span><span>Hoàn thiện trang Progress theo khối/lớp</span></li>
+          <li><span class="mk planned">◇</span><span>Tăng độ phủ unit test cho các module dịch vụ</span></li>
+        </ul>
+      </div>
+      <div class="phase">
+        <h3>Giai đoạn 3 — Mở rộng cho học sinh <span class="phase-tag b-planned" style="background:rgba(255,255,255,.05);color:var(--text-3)">Tương lai</span></h3>
+        <ul>
+          <li><span class="mk planned">◇</span><span>Vai trò học sinh, giao quiz và thu bài</span></li>
+          <li><span class="mk planned">◇</span><span>Nâng browser reminder thành push notification khi web đóng</span></li>
+          <li><span class="mk planned">◇</span><span>Bảng xếp hạng / gamification cho Playground</span></li>
+          <li><span class="mk planned">◇</span><span>Tách quyền giáo viên / học sinh, nâng cấp hạ tầng khi tải cao</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- RISKS -->
+  <section id="risks">
+    <div class="sec-head">
+      <div class="kicker">07 — Rủi ro & điểm cần theo dõi</div>
+      <h2>Sáu điểm cần giám sát</h2>
+    </div>
+    <div class="rgrid">
+      <div class="risk"><h4>⚠️ Ghi chú Office chỉ ở localStorage</h4><p>Ghi chú mất khi đổi thiết bị hoặc xóa cache — cần đồng bộ nếu hỗ trợ đa thiết bị.</p></div>
+      <div class="risk"><h4>⚠️ Source MOS là snapshot</h4><p>Source đã tách khỏi web nhưng vẫn dùng React/Ant Design; cần chuyển đổi khi kiến trúc mobile được xác định.</p></div>
+      <div class="risk"><h4>⚠️ Browser reminder phụ thuộc web đang mở</h4><p>Planner, Home và notification đã dùng chung task state, nhưng chưa có server push khi website đóng.</p></div>
+      <div class="risk"><h4>⚠️ Nội dung là dữ liệu tĩnh</h4><p>Bài học nằm trong code → cập nhật nội dung phải deploy lại toàn app.</p></div>
+      <div class="risk"><h4>⚠️ Phụ thuộc GitHub OAuth</h4><p>Học sinh THCS có thể không có tài khoản GitHub → cân nhắc thêm provider khác khi mở cho học sinh.</p></div>
+      <div class="risk"><h4>⚠️ Giới hạn free tier Supabase</h4><p>Theo dõi dung lượng / số row khi lượng user tăng lên để tránh vượt hạn mức.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="brand" style="display:flex"><span class="brand-mark">E</span>English Path</div>
+    <p>Tài liệu Requirements &amp; Roadmap · Giáo viên tiếng Anh THCS khối 6–9<br>Sinh từ <code style="font-family:'JetBrains Mono',monospace;font-size:12px">docs/requirements.md</code> · Cập nhật 14/07/2026</p>
+  </footer>
+</main>
+
+<script>
+  // scroll reveal
+  const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12});
+  document.querySelectorAll('.mcard,.tcard,.urow,.rule,.phase,.risk,.stat,.fade').forEach((el,i)=>{el.classList.add('fade');el.style.transitionDelay=(i%6*40)+'ms';io.observe(el)});
+  // card spotlight
+  document.querySelectorAll('.mcard').forEach(c=>{c.addEventListener('mousemove',e=>{const r=c.getBoundingClientRect();c.style.setProperty('--mx',(e.clientX-r.left)+'px')})});
+  // mobile menu
+  (function(){
+    const t=document.getElementById('navToggle'),m=document.getElementById('mobileMenu');
+    const close=()=>{t.classList.remove('open');m.classList.remove('open');t.setAttribute('aria-expanded','false')};
+    t.addEventListener('click',()=>{const o=t.classList.toggle('open');m.classList.toggle('open',o);t.setAttribute('aria-expanded',o)});
+    m.querySelectorAll('a').forEach(a=>a.addEventListener('click',close));
+  })();
+</script>
+</body>
+</html>
