@@ -6,6 +6,7 @@ import AppGradeBar from './components/layout/AppGradeBar'
 import AppSidebar from './components/layout/AppSidebar'
 import AppTopbar from './components/layout/AppTopbar'
 import I18nProvider from './components/providers/I18nProvider'
+import PlannerNotificationsProvider from './components/providers/PlannerNotificationsProvider'
 import SupabaseAuthProvider from './components/providers/SupabaseAuthProvider'
 import { getMenuKeyFromPath, getMenuPath, menuItems } from './constants/navigation'
 import { gradeContent, learningSteps } from './data'
@@ -15,8 +16,6 @@ const { Content } = Layout
 const HomePage = lazy(() => import('./pages/home/HomePage'))
 const HelpPage = lazy(() => import('./pages/HelpPage'))
 const LessonsPage = lazy(() => import('./pages/lessons/LessonsPage'))
-const MosLessonsPage = lazy(() => import('./pages/mosLessons/MosLessonsPage'))
-const MosMockExamsPage = lazy(() => import('./pages/mosExams/MosMockExamsPage'))
 const MakeupSchedulePage = lazy(() => import('./pages/makeupSchedule/MakeupSchedulePage'))
 const OfficeTipsPage = lazy(() => import('./pages/officeTips/OfficeTipsPage'))
 const PlannerPage = lazy(() => import('./pages/planner/PlannerPage'))
@@ -111,7 +110,7 @@ function AppShell() {
         colorInfo: '#2a9d8f',
         colorSuccess: '#2a9d8f',
         colorError: '#e76f51',
-        borderRadius: 18,
+        borderRadius: 12,
         fontSize: getFontSizeValue(fontSizeMode),
         fontFamily: "'Be Vietnam Pro', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
         colorText: themeMode === 'dark' ? '#f3f7f9' : '#171717',
@@ -177,8 +176,6 @@ function AppShell() {
                       }
                     />
                     <Route path="/lessons" element={<LessonsPage {...pageProps} />} />
-                    <Route path="/mos-lessons" element={<MosLessonsPage />} />
-                    <Route path="/mos-exams" element={<MosMockExamsPage />} />
                     <Route path="/practice" element={<PracticePage {...pageProps} learningSteps={learningSteps} />} />
                     <Route path="/planner" element={<PlannerPage onRegisterTopbarAction={registerTopbarPageAction} />} />
                     <Route path="/makeup-schedule" element={<MakeupSchedulePage />} />
@@ -203,7 +200,9 @@ function App() {
     <I18nProvider>
       <SupabaseAuthProvider>
         <HashRouter>
-          <AppShell />
+          <PlannerNotificationsProvider>
+            <AppShell />
+          </PlannerNotificationsProvider>
         </HashRouter>
       </SupabaseAuthProvider>
     </I18nProvider>

@@ -27,18 +27,15 @@ import {
 } from 'antd'
 import type { InputRef } from 'antd'
 import { useSupabaseAuth } from '../../components/providers/SupabaseAuthProvider'
+import { usePlannerNotifications } from '../../contexts/plannerNotifications'
 import { useI18n } from '../../i18n'
 import {
   getTaskBucket,
   getTaskDueDate,
   isSameDay,
-  sortPlannerTasks,
   type PlannerTask,
   type PlannerTaskPriority,
 } from '../../lib/plannerStorage'
-import {
-  listPlannerTasks,
-} from '../../lib/supabase/plannerApi'
 import PlannerOverviewGrid from './components/PlannerOverviewGrid'
 import { exportPlannerWeeklyPdf } from './pdf'
 import PlannerTaskDrawer from './components/PlannerTaskDrawer'
@@ -64,11 +61,10 @@ function PlannerPage({ onRegisterTopbarAction }: PlannerPageProps) {
   const { message } = AntdApp.useApp()
   const { language, t } = useI18n()
   const { configured, signInWithGithub, user } = useSupabaseAuth()
+  const { loadingTasks, setTasks, taskLoadErrorVersion, tasks } = usePlannerNotifications()
   const [form] = Form.useForm<PlannerFormValues>()
-  const [tasks, setTasks] = useState<PlannerTask[]>([])
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null)
   const [plannerDrawerOpen, setPlannerDrawerOpen] = useState(false)
-  const [loadingTasks, setLoadingTasks] = useState(false)
   const [savingTask, setSavingTask] = useState(false)
   const [taskListQuery, setTaskListQuery] = useState('')
   const [taskListDate, setTaskListDate] = useState('')
@@ -87,6 +83,7 @@ function PlannerPage({ onRegisterTopbarAction }: PlannerPageProps) {
   const todaySectionRef = useRef<HTMLDivElement>(null)
   const upcomingSectionRef = useRef<HTMLDivElement>(null)
   const taskListSectionRef = useRef<HTMLDivElement>(null)
+  const reportedLoadErrorVersionRef = useRef(0)
   const [activeOverviewKey, setActiveOverviewKey] = useState<string | null>(null)
   const currentYear = new Date().getFullYear()
   const minPlannerDate = formatDateInputValue(new Date(currentYear - 1, 0, 1))
@@ -123,52 +120,10 @@ function PlannerPage({ onRegisterTopbarAction }: PlannerPageProps) {
   )
 
   useEffect(() => {
-    if (!configured || !user) {
-      setTasks([])
-      return
-    }
-
-    let active = true
-    setLoadingTasks(true)
-
-    listPlannerTasks(user.id)
-      .then((records) => {
-        if (!active) {
-          return
-        }
-
-        setTasks(
-          sortPlannerTasks(
-            records.map((task) => ({
-              id: task.id,
-              title: task.title,
-              note: task.note,
-              dueDate: task.due_date,
-              dueTime: task.due_time,
-              priority: task.priority,
-              repeatPattern: task.repeat_pattern ?? (task.repeat_weekly ? 'weekly' : null),
-              completed: task.completed,
-              createdAt: task.created_at,
-              updatedAt: task.updated_at,
-            })),
-          ),
-        )
-      })
-      .catch(() => {
-        if (active) {
-          message.error(t('planner.loadError'))
-        }
-      })
-      .finally(() => {
-        if (active) {
-          setLoadingTasks(false)
-        }
-      })
-
-    return () => {
-      active = false
-    }
-  }, [configured, message, t, user])
+    if (taskLoadErrorVersion <= reportedLoadErrorVersionRef.current) return
+    reportedLoadErrorVersionRef.current = taskLoadErrorVersion
+    message.error(t('planner.loadError'))
+  }, [message, t, taskLoadErrorVersion])
 
   const { bucketedTasks, todayPendingTasks, taskListItems } = useMemo(() => {
     const now = new Date()

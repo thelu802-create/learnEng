@@ -1,5 +1,6 @@
 import {
   ArrowRightOutlined,
+  BellOutlined,
   BookOutlined,
   CheckCircleOutlined,
   PlayCircleOutlined,
@@ -7,8 +8,9 @@ import {
   RadarChartOutlined,
   SoundOutlined,
 } from '@ant-design/icons'
-import { Button, Card, Col, Progress, Row, Space, Tag, Typography } from 'antd'
+import { App, Button, Card, Col, Progress, Row, Space, Tag, Typography } from 'antd'
 import { useSupabaseAuth } from '../../components/providers/SupabaseAuthProvider'
+import { usePlannerNotifications } from '../../contexts/plannerNotifications'
 import { useI18n } from '../../i18n'
 import { formatTaskDate, getWeekdayLabel } from '../../lib/plannerStorage'
 import { useHomePlannerSummary } from './hooks/useHomePlannerSummary'
@@ -24,11 +26,12 @@ function HomePage({
   onOpenPractice,
 }: HomePageProps) {
   const { gradeLabel, language, t } = useI18n()
-  const { configured, user } = useSupabaseAuth()
-  const { reminderTasks, plannerStats, weeklyPlanner, getReminderStatus } = useHomePlannerSummary({
-    configured,
-    userId: user?.id,
-  })
+  const { message } = App.useApp()
+  const { user } = useSupabaseAuth()
+  const browserNotifications = usePlannerNotifications()
+  const { reminderTasks, plannerStats, weeklyPlanner, getReminderStatus } = useHomePlannerSummary(
+    browserNotifications.tasks,
+  )
 
   const topicCount = currentGrade.vocabularyTopics.length
   const wordCount = currentGrade.vocabularyTopics.reduce((total, topic) => total + topic.words.length, 0)
@@ -81,7 +84,36 @@ function HomePage({
     plannerChartTitle: t('home.plannerChartTitle'),
     plannerDoneLabel: t('home.plannerDoneLabel'),
     plannerThisWeekLabel: t('home.plannerThisWeekLabel'),
+    notificationsEnable: t('home.notificationsEnable'),
+    notificationsDisable: t('home.notificationsDisable'),
+    notificationsBlocked: t('home.notificationsBlocked'),
+    notificationsUnsupported: t('home.notificationsUnsupported'),
   }
+
+  const handleBrowserNotifications = async () => {
+    if (browserNotifications.enabled) {
+      browserNotifications.disable()
+      message.info(t('home.notificationsDisabledMessage'))
+      return
+    }
+
+    const permission = await browserNotifications.enable()
+    if (permission === 'granted') {
+      message.success(t('home.notificationsEnabledMessage'))
+    } else if (permission === 'denied') {
+      message.warning(t('home.notificationsDeniedMessage'))
+    } else {
+      message.warning(t('home.notificationsUnsupportedMessage'))
+    }
+  }
+
+  const notificationButtonLabel = !browserNotifications.supported
+    ? copy.notificationsUnsupported
+    : browserNotifications.permission === 'denied'
+      ? copy.notificationsBlocked
+      : browserNotifications.enabled
+        ? copy.notificationsDisable
+        : copy.notificationsEnable
 
   const plannerStatItems = [
     { label: copy.statusToday, value: plannerStats.today, tone: 'gold' },
@@ -225,7 +257,16 @@ function HomePage({
                   <Paragraph className="settings-copy">{copy.noReminders}</Paragraph>
                 )}
 
-                <Button onClick={onOpenPlanner}>{copy.openPlanner}</Button>
+                <Space wrap className="planner-home-actions">
+                  <Button
+                    icon={<BellOutlined />}
+                    disabled={!user || !browserNotifications.supported}
+                    onClick={() => void handleBrowserNotifications()}
+                  >
+                    {notificationButtonLabel}
+                  </Button>
+                  <Button onClick={onOpenPlanner}>{copy.openPlanner}</Button>
+                </Space>
               </Space>
             </Card>
           </Col>

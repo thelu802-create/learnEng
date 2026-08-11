@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
-import { listPlannerTasks } from '../../../lib/supabase/plannerApi'
+import { useMemo } from 'react'
 import { getTaskBucket, type PlannerTask } from '../../../lib/plannerStorage'
 import type { HomeReminderStatusKey, WeeklyPlannerDay } from '../types'
 
@@ -12,54 +11,7 @@ function getStartOfWeek(date: Date) {
   return next
 }
 
-function mapPlannerTask(task: Awaited<ReturnType<typeof listPlannerTasks>>[number]): PlannerTask {
-  return {
-    id: task.id,
-    title: task.title,
-    note: task.note,
-    dueDate: task.due_date,
-    dueTime: task.due_time,
-    priority: task.priority,
-    repeatPattern: task.repeat_pattern ?? (task.repeat_weekly ? 'weekly' : null),
-    completed: task.completed,
-    createdAt: task.created_at,
-    updatedAt: task.updated_at,
-  }
-}
-
-export function useHomePlannerSummary({
-  configured,
-  userId,
-}: {
-  configured: boolean
-  userId?: string
-}) {
-  const [plannerTasks, setPlannerTasks] = useState<PlannerTask[]>([])
-
-  useEffect(() => {
-    if (!configured || !userId) {
-      setPlannerTasks([])
-      return
-    }
-
-    let active = true
-
-    listPlannerTasks(userId)
-      .then((records) => {
-        if (!active) return
-        setPlannerTasks(records.map(mapPlannerTask))
-      })
-      .catch(() => {
-        if (active) {
-          setPlannerTasks([])
-        }
-      })
-
-    return () => {
-      active = false
-    }
-  }, [configured, userId])
-
+export function useHomePlannerSummary(plannerTasks: PlannerTask[]) {
   const reminderTasks = useMemo(
     () =>
       plannerTasks
