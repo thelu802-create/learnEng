@@ -24,6 +24,19 @@ export interface ProfileRecord {
   created_at: string
 }
 
+export type AppUserRole = 'admin' | 'member'
+export type AppUserStatus = 'active' | 'disabled'
+
+export interface AppUserAccessRecord {
+  id: string
+  email: string
+  role: AppUserRole
+  status: AppUserStatus
+  created_by: string | null
+  created_at: string
+  updated_at: string
+}
+
 export interface SavedQuizQuestionRecord {
   id: string
   quiz_id: string
@@ -147,4 +160,37 @@ export interface MakeupScheduleInput {
   makeupTime?: string
   note?: string
   status?: MakeupScheduleStatus
+}
+
+export interface ClassRosterRecord {
+  id: string
+  user_id: string
+  name: string
+  school_year: string
+  source_file_name: string
+  student_count: number
+  created_at: string
+  updated_at: string
+}
+
+export interface ClassStudentRecord {
+  id: string
+  roster_id: string
+  user_id: string
+  class_name: string
+  student_number: string
+  full_name: string
+  gender: string
+  date_of_birth: string
+  phone_number: string
+  is_ic3: boolean
+  is_tabn: boolean
+  has_air_conditioner: boolean
+  is_inclusive: boolean
+  has_zalo: boolean
+  note: string
+  extra_data: Record<string, string>
+  source_sheet: string
+  source_row: number
+  created_at: string
 }

@@ -45,6 +45,8 @@ Luu vao Supabase (theo tung user, bat RLS):
 2. Bat GitHub provider trong Authentication > Providers
 3. Vao SQL Editor va chay `supabase/schema.sql` (profiles, teacher_notes, saved_quizzes, saved_quiz_questions, quiz_attempts, vocabulary_entries)
 4. Chay them cac file tinh nang:
+- `supabase/user_access.sql` (danh sach email duoc phep dang nhap + role admin/member)
+- `supabase/class_rosters.sql` (chay sau `user_access.sql`)
 - `supabase/planner_tasks.sql`
 - `supabase/add_repeat_pattern.sql`
 - `supabase/vocabulary_entries.sql`
@@ -71,6 +73,28 @@ VITE_SUPABASE_ANON_KEY=your-anon-key
 npm install
 npm run build
 ```
+
+## Gioi han dang ky bang danh sach email
+
+App dung GitHub OAuth, khong can gui email moi. Admin cap quyen truoc cho email GitHub; email khong co trong danh sach se bi Auth Hook tu choi khi tao tai khoan.
+
+1. Chay `supabase/user_access.sql` trong SQL Editor.
+2. Tao admin dau tien trong SQL Editor (email phai trung voi email GitHub):
+
+```sql
+insert into public.app_user_allowlist (email, role, status)
+values ('admin@example.com', 'admin', 'active');
+```
+
+3. Trong Supabase Dashboard, mo `Authentication > Hooks > Before User Created`, chon Postgres function `public.hook_allowlisted_signup`, sau do bat hook.
+4. Admin dang nhap bang GitHub. Menu `Quan ly nguoi dung` se xuat hien de them, khoa, doi vai tro hoac xoa user.
+
+Luu y:
+
+- Nen nhap email chu thuong. He thong tu chuan hoa email duoc them tu giao dien.
+- Hook ngan tai khoan moi khong nam trong danh sach. Neu project da co user la truoc do, can xoa/ban cac tai khoan khong hop le trong `Authentication > Users`.
+- Database khong cho xoa, khoa hoac ha quyen admin dang hoat dong cuoi cung.
+- Sau khi sua role cua tai khoan dang dang nhap bang SQL, dang xuat/dang nhap lai hoac tai lai trang de giao dien cap nhat.
 
 ## Free-tier roadmap hop ly
 

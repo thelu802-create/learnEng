@@ -38,8 +38,11 @@ export const translations = {
       playground: 'Vừa học vừa chơi',
       planner: 'Nhắc việc',
       makeupSchedule: 'Lịch dạy bù',
+      classRosters: 'Danh sách lớp',
+      userManagement: 'Quản lý người dùng',
       progress: 'Tiến độ',
       officeTips: 'Mẹo Office',
+      notebookLm: 'NotebookLM',
       help: 'Hướng dẫn',
     },
     topbar: {
@@ -630,8 +633,11 @@ export const translations = {
       playground: 'Play & Learn',
       planner: 'Planner',
       makeupSchedule: 'Make-up Classes',
+      classRosters: 'Class Rosters',
+      userManagement: 'User Management',
       progress: 'Progress',
       officeTips: 'Office Tips',
+      notebookLm: 'NotebookLM',
       help: 'Help',
     },
     topbar: {

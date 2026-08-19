@@ -18,6 +18,8 @@ dist-ssr
 vite.config.d.ts
 vite.config.js
 server-data/
+.codex-run/
+tmp_pdf_text.txt
 
 # Editor directories and files
 .vscode/*

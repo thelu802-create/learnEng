@@ -5,7 +5,10 @@ import {
   PlayCircleOutlined,
   QuestionCircleOutlined,
   RiseOutlined,
+  RobotOutlined,
   RocketOutlined,
+  TeamOutlined,
+  UserSwitchOutlined,
 } from '@ant-design/icons'
 import { Drawer, Layout, Menu, Typography } from 'antd'
 import type { MenuProps } from 'antd'
@@ -23,6 +26,9 @@ const iconMap: Record<MenuIconKey, ReactNode> = {
   calendar: <CalendarOutlined />,
   play: <PlayCircleOutlined />,
   rise: <RiseOutlined />,
+  team: <TeamOutlined />,
+  users: <UserSwitchOutlined />,
+  robot: <RobotOutlined />,
   rocket: <RocketOutlined />,
   help: <QuestionCircleOutlined />,
 }

@@ -1,14 +1,20 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import type { PropsWithChildren } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
 import { getSupabaseClient, isSupabaseConfigured } from '../../lib/supabase/client'
 import { ensureOwnProfile } from '../../lib/supabase/profilesApi'
+import { getOwnUserAccess } from '../../lib/supabase/userAccessApi'
+import type { AppUserAccessRecord } from '../../lib/supabase/types'
 
 interface SupabaseAuthContextValue {
   configured: boolean
   loading: boolean
   session: Session | null
   user: User | null
+  access: AppUserAccessRecord | null
+  accessLoading: boolean
+  isAdmin: boolean
+  refreshAccess: () => Promise<void>
   signInWithGithub: () => Promise<void>
   signOut: () => Promise<void>
 }
@@ -91,6 +97,8 @@ function clearOAuthParamsFromBrowserUrl() {
 function SupabaseAuthProvider({ children }: PropsWithChildren) {
   const [loading, setLoading] = useState(true)
   const [session, setSession] = useState<Session | null>(null)
+  const [access, setAccess] = useState<AppUserAccessRecord | null>(null)
+  const [accessLoading, setAccessLoading] = useState(false)
   const configured = isSupabaseConfigured()
 
   useEffect(() => {
@@ -149,12 +157,38 @@ function SupabaseAuthProvider({ children }: PropsWithChildren) {
     }
   }, [configured, session?.user])
 
+  const refreshAccess = useCallback(async () => {
+    const email = session?.user?.email
+    if (!configured || !email) {
+      setAccess(null)
+      setAccessLoading(false)
+      return
+    }
+
+    setAccessLoading(true)
+    try {
+      setAccess(await getOwnUserAccess(email))
+    } catch {
+      setAccess(null)
+    } finally {
+      setAccessLoading(false)
+    }
+  }, [configured, session?.user?.email])
+
+  useEffect(() => {
+    void refreshAccess()
+  }, [refreshAccess])
+
   const value = useMemo<SupabaseAuthContextValue>(
     () => ({
       configured,
       loading,
       session,
       user: session?.user ?? null,
+      access,
+      accessLoading,
+      isAdmin: access?.role === 'admin' && access.status === 'active',
+      refreshAccess,
       signInWithGithub: async () => {
         const client = getSupabaseClient()
 
@@ -189,7 +223,7 @@ function SupabaseAuthProvider({ children }: PropsWithChildren) {
         }
       },
     }),
-    [configured, loading, session],
+    [access, accessLoading, configured, loading, refreshAccess, session],
   )
 
   return <SupabaseAuthContext.Provider value={value}>{children}</SupabaseAuthContext.Provider>

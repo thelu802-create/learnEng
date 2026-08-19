@@ -10,15 +10,19 @@ export type MenuKey =
   | 'playground'
   | 'planner'
   | 'makeupSchedule'
+  | 'classRosters'
+  | 'userManagement'
   | 'progress'
   | 'officeTips'
+  | 'notebookLm'
   | 'help'
-export type MenuIconKey = 'rocket' | 'book' | 'play' | 'bulb' | 'calendar' | 'rise' | 'help'
+export type MenuIconKey = 'rocket' | 'book' | 'play' | 'bulb' | 'calendar' | 'rise' | 'team' | 'users' | 'robot' | 'help'
 
 export interface MenuItemConfig {
   key: MenuKey
   icon: MenuIconKey
   path: string
+  externalUrl?: string
 }
 
 export interface VocabularyWord {

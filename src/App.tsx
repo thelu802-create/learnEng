@@ -7,8 +7,8 @@ import AppSidebar from './components/layout/AppSidebar'
 import AppTopbar from './components/layout/AppTopbar'
 import I18nProvider from './components/providers/I18nProvider'
 import PlannerNotificationsProvider from './components/providers/PlannerNotificationsProvider'
-import SupabaseAuthProvider from './components/providers/SupabaseAuthProvider'
-import { getMenuKeyFromPath, getMenuPath, menuItems } from './constants/navigation'
+import SupabaseAuthProvider, { useSupabaseAuth } from './components/providers/SupabaseAuthProvider'
+import { getExternalMenuUrl, getMenuKeyFromPath, getMenuPath, menuItems } from './constants/navigation'
 import { gradeContent, learningSteps } from './data'
 import type { FontSizeMode, GradeKey, MenuKey, ThemeMode } from './types'
 
@@ -17,6 +17,8 @@ const HomePage = lazy(() => import('./pages/home/HomePage'))
 const HelpPage = lazy(() => import('./pages/HelpPage'))
 const LessonsPage = lazy(() => import('./pages/lessons/LessonsPage'))
 const MakeupSchedulePage = lazy(() => import('./pages/makeupSchedule/MakeupSchedulePage'))
+const ClassRostersPage = lazy(() => import('./pages/classRosters/ClassRostersPage'))
+const UserManagementPage = lazy(() => import('./pages/userManagement/UserManagementPage'))
 const OfficeTipsPage = lazy(() => import('./pages/officeTips/OfficeTipsPage'))
 const PlannerPage = lazy(() => import('./pages/planner/PlannerPage'))
 const PlaygroundPage = lazy(() => import('./pages/PlaygroundPage'))
@@ -49,6 +51,7 @@ function getFontSizeValue(fontSizeMode: FontSizeMode): number {
 }
 
 function AppShell() {
+  const { isAdmin } = useSupabaseAuth()
   const gradeOptions = Object.keys(gradeContent) as GradeKey[]
   const location = useLocation()
   const navigate = useNavigate()
@@ -77,6 +80,10 @@ function AppShell() {
   }, [currentMenu])
 
   const currentGrade = useMemo(() => gradeContent[selectedGrade], [selectedGrade])
+  const visibleMenuItems = useMemo(
+    () => menuItems.filter((item) => item.key !== 'userManagement' || isAdmin),
+    [isAdmin],
+  )
   const showGradeBar =
     currentMenu === 'home' ||
     currentMenu === 'lessons' ||
@@ -91,6 +98,13 @@ function AppShell() {
 
   const openMenu = useCallback(
     (menuKey: MenuKey) => {
+      const externalUrl = getExternalMenuUrl(menuKey)
+      if (externalUrl) {
+        window.open(externalUrl, '_blank', 'noopener,noreferrer')
+        setIsMobileMenuOpen(false)
+        return
+      }
+
       navigate(getMenuPath(menuKey))
       setIsMobileMenuOpen(false)
     },
@@ -128,7 +142,7 @@ function AppShell() {
       <AntdApp>
         <Layout className={`app-shell ${themeMode === 'dark' ? 'theme-dark' : 'theme-light'}`}>
           <AppSidebar
-            menuItems={menuItems}
+            menuItems={visibleMenuItems}
             selectedMenu={currentMenu}
             onMenuChange={openMenu}
             isMobileOpen={isMobileMenuOpen}
@@ -179,6 +193,8 @@ function AppShell() {
                     <Route path="/practice" element={<PracticePage {...pageProps} learningSteps={learningSteps} />} />
                     <Route path="/planner" element={<PlannerPage onRegisterTopbarAction={registerTopbarPageAction} />} />
                     <Route path="/makeup-schedule" element={<MakeupSchedulePage />} />
+                    <Route path="/class-rosters" element={<ClassRostersPage />} />
+                    <Route path="/user-management" element={<UserManagementPage />} />
                     <Route path="/playground" element={<PlaygroundPage {...pageProps} />} />
                     <Route path="/progress" element={<ProgressPage {...pageProps} />} />
                     <Route path="/office-tips" element={<OfficeTipsPage />} />
