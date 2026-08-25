@@ -2,6 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react
 import { App as AntdApp, ConfigProvider, Layout, Spin, theme as antdTheme } from 'antd'
 import { HashRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import './App.css'
+import AuthGate from './components/auth/AuthGate'
 import AppGradeBar from './components/layout/AppGradeBar'
 import AppSidebar from './components/layout/AppSidebar'
 import AppTopbar from './components/layout/AppTopbar'
@@ -216,9 +217,11 @@ function App() {
     <I18nProvider>
       <SupabaseAuthProvider>
         <HashRouter>
-          <PlannerNotificationsProvider>
-            <AppShell />
-          </PlannerNotificationsProvider>
+          <AuthGate>
+            <PlannerNotificationsProvider>
+              <AppShell />
+            </PlannerNotificationsProvider>
+          </AuthGate>
         </HashRouter>
       </SupabaseAuthProvider>
     </I18nProvider>

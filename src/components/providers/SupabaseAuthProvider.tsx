@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import type { PropsWithChildren } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
 import { getSupabaseClient, isSupabaseConfigured } from '../../lib/supabase/client'
@@ -11,9 +11,11 @@ interface SupabaseAuthContextValue {
   loading: boolean
   session: Session | null
   user: User | null
+  authError: string | null
   access: AppUserAccessRecord | null
   accessLoading: boolean
   isAdmin: boolean
+  clearAuthError: () => void
   refreshAccess: () => Promise<void>
   signInWithGithub: () => Promise<void>
   signOut: () => Promise<void>
@@ -57,6 +59,16 @@ function buildCleanRedirectUrl() {
   return url.toString()
 }
 
+function getOAuthErrorFromBrowserUrl(): string | null {
+  const url = new URL(window.location.href)
+  const searchError = url.searchParams.get('error_description') ?? url.searchParams.get('error')
+  if (searchError) return searchError
+
+  const hash = url.hash.startsWith('#') ? url.hash.slice(1) : url.hash
+  const hashParams = new URLSearchParams(hash)
+  return hashParams.get('error_description') ?? hashParams.get('error')
+}
+
 function saveOAuthReturnPath() {
   if (!window.location.hash.startsWith('#/')) {
     return
@@ -97,8 +109,10 @@ function clearOAuthParamsFromBrowserUrl() {
 function SupabaseAuthProvider({ children }: PropsWithChildren) {
   const [loading, setLoading] = useState(true)
   const [session, setSession] = useState<Session | null>(null)
+  const [authError, setAuthError] = useState<string | null>(() => getOAuthErrorFromBrowserUrl())
   const [access, setAccess] = useState<AppUserAccessRecord | null>(null)
   const [accessLoading, setAccessLoading] = useState(false)
+  const sessionUserIdRef = useRef<string | null>(null)
   const configured = isSupabaseConfigured()
 
   useEffect(() => {
@@ -116,6 +130,12 @@ function SupabaseAuthProvider({ children }: PropsWithChildren) {
         return
       }
 
+      const nextUserId = data.session?.user.id ?? null
+      if (sessionUserIdRef.current !== nextUserId) {
+        setAccess(null)
+        setAccessLoading(Boolean(data.session?.user.email))
+      }
+      sessionUserIdRef.current = nextUserId
       setSession(data.session)
       clearOAuthParamsFromBrowserUrl()
       if (data.session) {
@@ -125,6 +145,12 @@ function SupabaseAuthProvider({ children }: PropsWithChildren) {
     })
 
     const { data } = client.auth.onAuthStateChange((_event, nextSession) => {
+      const nextUserId = nextSession?.user.id ?? null
+      if (sessionUserIdRef.current !== nextUserId) {
+        setAccess(null)
+        setAccessLoading(Boolean(nextSession?.user.email))
+      }
+      sessionUserIdRef.current = nextUserId
       setSession(nextSession)
       clearOAuthParamsFromBrowserUrl()
       if (nextSession) {
@@ -140,7 +166,7 @@ function SupabaseAuthProvider({ children }: PropsWithChildren) {
   }, [])
 
   useEffect(() => {
-    if (!configured || !session?.user) {
+    if (!configured || !session?.user || access?.status !== 'active') {
       return
     }
 
@@ -155,7 +181,7 @@ function SupabaseAuthProvider({ children }: PropsWithChildren) {
     return () => {
       cancelled = true
     }
-  }, [configured, session?.user])
+  }, [access?.status, configured, session?.user])
 
   const refreshAccess = useCallback(async () => {
     const email = session?.user?.email
@@ -185,9 +211,11 @@ function SupabaseAuthProvider({ children }: PropsWithChildren) {
       loading,
       session,
       user: session?.user ?? null,
+      authError,
       access,
       accessLoading,
       isAdmin: access?.role === 'admin' && access.status === 'active',
+      clearAuthError: () => setAuthError(null),
       refreshAccess,
       signInWithGithub: async () => {
         const client = getSupabaseClient()
@@ -196,6 +224,7 @@ function SupabaseAuthProvider({ children }: PropsWithChildren) {
           throw new Error('Supabase chưa được cấu hình.')
         }
 
+        setAuthError(null)
         saveOAuthReturnPath()
         const redirectTo = buildCleanRedirectUrl()
         const { error } = await client.auth.signInWithOAuth({
@@ -206,6 +235,7 @@ function SupabaseAuthProvider({ children }: PropsWithChildren) {
         })
 
         if (error) {
+          setAuthError(error.message)
           throw error
         }
       },
@@ -223,7 +253,7 @@ function SupabaseAuthProvider({ children }: PropsWithChildren) {
         }
       },
     }),
-    [access, accessLoading, configured, loading, refreshAccess, session],
+    [access, accessLoading, authError, configured, loading, refreshAccess, session],
   )
 
   return <SupabaseAuthContext.Provider value={value}>{children}</SupabaseAuthContext.Provider>
