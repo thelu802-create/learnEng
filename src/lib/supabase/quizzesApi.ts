@@ -23,40 +23,17 @@ export async function listSavedQuizzes(userId: string): Promise<SavedQuizRecord[
 
 export async function createSavedQuiz(input: SaveQuizInput): Promise<SavedQuizRecord> {
   const supabase = requireSupabaseClient()
-  const { data: quiz, error: quizError } = await supabase
-    .from('saved_quizzes')
-    .insert({
-      user_id: input.userId,
-      title: input.title,
-      source_passage: input.sourcePassage,
-      grade_key: input.gradeKey ?? null,
-      topic_key: input.topicKey ?? null,
-    })
-    .select()
-    .single()
+  const { data, error } = await supabase.rpc('create_saved_quiz_with_questions', {
+    p_title: input.title,
+    p_source_passage: input.sourcePassage,
+    p_grade_key: input.gradeKey ?? null,
+    p_topic_key: input.topicKey ?? null,
+    p_questions: input.questions,
+  })
 
-  if (quizError) {
-    throw quizError
-  }
-
-  const questionRows = input.questions.map((question, index) => ({
-    quiz_id: quiz.id,
-    prompt: question.prompt,
-    answer: question.answer,
-    options: question.options,
-    original_sentence: question.originalSentence ?? null,
-    question_order: index,
-  }))
-
-  if (questionRows.length > 0) {
-    const { error: questionError } = await supabase.from('saved_quiz_questions').insert(questionRows)
-
-    if (questionError) {
-      throw questionError
-    }
-  }
-
-  return quiz as SavedQuizRecord
+  if (error) throw error
+  if (!data) throw new Error('Quiz transaction returned no data.')
+  return data as SavedQuizRecord
 }
 
 export async function getSavedQuizQuestions(quizId: string): Promise<SavedQuizQuestionRecord[]> {

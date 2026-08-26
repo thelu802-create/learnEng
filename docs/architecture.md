@@ -49,6 +49,8 @@ The service layer is split by domain under [`src/lib/supabase`](../src/lib/supab
 - [`makeupSchedulesApi.ts`](../src/lib/supabase/makeupSchedulesApi.ts) — make-up schedules
 - [`profilesApi.ts`](../src/lib/supabase/profilesApi.ts) — user profiles
 
+Parent-child writes that must succeed together are database transactions exposed as Supabase RPCs in [`supabase/transactional_writes.sql`](../supabase/transactional_writes.sql). The TypeScript service modules call those RPCs once; PostgreSQL derives ownership from `auth.uid()`, applies RLS as the invoking user, and rolls the whole call back if any child row fails.
+
 The Supabase client is created in [`client.ts`](../src/lib/supabase/client.ts); `isSupabaseConfigured()` lets the UI degrade gracefully when env vars are missing. Pages call these helpers instead of scattering Supabase queries throughout the UI.
 
 ## Lessons Flow

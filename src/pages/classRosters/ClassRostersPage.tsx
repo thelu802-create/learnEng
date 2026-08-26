@@ -132,7 +132,7 @@ function ClassRostersPage() {
     const values = await importForm.validateFields()
     setSaving(true)
     try {
-      const roster = await createClassRoster({ userId: user.id, name: values.name.trim(), schoolYear: values.schoolYear.trim(), sourceFileName: workbook.fileName, students: importStudents })
+      const roster = await createClassRoster({ name: values.name.trim(), schoolYear: values.schoolYear.trim(), sourceFileName: workbook.fileName, students: importStudents })
       setRosters((current) => [roster, ...current]); setSelectedRosterId(roster.id); setStudents([]); setImportOpen(false); resetImport(); message.success(text.savedOk)
     } catch { message.error(text.saveError) } finally { setSaving(false) }
   }

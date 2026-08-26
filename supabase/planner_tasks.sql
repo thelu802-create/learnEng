@@ -1,3 +1,5 @@
+-- Run supabase/user_access.sql first. These policies depend on is_app_user_active().
+
 create table if not exists public.planner_tasks (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users (id) on delete cascade,
@@ -22,26 +24,26 @@ create policy "planner_tasks_select_own"
 on public.planner_tasks
 for select
 to authenticated
-using (auth.uid() = user_id);
+using (public.is_app_user_active() and auth.uid() = user_id);
 
 drop policy if exists "planner_tasks_insert_own" on public.planner_tasks;
 create policy "planner_tasks_insert_own"
 on public.planner_tasks
 for insert
 to authenticated
-with check (auth.uid() = user_id);
+with check (public.is_app_user_active() and auth.uid() = user_id);
 
 drop policy if exists "planner_tasks_update_own" on public.planner_tasks;
 create policy "planner_tasks_update_own"
 on public.planner_tasks
 for update
 to authenticated
-using (auth.uid() = user_id)
-with check (auth.uid() = user_id);
+using (public.is_app_user_active() and auth.uid() = user_id)
+with check (public.is_app_user_active() and auth.uid() = user_id);
 
 drop policy if exists "planner_tasks_delete_own" on public.planner_tasks;
 create policy "planner_tasks_delete_own"
 on public.planner_tasks
 for delete
 to authenticated
-using (auth.uid() = user_id);
+using (public.is_app_user_active() and auth.uid() = user_id);

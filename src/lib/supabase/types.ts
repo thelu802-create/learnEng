@@ -58,7 +58,6 @@ export interface QuizAttemptRecord {
 }
 
 export interface SaveQuizInput {
-  userId: string
   title: string
   sourcePassage: string
   gradeKey?: string | null

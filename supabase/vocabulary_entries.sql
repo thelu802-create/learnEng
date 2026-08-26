@@ -1,3 +1,5 @@
+-- Run supabase/user_access.sql first. These policies depend on is_app_user_active().
+
 create table if not exists public.vocabulary_entries (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references auth.users (id) on delete cascade,
@@ -29,26 +31,26 @@ create policy "vocabulary_entries_select_visible"
 on public.vocabulary_entries
 for select
 to authenticated
-using (source = 'system' or auth.uid() = user_id);
+using (public.is_app_user_active() and (source = 'system' or auth.uid() = user_id));
 
 drop policy if exists "vocabulary_entries_insert_own" on public.vocabulary_entries;
 create policy "vocabulary_entries_insert_own"
 on public.vocabulary_entries
 for insert
 to authenticated
-with check (source = 'teacher' and auth.uid() = user_id);
+with check (public.is_app_user_active() and source = 'teacher' and auth.uid() = user_id);
 
 drop policy if exists "vocabulary_entries_update_own" on public.vocabulary_entries;
 create policy "vocabulary_entries_update_own"
 on public.vocabulary_entries
 for update
 to authenticated
-using (source = 'teacher' and auth.uid() = user_id)
-with check (source = 'teacher' and auth.uid() = user_id);
+using (public.is_app_user_active() and source = 'teacher' and auth.uid() = user_id)
+with check (public.is_app_user_active() and source = 'teacher' and auth.uid() = user_id);
 
 drop policy if exists "vocabulary_entries_delete_own" on public.vocabulary_entries;
 create policy "vocabulary_entries_delete_own"
 on public.vocabulary_entries
 for delete
 to authenticated
-using (source = 'teacher' and auth.uid() = user_id);
+using (public.is_app_user_active() and source = 'teacher' and auth.uid() = user_id);

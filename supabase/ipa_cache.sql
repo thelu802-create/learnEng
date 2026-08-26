@@ -1,3 +1,5 @@
+-- Run supabase/user_access.sql first. These policies depend on is_app_user_active().
+
 create table if not exists public.ipa_cache (
   word text primary key,
   ipa text not null default '',
@@ -11,7 +13,7 @@ create policy "ipa_cache_read_authenticated"
 on public.ipa_cache
 for select
 to authenticated
-using (true);
+using (public.is_app_user_active());
 
 drop policy if exists "ipa_cache_no_client_write" on public.ipa_cache;
 create policy "ipa_cache_no_client_write"

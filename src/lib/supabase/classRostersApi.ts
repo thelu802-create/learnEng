@@ -3,7 +3,6 @@ import type { ClassRosterRecord, ClassStudentRecord } from './types'
 import type { ParsedStudent } from '../../pages/classRosters/types'
 
 interface CreateClassRosterInput {
-  userId: string
   name: string
   schoolYear: string
   sourceFileName: string
@@ -90,51 +89,15 @@ export async function listClassStudents(rosterId: string, userId: string): Promi
 
 export async function createClassRoster(input: CreateClassRosterInput): Promise<ClassRosterRecord> {
   const supabase = requireSupabaseClient()
-  const { data: roster, error: rosterError } = await supabase
-    .from('class_rosters')
-    .insert({
-      user_id: input.userId,
-      name: input.name,
-      school_year: input.schoolYear,
-      source_file_name: input.sourceFileName,
-      student_count: input.students.length,
-    })
-    .select()
-    .single()
-  if (rosterError) throw rosterError
-
-  const record = roster as ClassRosterRecord
-  const rows = input.students.map((student) => ({
-    roster_id: record.id,
-    user_id: input.userId,
-    class_name: student.className,
-    student_number: student.studentNumber,
-    full_name: student.fullName,
-    gender: student.gender,
-    date_of_birth: student.dateOfBirth,
-    phone_number: student.phoneNumber,
-    is_ic3: student.isIc3,
-    is_tabn: student.isTabn,
-    has_air_conditioner: student.hasAirConditioner,
-    is_inclusive: student.isInclusive,
-    has_zalo: false,
-    note: student.note,
-    extra_data: student.extraData,
-    source_sheet: student.sourceSheet,
-    source_row: student.sourceRow,
-  }))
-
-  try {
-    for (let start = 0; start < rows.length; start += 500) {
-      const { error } = await supabase.from('class_students').insert(rows.slice(start, start + 500))
-      if (error) throw error
-    }
-  } catch (error) {
-    await supabase.from('class_rosters').delete().eq('id', record.id).eq('user_id', input.userId)
-    throw error
-  }
-
-  return record
+  const { data, error } = await supabase.rpc('create_class_roster_with_students', {
+    p_name: input.name,
+    p_school_year: input.schoolYear,
+    p_source_file_name: input.sourceFileName,
+    p_students: input.students,
+  })
+  if (error) throw error
+  if (!data) throw new Error('Roster transaction returned no data.')
+  return data as ClassRosterRecord
 }
 
 export async function deleteClassRoster(rosterId: string, userId: string): Promise<void> {

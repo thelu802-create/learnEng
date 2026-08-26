@@ -54,20 +54,22 @@ Luu vao Supabase (theo tung user, bat RLS):
 - `supabase/ipa_cache.sql`
 - `supabase/profiles_policy.sql`
 - `supabase/planner_tasks_with_profiles.sql`
-5. (Tuy chon) Deploy Edge Function tra IPA:
+5. Voi database da ton tai, chay `supabase/enforce_active_user_access.sql` sau cac file tren de dong bo RLS theo trang thai allowlist.
+6. Chay `supabase/transactional_writes.sql` de tao RPC transaction cho roster + students va quiz + questions.
+7. (Tuy chon) Deploy Edge Function tra IPA:
 - `supabase/functions/ipa-lookup/index.ts`
-6. Lay tu Project Settings > API:
+8. Lay tu Project Settings > API:
 - Project URL
 - anon public key
-7. Tao file `.env.local` tu `.env.example`
-8. Dien:
+9. Tao file `.env.local` tu `.env.example`
+10. Dien:
 
 ```bash
 VITE_SUPABASE_URL=your-project-url
 VITE_SUPABASE_ANON_KEY=your-anon-key
 ```
 
-9. Cai dependency va build:
+11. Cai dependency va build:
 
 ```bash
 npm install
@@ -132,4 +134,6 @@ Config va SQL:
 - `anon key` co the dung o frontend neu bat RLS dung cach
 - khong dua service role key vao Vite frontend
 - moi bang co du lieu rieng tu user nen bat RLS ngay tu dau
+- moi policy du lieu ung dung phai kiem tra `public.is_app_user_active()`; policy doc allowlist cua chinh user la ngoai le de AuthGate hien thi trang thai bi khoa
+- cac thao tac ghi cha-con phai di qua RPC trong `supabase/transactional_writes.sql`; RPC lay user tu `auth.uid()` va chay voi `security invoker`
 - Edge Function nen giu key/secret trong Supabase secrets, khong hardcode

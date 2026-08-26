@@ -67,12 +67,17 @@ The app expects these environment variables (see [`.env.example`](.env.example))
 Run these SQL files in the Supabase SQL Editor:
 
 - [`supabase/schema.sql`](supabase/schema.sql) — core tables (profiles, teacher_notes, saved_quizzes, saved_quiz_questions, quiz_attempts, vocabulary_entries)
+- [`supabase/user_access.sql`](supabase/user_access.sql) — allowlist helpers; run before the feature SQL files below
+- [`supabase/class_rosters.sql`](supabase/class_rosters.sql)
 - [`supabase/planner_tasks.sql`](supabase/planner_tasks.sql)
 - [`supabase/add_repeat_pattern.sql`](supabase/add_repeat_pattern.sql) — adds the planner repeat column
 - [`supabase/vocabulary_entries.sql`](supabase/vocabulary_entries.sql)
 - [`supabase/makeup_schedules.sql`](supabase/makeup_schedules.sql)
 - [`supabase/ipa_cache.sql`](supabase/ipa_cache.sql)
 - [`supabase/profiles_policy.sql`](supabase/profiles_policy.sql) and [`supabase/planner_tasks_with_profiles.sql`](supabase/planner_tasks_with_profiles.sql) — supporting policies/views
+- [`supabase/transactional_writes.sql`](supabase/transactional_writes.sql) — atomic RPCs for creating rosters with students and quizzes with questions
+
+For an existing database, run [`supabase/enforce_active_user_access.sql`](supabase/enforce_active_user_access.sql) after the tables above to make every application-data RLS policy reject disabled or removed allowlist users.
 
 For auto IPA lookup on the deployed app, also deploy the Edge Function:
 

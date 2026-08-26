@@ -187,18 +187,18 @@ alter table public.class_students enable row level security;
 create policy "profiles_select_own"
 on public.profiles for select
 to authenticated
-using (auth.uid() = id);
+using (public.is_app_user_active() and auth.uid() = id);
 
 create policy "profiles_insert_own"
 on public.profiles for insert
 to authenticated
-with check (auth.uid() = id);
+with check (public.is_app_user_active() and auth.uid() = id);
 
 create policy "profiles_update_own"
 on public.profiles for update
 to authenticated
-using (auth.uid() = id)
-with check (auth.uid() = id);
+using (public.is_app_user_active() and auth.uid() = id)
+with check (public.is_app_user_active() and auth.uid() = id);
 
 create policy "app_user_allowlist_select"
 on public.app_user_allowlist for select to authenticated
@@ -220,22 +220,22 @@ create policy "teacher_notes_manage_own"
 on public.teacher_notes
 for all
 to authenticated
-using (auth.uid() = user_id)
-with check (auth.uid() = user_id);
+using (public.is_app_user_active() and auth.uid() = user_id)
+with check (public.is_app_user_active() and auth.uid() = user_id);
 
 create policy "saved_quizzes_manage_own"
 on public.saved_quizzes
 for all
 to authenticated
-using (auth.uid() = user_id)
-with check (auth.uid() = user_id);
+using (public.is_app_user_active() and auth.uid() = user_id)
+with check (public.is_app_user_active() and auth.uid() = user_id);
 
 create policy "saved_quiz_questions_select_owner"
 on public.saved_quiz_questions
 for select
 to authenticated
 using (
-  exists (
+  public.is_app_user_active() and exists (
     select 1
     from public.saved_quizzes
     where public.saved_quizzes.id = saved_quiz_questions.quiz_id
@@ -248,7 +248,7 @@ on public.saved_quiz_questions
 for insert
 to authenticated
 with check (
-  exists (
+  public.is_app_user_active() and exists (
     select 1
     from public.saved_quizzes
     where public.saved_quizzes.id = saved_quiz_questions.quiz_id
@@ -261,7 +261,7 @@ on public.saved_quiz_questions
 for delete
 to authenticated
 using (
-  exists (
+  public.is_app_user_active() and exists (
     select 1
     from public.saved_quizzes
     where public.saved_quizzes.id = saved_quiz_questions.quiz_id
@@ -274,7 +274,7 @@ on public.quiz_attempts
 for all
 to authenticated
 using (
-  exists (
+  public.is_app_user_active() and exists (
     select 1
     from public.saved_quizzes
     where public.saved_quizzes.id = quiz_attempts.quiz_id
@@ -282,7 +282,7 @@ using (
   )
 )
 with check (
-  exists (
+  public.is_app_user_active() and exists (
     select 1
     from public.saved_quizzes
     where public.saved_quizzes.id = quiz_attempts.quiz_id
